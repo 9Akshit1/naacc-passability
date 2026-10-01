@@ -1,0 +1,401 @@
+ 
+ 
+CR OSSING D ATAOUTLETINLETADDITIONAL CONDITIONS
+ 
+ 
+ 
+      
+  
+  
+ 
+          
+          
+     
+ 
+   
+    
+ 
+               
+         
+             
+         
+   
+                    
+        
+         
+             
+        
+        
+ 
+        
+          
+     
+        
+           
+            
+    
+     
+     
+      
+ 
+5/26/16
+AQUATIC CONNEC TIVIT Y  
+Stream Crossing Survey 
+DATA FORM  
+DATABASE ENTR Y BY  ENTR Y DATE  
+DATA ENTR Y REVIE WED BY  REVIE W DATE  
+Crossing Code      Local ID (Optional) 
+Date Observed (00/00/0000)  Lead Observer  
+Town/County Stream  
+MULTILANE PAVED UNPAVED DRIVEWAY TRAIL RAILROAD Road  Type  
+°N Latitude °W Longitude GPS Coordinates (Decimal degrees) 
+Location Description 
+BRIDGE CULVERT MULTIPLE CULVERT FORD NO CROSSING REMOVED CROSSINGCrossing Type       Number of Culverts/ Bridge Cells  
+BURIED STREAM INACCESSIBLE PARTIALLY INACCESSIBLE NO UPSTREAM CHANNEL BRIDGE ADEQUATE 
+Photo IDs INLET OUTLET UPSTREAM DOWNSTREAM OTHER 
+Flow Condition NO FLOW TYPICAL-LOW MODERATE HIGH Crossing Condition OK POOR NEW UNKNOWN 
+Tidal Site YES NO UNKNOWN Alignment FLOW-ALIGNED SKEWED (>45°) Road Fill Height (Top of culvert to road surface; bridge = 0) 
+SPANS ONLY BANKFULL/  Bankfull Width (Optional)  Confidence HIGH LOW/ESTIMATED Constriction  SEVERE MODERATE 
+ACTIVE CHANNEL 
+Tailwater Scour Pool  NONE SMALL LARGE SPANS FULL CHANNEL & BANKS 
+Crossing Comments  
+STR UC TURE 1  Structure Material  METAL CONCRETE PLASTIC WOOD ROCK/STONE FIBERGLASS COMBINATION 
+Outlet Shape  1 2 3 4 5 6 7 FORD UNKNOWN REMOVED Outlet Armoring NONE NOT EXTENSIVE EXTENSIVE 
+Outlet Grade (Pick one)  AT STREAM GRADE FREE FALL CASCADE FREE FALL ONTO CASCADE CLOGGED/COLLAPSED/SUBMERGED UNKNOWN 
+Outlet Dimensions A. Width  .  B. Height  .  C. Substrate/Water Width  .  D. Water Depth .  
+Outlet Drop to Water Surface  .  Outlet Drop to Stream Bottom  .  E. Abutment Height (Type 7 bridges only)  .  
+L. Structure Length (Overall length from inlet to outlet)  .  
+Inlet Shape  1 2 3 4 5 6 7 FORD UNKNOWN REMOVED 
+Inlet Type  PROJECTING HEADWALL WINGWALLS HEADWALL & WINGWALLS MITERED TO SLOPE OTHER NONE 
+Inlet Grade (Pick one)  AT STREAM GRADE INLET DROP PERCHED CLOGGED/COLLAPSED/SUBMERGED UNKNOWN 
+Inlet Dimensions A. Width  .  B. Height  .  C. Substrate/Water Width  .  D. Water Depth .  
+Slope % (Optional) Slope Confidence  HIGH LOW Internal Structures  NONE BAFFLES/WEIRS SUPPORTS OTHER 
+Structure Substrate Matches Stream  NONE COMPARABLE CONTRASTING NOT APPROPRIATE UNKNOWN 
+Structure Substrate Type (Pick one)  NONE SILT SAND GRAVEL COBBLE BOULDER BEDROCK UNKNOWN 
+Structure Substrate Coverage  NONE 25% 50% 75% 100% UNKNOWN 
+Physical Barriers (Pick all that apply)  NONE DEBRIS/SEDIMENT/ROCK DEFORMATION FREE FALL FENCING DRY OTHER 
+Severity (Choose carefully based on barrier type(s) above)  NONE MINOR MODERATE SEVERE 
+Water Depth Matches Stream  YES NO-SHALLOWER NO-DEEPER UNKNOWN DRY 
+Water Velocity Matches Stream  YES NO-FASTER NO-SLOWER UNKNOWN DRY 
+Dry Passage through Structure?  YES NO UNKNOWN Height above Dry Passage 
+Comments  
+1  AQUATIC CONNEC TIVIT Y STREAM CROSSING SURVEY DATA FORM  
+OUTLETOUTLET INLETINLET ADDITIONAL CONDITIONSADDITIONAL CONDITIONS
+               
+         
+             
+         
+   
+                    
+        
+         
+             
+               
+         
+             
+         
+   
+                    
+        
+         
+             
+        
+        
+          
+     
+        
+           
+            
+    
+     
+     
+      
+          
+     
+        
+           
+            
+    
+     
+     
+      
+ 
+STR UC TURE 2  Structure Material  METAL CONCRETE PLASTIC WOOD ROCK/STONE FIBERGLASS COMBINATION 
+Outlet Shape  1 2 3 4 5 6 7 FORD UNKNOWN REMOVED Outlet Armoring NONE NOT EXTENSIVE EXTENSIVE 
+Outlet Grade (Pick one)  AT STREAM GRADE FREE FALL CASCADE FREE FALL ONTO CASCADE CLOGGED/COLLAPSED/SUBMERGED UNKNOWN 
+Outlet Dimensions A. Width  .  B. Height  .  C. Substrate/Water Width  .  D. Water Depth .  
+Outlet Drop to Water Surface  .  Outlet Drop to Stream Bottom  .  E. Abutment Height (Type 7 bridges only)  .  
+L. Structure Length (Overall length from inlet to outlet)  .  
+Inlet Shape  1 2 3 4 5 6 7 FORD UNKNOWN REMOVED 
+Inlet Type  PROJECTING HEADWALL WINGWALLS HEADWALL & WINGWALLS MITERED TO SLOPE OTHER NONE 
+Inlet Grade (Pick one)  AT STREAM GRADE INLET DROP PERCHED CLOGGED/COLLAPSED/SUBMERGED UNKNOWN 
+Inlet Dimensions A. Width  .  B. Height  .  C. Substrate/Water Width  .  D. Water Depth .  
+Slope % (Optional) Slope Confidence  HIGH LOW Internal Structures  NONE BAFFLES/WEIRS SUPPORTS OTHER 
+Structure Substrate Matches Stream  NONE COMPARABLE CONTRASTING NOT APPROPRIATE UNKNOWN 
+Structure Substrate Type (Pick one)  NONE SILT SAND GRAVEL COBBLE BOULDER BEDROCK UNKNOWN 
+Structure Substrate Coverage  NONE 25% 50% 75% 100% UNKNOWN 
+Physical Barriers (Pick all that apply)  NONE DEBRIS/SEDIMENT/ROCK DEFORMATION FREE FALL FENCING DRY OTHER 
+Severity (Choose carefully based on barrier type(s) above)  NONE MINOR MODERATE SEVERE 
+Water Depth Matches Stream  YES NO-SHALLOWER NO-DEEPER UNKNOWN DRY 
+Water Velocity Matches Stream  YES NO-FASTER NO-SLOWER UNKNOWN DRY 
+Dry Passage through Structure?  YES NO UNKNOWN Height above Dry Passage 
+Comments  
+STR UC TURE 3  Structure Material  METAL CONCRETE PLASTIC WOOD ROCK/STONE FIBERGLASS COMBINATION 
+Outlet Shape  1 2 3 4 5 6 7 FORD UNKNOWN REMOVED Outlet Armoring NONE NOT EXTENSIVE EXTENSIVE 
+Outlet Grade (Pick one)  AT STREAM GRADE FREE FALL CASCADE FREE FALL ONTO CASCADE CLOGGED/COLLAPSED/SUBMERGED UNKNOWN 
+Outlet Dimensions A. Width  .  B. Height  .  C. Substrate/Water Width  .  D. Water Depth .  
+Outlet Drop to Water Surface  .  Outlet Drop to Stream Bottom  .  E. Abutment Height (Type 7 bridges only)  .  
+L. Structure Length (Overall length from inlet to outlet)  .  
+Inlet Shape  1 2 3 4 5 6 7 FORD UNKNOWN REMOVED 
+Inlet Type  PROJECTING HEADWALL WINGWALLS HEADWALL & WINGWALLS MITERED TO SLOPE OTHER NONE 
+Inlet Grade (Pick one)  AT STREAM GRADE INLET DROP PERCHED CLOGGED/COLLAPSED/SUBMERGED UNKNOWN 
+Inlet Dimensions A. Width  .  B. Height  .  C. Substrate/Water Width  .  D. Water Depth .  
+Slope % (Optional) Slope Confidence  HIGH LOW Internal Structures  NONE BAFFLES/WEIRS SUPPORTS OTHER 
+Structure Substrate Matches Stream  NONE COMPARABLE CONTRASTING NOT APPROPRIATE UNKNOWN 
+Structure Substrate Type (Pick one)  NONE SILT SAND GRAVEL COBBLE BOULDER BEDROCK UNKNOWN 
+Structure Substrate Coverage  NONE 25% 50% 75% 100% UNKNOWN 
+Physical Barriers (Pick all that apply)  NONE DEBRIS/SEDIMENT/ROCK DEFORMATION FREE FALL FENCING DRY OTHER 
+Severity (Choose carefully based on barrier type(s) above)  NONE MINOR MODERATE SEVERE 
+Water Depth Matches Stream  YES NO-SHALLOWER NO-DEEPER UNKNOWN DRY 
+Water Velocity Matches Stream  YES NO-FASTER NO-SLOWER UNKNOWN DRY 
+Dry Passage through Structure?  YES NO UNKNOWN Height above Dry Passage 
+Comments  
+2  AQUATIC CONNEC TIVIT Y STREAM CROSSING SURVEY DATA FORM  
+OUTLETOUTLET INLETINLET ADDITIONAL CONDITIONSADDITIONAL CONDITIONS
+               
+         
+             
+         
+   
+                    
+        
+         
+             
+               
+         
+             
+         
+   
+                    
+        
+         
+             
+        
+        
+          
+     
+        
+           
+            
+    
+     
+     
+      
+          
+     
+        
+           
+            
+    
+     
+     
+      
+ 
+STR UC TURE 4  Structure Material  METAL CONCRETE PLASTIC WOOD ROCK/STONE FIBERGLASS COMBINATION 
+Outlet Shape  1 2 3 4 5 6 7 FORD UNKNOWN REMOVED Outlet Armoring NONE NOT EXTENSIVE EXTENSIVE 
+Outlet Grade (Pick one)  AT STREAM GRADE FREE FALL CASCADE FREE FALL ONTO CASCADE CLOGGED/COLLAPSED/SUBMERGED UNKNOWN 
+Outlet Dimensions A. Width  .  B. Height  .  C. Substrate/Water Width  .  D. Water Depth .  
+Outlet Drop to Water Surface  .  Outlet Drop to Stream Bottom  .  E. Abutment Height (Type 7 bridges only)  .  
+L. Structure Length (Overall length from inlet to outlet)  .  
+Inlet Shape  1 2 3 4 5 6 7 FORD UNKNOWN REMOVED 
+Inlet Type  PROJECTING HEADWALL WINGWALLS HEADWALL & WINGWALLS MITERED TO SLOPE OTHER NONE 
+Inlet Grade (Pick one)  AT STREAM GRADE INLET DROP PERCHED CLOGGED/COLLAPSED/SUBMERGED UNKNOWN 
+Inlet Dimensions A. Width  .  B. Height  .  C. Substrate/Water Width  .  D. Water Depth .  
+Slope % (Optional) Slope Confidence  HIGH LOW Internal Structures  NONE BAFFLES/WEIRS SUPPORTS OTHER 
+Structure Substrate Matches Stream  NONE COMPARABLE CONTRASTING NOT APPROPRIATE UNKNOWN 
+Structure Substrate Type (Pick one)  NONE SILT SAND GRAVEL COBBLE BOULDER BEDROCK UNKNOWN 
+Structure Substrate Coverage  NONE 25% 50% 75% 100% UNKNOWN 
+Physical Barriers (Pick all that apply)  NONE DEBRIS/SEDIMENT/ROCK DEFORMATION FREE FALL FENCING DRY OTHER 
+Severity (Choose carefully based on barrier type(s) above)  NONE MINOR MODERATE SEVERE 
+Water Depth Matches Stream  YES NO-SHALLOWER NO-DEEPER UNKNOWN DRY 
+Water Velocity Matches Stream  YES NO-FASTER NO-SLOWER UNKNOWN DRY 
+Dry Passage through Structure?  YES NO UNKNOWN Height above Dry Passage 
+Comments  
+STR UC TURE 5  Structure Material  METAL CONCRETE PLASTIC WOOD ROCK/STONE FIBERGLASS COMBINATION 
+Outlet Shape  1 2 3 4 5 6 7 FORD UNKNOWN REMOVED Outlet Armoring NONE NOT EXTENSIVE EXTENSIVE 
+Outlet Grade (Pick one)  AT STREAM GRADE FREE FALL CASCADE FREE FALL ONTO CASCADE CLOGGED/COLLAPSED/SUBMERGED UNKNOWN 
+Outlet Dimensions A. Width  .  B. Height  .  C. Substrate/Water Width  .  D. Water Depth .  
+Outlet Drop to Water Surface  .  Outlet Drop to Stream Bottom  .  E. Abutment Height (Type 7 bridges only)  .  
+L. Structure Length (Overall length from inlet to outlet)  .  
+Inlet Shape  1 2 3 4 5 6 7 FORD UNKNOWN REMOVED 
+Inlet Type  PROJECTING HEADWALL WINGWALLS HEADWALL & WINGWALLS MITERED TO SLOPE OTHER NONE 
+Inlet Grade (Pick one)  AT STREAM GRADE INLET DROP PERCHED CLOGGED/COLLAPSED/SUBMERGED UNKNOWN 
+Inlet Dimensions A. Width  .  B. Height  .  C. Substrate/Water Width  .  D. Water Depth .  
+Slope % (Optional) Slope Confidence  HIGH LOW Internal Structures  NONE BAFFLES/WEIRS SUPPORTS OTHER 
+Structure Substrate Matches Stream  NONE COMPARABLE CONTRASTING NOT APPROPRIATE UNKNOWN 
+Structure Substrate Type (Pick one)  NONE SILT SAND GRAVEL COBBLE BOULDER BEDROCK UNKNOWN 
+Structure Substrate Coverage  NONE 25% 50% 75% 100% UNKNOWN 
+Physical Barriers (Pick all that apply)  NONE DEBRIS/SEDIMENT/ROCK DEFORMATION FREE FALL FENCING DRY OTHER 
+Severity (Choose carefully based on barrier type(s) above)  NONE MINOR MODERATE SEVERE 
+Water Depth Matches Stream  YES NO-SHALLOWER NO-DEEPER UNKNOWN DRY 
+Water Velocity Matches Stream  YES NO-FASTER NO-SLOWER UNKNOWN DRY 
+Dry Passage through Structure?  YES NO UNKNOWN Height above Dry Passage 
+Comments  
+3  AQUATIC CONNEC TIVIT Y STREAM CROSSING SURVEY DATA FORM  
+OUTLETOUTLET INLETINLET ADDITIONAL CONDITIONSADDITIONAL CONDITIONS
+               
+         
+             
+         
+   
+                    
+        
+         
+             
+               
+         
+             
+         
+   
+                    
+        
+         
+             
+        
+        
+          
+     
+        
+           
+            
+    
+     
+     
+      
+          
+     
+        
+           
+            
+    
+     
+     
+      
+ 
+STR UC TURE 6  Structure Material  METAL CONCRETE PLASTIC WOOD ROCK/STONE FIBERGLASS COMBINATION 
+Outlet Shape  1 2 3 4 5 6 7 FORD UNKNOWN REMOVED Outlet Armoring NONE NOT EXTENSIVE EXTENSIVE 
+Outlet Grade (Pick one)  AT STREAM GRADE FREE FALL CASCADE FREE FALL ONTO CASCADE CLOGGED/COLLAPSED/SUBMERGED UNKNOWN 
+Outlet Dimensions A. Width  .  B. Height  .  C. Substrate/Water Width  .  D. Water Depth .  
+Outlet Drop to Water Surface  .  Outlet Drop to Stream Bottom  .  E. Abutment Height (Type 7 bridges only)  .  
+L. Structure Length (Overall length from inlet to outlet)  .  
+Inlet Shape  1 2 3 4 5 6 7 FORD UNKNOWN REMOVED 
+Inlet Type  PROJECTING HEADWALL WINGWALLS HEADWALL & WINGWALLS MITERED TO SLOPE OTHER NONE 
+Inlet Grade (Pick one)  AT STREAM GRADE INLET DROP PERCHED CLOGGED/COLLAPSED/SUBMERGED UNKNOWN 
+Inlet Dimensions A. Width  .  B. Height  .  C. Substrate/Water Width  .  D. Water Depth .  
+Slope % (Optional) Slope Confidence  HIGH LOW Internal Structures  NONE BAFFLES/WEIRS SUPPORTS OTHER 
+Structure Substrate Matches Stream  NONE COMPARABLE CONTRASTING NOT APPROPRIATE UNKNOWN 
+Structure Substrate Type (Pick one)  NONE SILT SAND GRAVEL COBBLE BOULDER BEDROCK UNKNOWN 
+Structure Substrate Coverage  NONE 25% 50% 75% 100% UNKNOWN 
+Physical Barriers (Pick all that apply)  NONE DEBRIS/SEDIMENT/ROCK DEFORMATION FREE FALL FENCING DRY OTHER 
+Severity (Choose carefully based on barrier type(s) above)  NONE MINOR MODERATE SEVERE 
+Water Depth Matches Stream  YES NO-SHALLOWER NO-DEEPER UNKNOWN DRY 
+Water Velocity Matches Stream  YES NO-FASTER NO-SLOWER UNKNOWN DRY 
+Dry Passage through Structure?  YES NO UNKNOWN Height above Dry Passage 
+Comments  
+STR UC TURE 7  Structure Material  METAL CONCRETE PLASTIC WOOD ROCK/STONE FIBERGLASS COMBINATION 
+Outlet Shape  1 2 3 4 5 6 7 FORD UNKNOWN REMOVED Outlet Armoring NONE NOT EXTENSIVE EXTENSIVE 
+Outlet Grade (Pick one)  AT STREAM GRADE FREE FALL CASCADE FREE FALL ONTO CASCADE CLOGGED/COLLAPSED/SUBMERGED UNKNOWN 
+Outlet Dimensions A. Width  .  B. Height  .  C. Substrate/Water Width  .  D. Water Depth .  
+Outlet Drop to Water Surface  .  Outlet Drop to Stream Bottom  .  E. Abutment Height (Type 7 bridges only)  .  
+L. Structure Length (Overall length from inlet to outlet)  .  
+Inlet Shape  1 2 3 4 5 6 7 FORD UNKNOWN REMOVED 
+Inlet Type  PROJECTING HEADWALL WINGWALLS HEADWALL & WINGWALLS MITERED TO SLOPE OTHER NONE 
+Inlet Grade (Pick one)  AT STREAM GRADE INLET DROP PERCHED CLOGGED/COLLAPSED/SUBMERGED UNKNOWN 
+Inlet Dimensions A. Width  .  B. Height  .  C. Substrate/Water Width  .  D. Water Depth .  
+Slope % (Optional) Slope Confidence  HIGH LOW Internal Structures  NONE BAFFLES/WEIRS SUPPORTS OTHER 
+Structure Substrate Matches Stream  NONE COMPARABLE CONTRASTING NOT APPROPRIATE UNKNOWN 
+Structure Substrate Type (Pick one)  NONE SILT SAND GRAVEL COBBLE BOULDER BEDROCK UNKNOWN 
+Structure Substrate Coverage  NONE 25% 50% 75% 100% UNKNOWN 
+Physical Barriers (Pick all that apply)  NONE DEBRIS/SEDIMENT/ROCK DEFORMATION FREE FALL FENCING DRY OTHER 
+Severity (Choose carefully based on barrier type(s) above)  NONE MINOR MODERATE SEVERE 
+Water Depth Matches Stream  YES NO-SHALLOWER NO-DEEPER UNKNOWN DRY 
+Water Velocity Matches Stream  YES NO-FASTER NO-SLOWER UNKNOWN DRY 
+Dry Passage through Structure?  YES NO UNKNOWN Height above Dry Passage 
+Comments  
+4  AQUATIC CONNEC TIVIT Y STREAM CROSSING SURVEY DATA FORM  
+     
+ 
+  
+ 
+ 
+ 
+Height 
+Height 
+1 2
+4
+ 
+   
+  
+ 
+ 
+ 
+ 
+ 
+ 
+Structure Shape & Dimensions  
+1)  Select the Structure Shape number from the diagrams below and record it on the form for Inlet and Outlet Shape. 
+2)  Record on the form in the approriate blanks dimensions A, B, C and D as shown in the diagrams; 
+C  captures the width of water or substrate, whichever is wider; for dry culverts without substrate, C = 0.  
+D  is the depth of water -- be sure to measure inside the structure; for dry culverts, D = 0.  
+3)  Record Structure Length (L).  (Record abutment height (E) only for Type 7 Structures.)  
+4)  For multiple culverts, also record the Inlet and Outlet shape and dimensions for each additional culvert.  
+NOTE: Culverts 1, 2 & 4 may or may not have substrate in them, so height measurements (B) are taken from the level of the 
+“stream bed”, whether that bed is composed of substrate or just the inside bottom surface of a culvert (grey arrows below 
+show measuring to bottom, black arrows show measuring to substrate).culvert (grey arrows below show measuring to bottom, black arrows show measuring to substrate).  
+D 
+A 
+B 
+C 
+Width 
+Water 
+Level 
+Substrate/Water Width 
+Round Culvert
+ 
+A 
+C 
+B 
+Width 
+Water Level D 
+Substrate/Water Width 
+Water Depth 
+Pipe Arch/Elliptical Culvert
+A 
+B 
+C 
+ 
+D 
+3
+Open Bottom Arch Bridge/Culvert
+ 
+A 
+B 
+ 
+C 
+D 
+Box Culvert
+ 
+D 
+5
+Bridge with Side Slopes
+ 
+C D 
+6
+Box/Bridge with 
+Abutments
+E 
+D 
+7
+Bridge with Abutments
+and Side Slopes
+7  AQUATIC CONNEC TIVIT Y STREAM CROSSING SURVEY DATA FORM  

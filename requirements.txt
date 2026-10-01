@@ -1,0 +1,17 @@
+pandas>=2.0
+numpy>=1.24
+scikit-learn>=1.3
+xgboost>=2.0
+lightgbm>=4.0
+scipy>=1.10
+matplotlib>=3.7
+requests>=2.28
+pyarrow>=12.0
+tabulate>=0.9
+pytest>=7.4
+# geopandas/shapely (2026-09-22): bulk spatial joins (road_class, AADT,
+# terrain sampling, ecoregion, structure inventory) - see gis_predictors.py.
+geopandas>=0.14
+shapely>=2.0
+# pyrosm (2026-09-22): parses the local OSM .pbf extract for road_class_mode="bulk".
+pyrosm>=0.4

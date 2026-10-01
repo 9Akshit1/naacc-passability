@@ -1,0 +1,40 @@
+{
+  "validation": {
+    "n": 28141,
+    "mae": 0.05533333903218169,
+    "rmse": 0.14797363634845642,
+    "bias": -0.013942982380446924,
+    "pearson_r": 0.8880350104195395,
+    "spearman_rho": 0.8819311865268583,
+    "within_0.05": 0.7141181905404925,
+    "within_0.10": 0.9219288582495292,
+    "within_0.20": 0.9615862975729362
+  },
+  "n_large_error": 977,
+  "large_error_by_outlet_grade": {
+    "Free Fall": 279,
+    "Free Fall Onto Cascade": 156,
+    "Cascade": 68,
+    "At Stream Grade": 49,
+    "Clogged/Collapsed/Submerged": 7,
+    "Unknown": 5
+  },
+  "abs_err_by_aop": {
+    "Full AOP": {
+      "mean": 0.102,
+      "count": 5000
+    },
+    "No AOP": {
+      "mean": 0.034,
+      "count": 10003
+    },
+    "Reduced AOP": {
+      "mean": 0.054,
+      "count": 12517
+    },
+    "no score - missing data": {
+      "mean": 0.048,
+      "count": 621
+    }
+  }
+}

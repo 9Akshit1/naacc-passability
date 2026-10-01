@@ -1,0 +1,31 @@
+# Raw bulk download for the NHDPlusV2 VAA slope fetcher (gis_predictors.py::
+# fetch_nhdplus_vaa_batch). ~246 MB, disposable, trivially re-downloaded from
+# HydroShare - out of proportion with this repo's other KB-sized per-crossing
+# caches, which ARE committed for reproducibility. Only the small derived
+# per-COMID cache (data/interim/cache/nhdplus_vaa/*.json) is tracked.
+data/interim/cache/_nhdplus_vaa_raw.parquet
+
+# Same reasoning: raw NY OpenStreetMap extract (Geofabrik, ~497 MB) used to
+# build a local road-class spatial index instead of one Overpass API call per
+# crossing (src/gis_predictors.py::fetch_osm_road_class_bulk). Disposable and
+# re-downloadable; only the small per-crossing cache is tracked.
+data/interim/cache/_osm_ny_raw.pbf
+
+# Derived from the above (pyrosm-extracted GeoParquet way index, ~280 MB) -
+# also disposable/regenerable from the gitignored raw .pbf in ~25 min, same
+# out-of-proportion-with-repo reasoning.
+data/interim/cache/_osm_ny_ways.parquet
+
+# NYSDOT statewide AADT traffic layer (gis_predictors.py::fetch_aadt_bulk),
+# ~73 MB, disposable/re-downloadable from the live public FeatureServer -
+# same reasoning as the two entries above.
+data/interim/cache/_aadt_ny_raw.parquet
+
+# Internal round-by-round experiment log. Useful so we don't re-try a dead
+# end, not meant for outside readers - METHODOLOGY.md has the real summary.
+reports/EXPERIMENT_LOG.md
+
+# Saved fitted models (src/predict.py --save-model). Regenerable in ~1min
+# from the committed data + code; a fitted RF/ExtraTrees pair can run tens
+# of MB, out of proportion with this repo's other committed artifacts.
+results/models/*.joblib

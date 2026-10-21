@@ -15,3 +15,6 @@ geopandas>=0.14
 shapely>=2.0
 # pyrosm (2026-09-22): parses the local OSM .pbf extract for road_class_mode="bulk".
 pyrosm>=0.4
+# multi-state (Plunkett) work, October 2026
+catboost>=1.2
+pyproj>=3.4

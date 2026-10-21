@@ -1,0 +1,54 @@
+subset: 2100 crossings across 7 HUC8 watersheds
+huc8_name
+Chenango             300
+Mohawk               300
+Rondout              300
+Schoharie            300
+Seneca               300
+Upper Genesee        300
+Upper Susquehanna    300
+  0/2100  drainage_ok=1
+  50/2100  drainage_ok=20
+  100/2100  drainage_ok=31
+  150/2100  drainage_ok=81
+  200/2100  drainage_ok=131
+  250/2100  drainage_ok=181
+  300/2100  drainage_ok=231
+  350/2100  drainage_ok=281
+  400/2100  drainage_ok=331
+  450/2100  drainage_ok=381
+  500/2100  drainage_ok=420
+  550/2100  drainage_ok=420
+  600/2100  drainage_ok=420
+  650/2100  drainage_ok=420
+  700/2100  drainage_ok=420
+  750/2100  drainage_ok=420
+  800/2100  drainage_ok=420
+  850/2100  drainage_ok=420
+  900/2100  drainage_ok=420
+  950/2100  drainage_ok=420
+  1000/2100  drainage_ok=420
+  1050/2100  drainage_ok=420
+  1100/2100  drainage_ok=420
+  1150/2100  drainage_ok=420
+  1200/2100  drainage_ok=420
+  1250/2100  drainage_ok=420
+  1300/2100  drainage_ok=420
+  1350/2100  drainage_ok=420
+  1400/2100  drainage_ok=420
+  1450/2100  drainage_ok=420
+  1500/2100  drainage_ok=423
+  1550/2100  drainage_ok=435
+  1600/2100  drainage_ok=435
+  1650/2100  drainage_ok=435
+  1700/2100  drainage_ok=435
+  1750/2100  drainage_ok=438
+  1800/2100  drainage_ok=444
+  1850/2100  drainage_ok=445
+  1900/2100  drainage_ok=445
+  1950/2100  drainage_ok=446
+  2000/2100  drainage_ok=447
+  2050/2100  drainage_ok=447
+
+done: drainage_area present 21.6%, elevation present 96.6%
+wrote data/processed/subset_predictors.parquet

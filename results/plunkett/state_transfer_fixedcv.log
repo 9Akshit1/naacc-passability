@@ -1,0 +1,37 @@
+{'features': 'Plunkett', 'state': 'NY', 'n': 21317, 'pooled': 0.2972383644627502, 'unseen': 0.2594170254486252, 'state_only': 0.293220518806227}
+{'features': 'Plunkett', 'state': 'MA', 'n': 7774, 'pooled': 0.26686539561409633, 'unseen': 0.2637332496754463, 'state_only': 0.23164132410381078}
+{'features': 'Plunkett', 'state': 'PA', 'n': 5622, 'pooled': 0.3032246237110187, 'unseen': 0.28017023011109554, 'state_only': 0.2754899258746572}
+{'features': 'Plunkett', 'state': 'CT', 'n': 4174, 'pooled': 0.2523348960612734, 'unseen': 0.2550726645223752, 'state_only': 0.17331385296045176}
+{'features': 'Plunkett', 'state': 'ME', 'n': 2678, 'pooled': 0.25109921676697644, 'unseen': 0.2139215918183739, 'state_only': 0.19263147427524518}
+{'features': 'Plunkett', 'state': 'NJ', 'n': 1964, 'pooled': 0.09811271717693154, 'unseen': 0.08378149782344213, 'state_only': 0.08949177989250146}
+{'features': 'Plunkett', 'state': 'WV', 'n': 1347, 'pooled': 0.2908988540666101, 'unseen': 0.2960675279978592, 'state_only': 0.22208720186701808}
+{'features': 'Plunkett', 'state': 'MD', 'n': 1067, 'pooled': 0.27202148325093733, 'unseen': 0.2700331166300294, 'state_only': 0.15838109219847168}
+{'features': 'Plunkett+NBI', 'state': 'NY', 'n': 21317, 'pooled': 0.3261410250531829, 'unseen': 0.28683620929469056, 'state_only': 0.3208963206200833}
+{'features': 'Plunkett+NBI', 'state': 'MA', 'n': 7774, 'pooled': 0.30341811831380977, 'unseen': 0.29773203087859246, 'state_only': 0.27158491431806764}
+{'features': 'Plunkett+NBI', 'state': 'PA', 'n': 5622, 'pooled': 0.32109279265787133, 'unseen': 0.29544980012003885, 'state_only': 0.2918914781904138}
+{'features': 'Plunkett+NBI', 'state': 'CT', 'n': 4174, 'pooled': 0.268682661745148, 'unseen': 0.27627593978551346, 'state_only': 0.1869789095901485}
+{'features': 'Plunkett+NBI', 'state': 'ME', 'n': 2678, 'pooled': 0.2711354961964895, 'unseen': 0.23569449159532374, 'state_only': 0.2137852030395876}
+{'features': 'Plunkett+NBI', 'state': 'NJ', 'n': 1964, 'pooled': 0.10225480391601188, 'unseen': 0.09327721269777955, 'state_only': 0.09839836998182577}
+{'features': 'Plunkett+NBI', 'state': 'WV', 'n': 1347, 'pooled': 0.31062321599404547, 'unseen': 0.3163660592416664, 'state_only': 0.24757935908449064}
+{'features': 'Plunkett+NBI', 'state': 'MD', 'n': 1067, 'pooled': 0.3113159620661154, 'unseen': 0.29900759671824095, 'state_only': 0.20292796319631912}
+        features state      n  pooled  unseen  state_only
+0       Plunkett    NY  21317   0.297   0.259       0.293
+1       Plunkett    MA   7774   0.267   0.264       0.232
+2       Plunkett    PA   5622   0.303   0.280       0.275
+3       Plunkett    CT   4174   0.252   0.255       0.173
+4       Plunkett    ME   2678   0.251   0.214       0.193
+5       Plunkett    NJ   1964   0.098   0.084       0.089
+6       Plunkett    WV   1347   0.291   0.296       0.222
+7       Plunkett    MD   1067   0.272   0.270       0.158
+8   Plunkett+NBI    NY  21317   0.326   0.287       0.321
+9   Plunkett+NBI    MA   7774   0.303   0.298       0.272
+10  Plunkett+NBI    PA   5622   0.321   0.295       0.292
+11  Plunkett+NBI    CT   4174   0.269   0.276       0.187
+12  Plunkett+NBI    ME   2678   0.271   0.236       0.214
+13  Plunkett+NBI    NJ   1964   0.102   0.093       0.098
+14  Plunkett+NBI    WV   1347   0.311   0.316       0.248
+15  Plunkett+NBI    MD   1067   0.311   0.299       0.203
+              pooled  state_only  unseen
+features                                
+Plunkett       0.254       0.205   0.240
+Plunkett+NBI   0.277       0.229   0.263

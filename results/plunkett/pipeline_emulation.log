@@ -1,0 +1,11 @@
+step 1: add d8accum    OOB R2=0.1184
+step 2: add elev_range OOB R2=0.2545
+step 3: add bdev       OOB R2=0.2714
+step 4: add gradient   OOB R2=0.2832
+step 5: add adt        OOB R2=0.2872
+step 6: add class      OOB R2=0.2897
+step 7: add income     OOB R2=0.2920
+step 8: add dem        OOB R2=0.2968
+step 9: add elev_sd    OOB R2=0.2940
+selected groups: ['d8accum', 'elev_range', 'bdev', 'gradient', 'adt', 'class', 'income', 'dem']  n columns: 19  OOB R2: 0.2968
+{'selected_groups': ['d8accum', 'elev_range', 'bdev', 'gradient', 'adt', 'class', 'income', 'dem'], 'n_columns': 19, 'oob_r2_300_trees': 0.3011685016138098, 'huc8_cv_r2': 0.2724350028729124, 'locked_r2': 0.2797673041860448}

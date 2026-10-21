@@ -1,0 +1,38 @@
+subset: 1260 crossings across 7 HUC8 watersheds
+huc8_name
+Chenango             180
+Mohawk               180
+Rondout              180
+Schoharie            180
+Seneca               180
+Upper Genesee        180
+Upper Susquehanna    180
+  0/1260  drainage_ok=1
+  50/1260  drainage_ok=50
+  100/1260  drainage_ok=100
+  150/1260  drainage_ok=150
+  200/1260  drainage_ok=200
+  250/1260  drainage_ok=250
+  300/1260  drainage_ok=300
+  350/1260  drainage_ok=350
+  400/1260  drainage_ok=400
+  450/1260  drainage_ok=450
+  500/1260  drainage_ok=500
+  550/1260  drainage_ok=550
+  600/1260  drainage_ok=600
+  650/1260  drainage_ok=650
+  700/1260  drainage_ok=700
+  750/1260  drainage_ok=750
+  800/1260  drainage_ok=800
+  850/1260  drainage_ok=850
+  900/1260  drainage_ok=900
+  950/1260  drainage_ok=950
+  1000/1260  drainage_ok=1000
+  1050/1260  drainage_ok=1050
+  1100/1260  drainage_ok=1100
+  1150/1260  drainage_ok=1150
+  1200/1260  drainage_ok=1200
+  1250/1260  drainage_ok=1250
+
+done: drainage_area present 99.9%, elevation present 99.8%
+wrote data/processed/subset_predictors.parquet

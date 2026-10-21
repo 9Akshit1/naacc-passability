@@ -1,0 +1,32 @@
+NY dev crossings with recomputed components: 14061
+{'component': 'outlet_drop', 'weight': 0.161, 'n': 13254, 'r2': 0.20179538059125113, 'share_equal_1': 0.6817564508827524}
+{'component': 'physical_barriers', 'weight': 0.135, 'n': 3454, 'r2': -0.05066172129684602, 'share_equal_1': 0.0}
+{'component': 'constriction', 'weight': 0.09, 'n': 13649, 'r2': 0.14711084338470462, 'share_equal_1': 0.06330134075756466}
+{'component': 'water_depth', 'weight': 0.082, 'n': 13180, 'r2': 0.025936244617387822, 'share_equal_1': 0.5333839150227617}
+{'component': 'water_velocity', 'weight': 0.08, 'n': 13146, 'r2': 0.01971837000607261, 'share_equal_1': 0.5989654647801612}
+{'component': 'scour_pool', 'weight': 0.071, 'n': 7009, 'r2': -0.006400002495910402, 'share_equal_1': 0.022542445427307746}
+{'component': 'substrate_match', 'weight': 0.07, 'n': 6490, 'r2': -0.020275052373548652, 'share_equal_1': 0.8582434514637904}
+{'component': 'substrate_coverage', 'weight': 0.057, 'n': 6260, 'r2': 0.08656102623457052, 'share_equal_1': 0.6715654952076677}
+{'component': 'openness', 'weight': 0.052, 'n': 13212, 'r2': 0.48722698818952465, 'share_equal_1': 0.22313048743566455}
+{'component': 'height', 'weight': 0.045, 'n': 13223, 'r2': 0.4944419871847172, 'share_equal_1': 0.21099599183241322}
+{'component': 'composite', 'weight': None, 'n': 14061, 'r2': 0.1669652024107309, 'share_equal_1': 0.03584382334115639}
+{'component': 'final_recon', 'weight': None, 'n': 14061, 'r2': 0.2235534670874307, 'share_equal_1': 0.03584382334115639}
+{'component': 'published', 'weight': None, 'n': 14061, 'r2': 0.3529231117101279, 'share_equal_1': 0.07182988407652371}
+              component  weight      n     r2  share_equal_1
+0           outlet_drop   0.161  13254  0.202          0.682
+1     physical_barriers   0.135   3454 -0.051          0.000
+2          constriction   0.090  13649  0.147          0.063
+3           inlet_grade     NaN  13326    NaN            NaN
+4           water_depth   0.082  13180  0.026          0.533
+5        water_velocity   0.080  13146  0.020          0.599
+6            scour_pool   0.071   7009 -0.006          0.023
+7       substrate_match   0.070   6490 -0.020          0.858
+8    substrate_coverage   0.057   6260  0.087          0.672
+9              openness   0.052  13212  0.487          0.223
+10               height   0.045  13223  0.494          0.211
+11      outlet_armoring     NaN   3457    NaN            NaN
+12  internal_structures     NaN    738    NaN            NaN
+13            composite     NaN  14061  0.167          0.036
+14          final_recon     NaN  14061  0.224          0.036
+15            published     NaN  14061  0.353          0.072
+reconstruction MAE single-structure vs multiple-structure crossings: {'mean': {False: 0.0568, True: 0.0767}, 'size': {False: 12426, True: 1635}}

@@ -1,6 +1,6 @@
 """Cross-validation splitters.
 
-The research question is *spatial transfer*: can the model predict passability at
+The research question is spatial transfer: can the model predict passability at
 crossings in watersheds it never trained on? A random split leaks watershed-level
 structure (geology, stream size regime, land use) into the test set and gives an
 over-optimistic score. We therefore compare:

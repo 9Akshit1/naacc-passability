@@ -1,0 +1,18 @@
+{
+ "random split, no neighbour scores": {
+  "r2_mean": 0.3397650069341198,
+  "r2_sd": 0.0007091496616772891,
+  "mae_mean": 0.19039308094234908,
+  "mae_sd": 0.00011358575982239924,
+  "spearman_mean": 0.6169155925021742,
+  "n_repeats": 3
+ },
+ "random split, with neighbour scores": {
+  "r2_mean": 0.354506220849198,
+  "r2_sd": 0.000215363645400399,
+  "mae_mean": 0.18715973646049258,
+  "mae_sd": 3.7172652809907926e-05,
+  "spearman_mean": 0.630640839828639,
+  "n_repeats": 3
+ }
+}

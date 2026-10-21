@@ -1,0 +1,36 @@
+{
+ "public_rows_that_disagree_within_a_survey": 0,
+ "surveys_in_both_with_a_public_score": 27451,
+ "identical_within_0.001": 0.9964664310954063,
+ "differ_at_least_0.001": 97,
+ "differ_more_than_0.05": 41,
+ "differ_more_than_0.2": 5,
+ "differing_surveys_with_the_same_observation_date": 41,
+ "plunkett_lower_than_public": 32,
+ "survey_year_of_differing": {
+  "2015": 23,
+  "2016": 1,
+  "2017": 2,
+  "2018": 3,
+  "2019": 11,
+  "2020": 1
+ },
+ "share_of_all_shared_surveys_from_2015": 0.1585734581618156,
+ "share_of_differing_surveys_from_2015": 0.5609756097560976,
+ "crossing_type_share_differing": {
+  "Culvert": 0.512,
+  "Multiple Culvert": 0.22,
+  "Bridge": 0.195,
+  "Bridge Adequate": 0.049,
+  "Buried Stream": 0.024
+ },
+ "crossing_type_share_all_shared": {
+  "Culvert": 0.629,
+  "Bridge": 0.158,
+  "Multiple Culvert": 0.114,
+  "Bridge Adequate": 0.088,
+  "Buried Stream": 0.006,
+  "Ford": 0.003,
+  "Removed Crossing": 0.001
+ }
+}

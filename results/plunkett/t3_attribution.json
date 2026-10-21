@@ -1,0 +1,22 @@
+{
+ "shap_share": {
+  "catchment area (d8accum)": 0.30186589107326806,
+  "gradient + elevation": 0.1592026401987612,
+  "terrain windows": 0.12956510149253475,
+  "traffic + road class": 0.054448166135212334,
+  "development (bdev)": 0.03917549071329417,
+  "county income": 0.04168332292302689,
+  "NBI structure size": 0.1269940296686781,
+  "NBI other fields": 0.0526863933956499,
+  "OSM bridge/culvert tags": 0.09437896439957456
+ },
+ "ablation_r2": {
+  "all T3 features": 0.32171867906411566,
+  "without d8accum": 0.2985013767428563,
+  "without d8accum AND without NBI/OSM (Plunkett minus d8accum)": 0.17310861560424998,
+  "d8accum only": 0.2171633408457474,
+  "d8accum + NBI + OSM only": 0.25157597169256735,
+  "NBI + OSM only (no Plunkett predictors)": 0.19842958132842892,
+  "all but terrain windows": 0.31060841032142916
+ }
+}

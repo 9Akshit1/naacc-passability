@@ -1,0 +1,47 @@
+{
+ "predictors only": {
+  "n_columns": 39,
+  "r2_mean": 0.2873146009338619,
+  "r2_sd": 0.0014518843483429429,
+  "mae_mean": 0.20024736984737398,
+  "mae_sd": 3.314548131663535e-05,
+  "spearman_mean": 0.5727719976816951,
+  "n_repeats": 3
+ },
+ "+ matched flag only": {
+  "n_columns": 40,
+  "r2_mean": 0.30703883109878805,
+  "r2_sd": 0.001118565129643146,
+  "mae_mean": 0.19601413724559613,
+  "mae_sd": 7.607037302997473e-05,
+  "spearman_mean": 0.5917330656158981,
+  "n_repeats": 3
+ },
+ "+ length and max span (3 columns)": {
+  "n_columns": 42,
+  "r2_mean": 0.3114328522515252,
+  "r2_sd": 0.001623241645804135,
+  "mae_mean": 0.19473448155259507,
+  "mae_sd": 7.00579170005768e-05,
+  "spearman_mean": 0.5944086181022351,
+  "n_repeats": 3
+ },
+ "+ the 8 size fields and matched flag": {
+  "n_columns": 48,
+  "r2_mean": 0.31192935625170426,
+  "r2_sd": 0.001444290058726079,
+  "mae_mean": 0.1946658593289379,
+  "mae_sd": 3.797939062300196e-05,
+  "spearman_mean": 0.5943356226866032,
+  "n_repeats": 3
+ },
+ "+ every NBI field we joined": {
+  "n_columns": 63,
+  "r2_mean": 0.312580511507154,
+  "r2_sd": 0.0018712345517254978,
+  "mae_mean": 0.1945886716237987,
+  "mae_sd": 9.63264518518151e-05,
+  "spearman_mean": 0.5948720808128414,
+  "n_repeats": 3
+ }
+}

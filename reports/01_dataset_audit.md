@@ -1,3 +1,5 @@
+> Superseded context: this audit covers the New York public data used in the first version. Current results are in `reports/RESULTS.md`.
+
 # NAACC New York passability data - Phase 1 audit
 
 Source: NYS DEC ArcGIS FeatureServer `NYS_NAACCSurveys_Projected` (public, no login). See `data/raw/ny_naacc_PROVENANCE.json`.

@@ -1,114 +1,57 @@
-# Predicting NAACC Aquatic Passability from GIS Data: A New York Case Study
+# Predicting NAACC passability from map data
 
-Akshit Erukulla
-October 2026
+Akshit Erukulla, October 2026
 
-## Introduction
+## Summary
 
-This report describes an attempt to reproduce, on New York data, the
-structure of the GIS-only passability prediction model developed by the
-Designing Sustainable Landscapes (DSL) project (Plunkett et al. 2022). The
-DSL model predicts the NAACC aquatic passability score for unsurveyed
-road-stream crossings using only GIS-derived predictors, since the majority
-of crossings in the landscape have never been field-surveyed. Plunkett et
-al. (2022) report an out-of-bag R² of 0.31 for this model and note two
-specific limitations: a low R², and a tendency to predict values closer to
-the mean rather than the more extreme values found in the field data.
+Most road-stream crossings have never been surveyed, so DSL predicts the NAACC aquatic passability score from map
+layers. This project rebuilt that kind of model, first on New York surveys and then, after review by Ethan Plunkett,
+on his file of 56,525 surveys from 13 northeastern and mid-Atlantic states.
 
-The purpose of this work was twofold: to reproduce the DSL approach with
-full methodological rigor, particularly with respect to spatial validation,
-and to examine whether the limitations documented by Plunkett et al. (2022)
-reflect a modeling shortfall or a more fundamental property of the
-prediction problem itself.
+On 8,995 crossings in seven river basins set aside before modelling and scored once, a random forest on his 39
+predictors reaches R2 0.286. A boosted ensemble on the same predictors reaches 0.299, adding the FHWA National Bridge
+Inventory 0.315, and adding OpenStreetMap bridge and culvert tags 0.320. The gain over the forest is 0.034 (95%
+interval 0.026 to 0.045). That is a small improvement, and we do not claim more.
 
-## Data and Methods
+## What limits accuracy
 
-The analysis uses 44,871 NAACC survey records from New York State, filtered
-to 28,141 unique surveyed crossings. The NAACC 2016 scoring formula was
-independently re-implemented from its published specification and validated
-against the published scores (r = 0.89) before being used as the target
-variable. The modeling subset comprises 21,111 crossings across all 55 of
-New York's HUC8 watersheds, capped at 1,000 crossings per watershed so that
-no single large watershed dominates the sample.
+Most of the remaining error is whether a culvert's outlet is perched. The score depends heavily on outlet drop, and no
+public map layer measures it. If outlet drop were known, the model's R2 would be about 0.82 on New York crossings; no
+other single field property adds more than 0.07. From map data alone, perched outlets are identified with an AUC of
+0.76. Early in this project we argued that R2 near 0.3 is a ceiling for any map-only model. Later checks showed that
+argument was too strong, and it is withdrawn. What the data support is that the missing information is mainly outlet
+condition.
 
-A central methodological choice in this work is the use of spatial
-cross-validation, in which entire HUC8 watersheds are held out rather than
-individual rows, alongside conventional random k-fold cross-validation. The
-difference between the two validation schemes is substantial and persists
-throughout the analysis, consistent with the caution in Plunkett et al.
-(2022) that out-of-bag estimates from a random forest may not fully reflect
-performance on genuinely unsurveyed regions.
+## What changed after review
 
-## Results
+- A catchment-area input from the first version was linked to the wrong stream segment for many crossings. Using the
+  DSL `d8accum` instead raised the old New York model from 0.289 to 0.327. The earlier claim that catchment area does
+  not matter was wrong.
+- Pooling states did not hurt. Averaged over eight states, a pooled model scored 0.28, a model that never saw the state
+  0.26, and a model trained on that state alone 0.23. All states tested are in the Northeast and mid-Atlantic.
+- The 0.31 that DSL reports is an out-of-bag figure. Rebuilding their documented procedure and scoring it on the same
+  held-out basins gives 0.280, so the like-for-like comparison is 0.280 against 0.320.
 
-The best-performing model, an equal-weight ensemble of random forest, extra
-trees, histogram gradient boosting, and XGBoost, achieves R² = 0.273 under
-spatial cross-validation (MAE = 0.210) and R² = 0.312 under random k-fold
-cross-validation.
+## What was checked
 
-Plunkett et al. (2022) report an out-of-bag R² of 0.31. Out-of-bag
-estimation draws held-out rows from bootstrap resampling of the entire
-training set rather than from held-out geographic regions, so spatially
-correlated crossings routinely appear together in a tree's in-bag and
-out-of-bag partitions. Methodologically, this places the out-of-bag estimate
-closer to the random cross-validation result obtained here (0.312) than to
-the spatial cross-validation result (0.273). Under the comparison that the
-spatial structure of the data would suggest is appropriate, the model
-described here is not distinguishable in accuracy from the DSL figure.
-Under the harder, held-out-region standard used throughout this analysis,
-it falls somewhat below that figure, on a reduced predictor set and a
-single state rather than thirteen.
+The headline numbers were re-derived with separate code from the raw file and the saved predictions
+(`scripts/verify_headline_numbers.py`): the locked scores, the baseline refit, the paired interval, calibration, and the
+NBI join. Errors found along the way, and open questions, are listed in `reports/CHECKS.md`.
 
-Two further findings are reported in full in the accompanying methodology
-document. First, the predictors with the largest effect on accuracy were
-not landscape-context variables but structure-level data: bridge and
-culvert age, condition, and material, obtained from the New York State
-Department of Transportation's structure inventory. This is consistent with
-the NAACC scoring formula itself being computed from field-measured
-structure properties rather than surrounding landscape characteristics.
+## Limits
 
-Second, and bearing directly on the limitation described in Plunkett et al.
-(2022), the passability score was decomposed into its thirteen published,
-weighted sub-components, and each component's predictability from GIS data
-alone was tested independently. The components tied to structure geometry
-(constriction, opening height, outlet drop) proved genuinely learnable,
-each reaching an R² comparable to or exceeding that of the composite score.
-Components that require a direct field observation at the time of survey
-(presence of debris or barriers, scour pool condition, substrate match,
-water depth, and water velocity) could not be predicted above chance
-regardless of which predictors were supplied, and together these account
-for just over half of the score's total weight. This result quantifies,
-rather than simply restates, the observation in Plunkett et al. (2022) that
-the model does not predict extreme values well: approximately half of what
-the NAACC score measures is, by construction, unobservable without a site
-visit. This suggests that an R² in the range of 0.27 to 0.31 may be close
-to the practical ceiling for any GIS-only approach to this problem, rather
-than a deficiency correctable by additional features.
+The model has not been tried on unsurveyed crossings, which may differ from surveyed ones. Predictions are shrunk toward
+the mean and single-crossing intervals are wide (about 0.73), so the output suits ranking and area totals rather than
+judging one site. Bridges are under-predicted, partly because coordinators in some states mark large bridges "Bridge
+Adequate" (a fixed score of 1.0) far more often than in others, which map data cannot see. New Jersey is poorly
+predicted and we do not know why.
 
-## Conclusion
+## Reuse
 
-This work is not presented as a general improvement on the DSL model. It is
-restricted to one state, uses a smaller and partially different predictor
-set, and has not been evaluated for operational use. Within those limits,
-it reproduces the DSL approach under a validation standard at least as
-rigorous as the original, and it offers one result that may be of
-independent interest beyond this particular model: a quantified account of
-why GIS-only prediction of aquatic passability appears to have a ceiling
-close to where both this analysis and Plunkett et al. (2022) have found it,
-and why that ceiling follows from a property of the target variable rather
-than from any particular model.
-
-## Code and Reproducibility
-
-The accompanying repository contains the full pipeline, from the raw NAACC
-download through model training and inference, together with a detailed
-methodology document (`reports/METHODOLOGY.md`). All reported figures are
-reproducible from the included data and code. Comments on any part of this
-analysis, particularly on any point at which the comparison to the DSL
-model may not hold, would be welcome.
+The National Bridge Inventory join is self-contained and can be run on any list of crossings: `docs/NBI_JOIN.md`.
+Full results are in `reports/RESULTS.md`.
 
 ## Reference
 
-Plunkett EB, McGarigal K, Compton BW, Jackson SD, DeLuca WV, Grand J. 2022.
-Designing Sustainable Landscapes: Aquatic Barriers data product. University
-of Massachusetts, Amherst.
+Plunkett EB, McGarigal K, Compton BW, Jackson SD, DeLuca WV, Grand J. 2022. Designing Sustainable Landscapes: Aquatic
+Barriers data product. University of Massachusetts, Amherst.

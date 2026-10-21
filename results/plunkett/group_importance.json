@@ -1,0 +1,62 @@
+{
+ "catchment area (d8accum)": {
+  "mean_r2_drop": 0.15829507733596507,
+  "sd": 0.006044992830739405,
+  "n_features": 1
+ },
+ "gradient + elevation": {
+  "mean_r2_drop": 0.053520732875393884,
+  "sd": 0.003367586887013983,
+  "n_features": 2
+ },
+ "terrain windows (30)": {
+  "mean_r2_drop": 0.036359671802450456,
+  "sd": 0.004204403984282111,
+  "n_features": 30
+ },
+ "traffic + road class": {
+  "mean_r2_drop": 0.009268282232717513,
+  "sd": 0.001940416894346065,
+  "n_features": 2
+ },
+ "development (bdev)": {
+  "mean_r2_drop": 0.009081272832210496,
+  "sd": 0.0032008121605449392,
+  "n_features": 3
+ },
+ "county income": {
+  "mean_r2_drop": 0.0072554121180332535,
+  "sd": 0.0022721683709534205,
+  "n_features": 1
+ },
+ "NBI: matched flag + structure kind/type/culvert": {
+  "mean_r2_drop": 0.0010749000360494687,
+  "sd": 0.0007886468942390962,
+  "n_features": 4
+ },
+ "NBI: size (length, span, widths, spans, clearances)": {
+  "mean_r2_drop": 0.05847615566530117,
+  "sd": 0.007761706444294144,
+  "n_features": 8
+ },
+ "NBI: age (year built / reconstructed)": {
+  "mean_r2_drop": 0.0009281357581516647,
+  "sd": 0.001040260444558301,
+  "n_features": 2
+ },
+ "NBI: condition / scour / waterway adequacy": {
+  "mean_r2_drop": 0.0016062556884505197,
+  "sd": 0.0009930668452086827,
+  "n_features": 5
+ },
+ "NBI: skew": {
+  "mean_r2_drop": 0.0004936147400824287,
+  "sd": 0.0004440340602133496,
+  "n_features": 1
+ },
+ "NBI: owner / function class / ADT / lanes": {
+  "mean_r2_drop": 0.002513237492585034,
+  "sd": 0.0013614903523937155,
+  "n_features": 4
+ }
+}

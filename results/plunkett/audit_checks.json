@@ -1,0 +1,162 @@
+{
+ "A3_structure_size_vs_catchment_area": {
+  "nbi_length_m": {
+   "n": 2721,
+   "rho_with_d8accum": 0.630708759905431,
+   "rho_with_old_nldi_area": 0.6041275459551064
+  },
+  "nbi_max_span_m": {
+   "n": 2721,
+   "rho_with_d8accum": 0.5951235566031429,
+   "rho_with_old_nldi_area": 0.5748199001429457
+  },
+  "nbi_deck_width_m": {
+   "n": 2408,
+   "rho_with_d8accum": 0.02811578380534527,
+   "rho_with_old_nldi_area": 0.00047942087394306564
+  }
+ },
+ "A4_nbi_match_name_agreement_NY": [
+  {
+   "dist_m": "0-10",
+   "n": 2171,
+   "stream_name_agree": 0.808066759388039,
+   "shuffled_baseline": 0.015291936978683966
+  },
+  {
+   "dist_m": "10-30",
+   "n": 477,
+   "stream_name_agree": 0.7689075630252101,
+   "shuffled_baseline": 0.012578616352201259
+  },
+  {
+   "dist_m": "30-60",
+   "n": 152,
+   "stream_name_agree": 0.6556291390728477,
+   "shuffled_baseline": 0.019736842105263157
+  },
+  {
+   "dist_m": "60-100",
+   "n": 121,
+   "stream_name_agree": 0.5371900826446281,
+   "shuffled_baseline": 0.008264462809917356
+  },
+  {
+   "dist_m": "100-200",
+   "n": 317,
+   "stream_name_agree": 0.47151898734177217,
+   "shuffled_baseline": 0.015822784810126583
+  },
+  {
+   "dist_m": "200-500",
+   "n": 1121,
+   "stream_name_agree": 0.4119749776586238,
+   "shuffled_baseline": 0.015246636771300448
+  }
+ ],
+ "A5_temporal": {
+  "matched": 9248,
+  "built_after_survey": 398,
+  "reconstructed_after_survey": 189,
+  "survey_year_median_matched": 2018.0
+ },
+ "A6_huc8_boundary": {
+  "within_150m_of_boundary": 150,
+  "share": 0.0026536930561698365,
+  "points_in_multiple_polygons": 1,
+  "points_matched_to_no_polygon": 0
+ },
+ "A7_locked_r2_by_distance_to_dev": [
+  {
+   "dist_to_nearest_dev_crossing_km": "(0.318, 9.421]",
+   "n": 1799,
+   "r2": 0.29830410932516493
+  },
+  {
+   "dist_to_nearest_dev_crossing_km": "(9.421, 17.532]",
+   "n": 1799,
+   "r2": 0.3342400569782441
+  },
+  {
+   "dist_to_nearest_dev_crossing_km": "(17.532, 27.32]",
+   "n": 1799,
+   "r2": 0.3359894880549309
+  },
+  {
+   "dist_to_nearest_dev_crossing_km": "(27.32, 40.494]",
+   "n": 1799,
+   "r2": 0.28338078360955454
+  },
+  {
+   "dist_to_nearest_dev_crossing_km": "(40.494, 137.067]",
+   "n": 1799,
+   "r2": 0.30396929424529284
+  }
+ ],
+ "A8_by_type": [
+  {
+   "crossing_type": "Bridge",
+   "n": 9920,
+   "mean": 0.8803,
+   "sd": 0.1783,
+   "share_eq_1": 0.0517
+  },
+  {
+   "crossing_type": "Bridge Adequate",
+   "n": 4257,
+   "mean": 1.0,
+   "sd": 0.0,
+   "share_eq_1": 1.0
+  },
+  {
+   "crossing_type": "Buried Stream",
+   "n": 603,
+   "mean": 0.1,
+   "sd": 0.0,
+   "share_eq_1": 0.0
+  },
+  {
+   "crossing_type": "Culvert",
+   "n": 31870,
+   "mean": 0.536,
+   "sd": 0.2887,
+   "share_eq_1": 0.0004
+  },
+  {
+   "crossing_type": "Ford",
+   "n": 295,
+   "mean": 0.8794,
+   "sd": 0.237,
+   "share_eq_1": 0.3559
+  },
+  {
+   "crossing_type": "Multiple Culvert",
+   "n": 6281,
+   "mean": 0.6304,
+   "sd": 0.2357,
+   "share_eq_1": 0.0002
+  },
+  {
+   "crossing_type": "Open Bottom Arch",
+   "n": 185,
+   "mean": 0.837,
+   "sd": 0.2248,
+   "share_eq_1": 0.0486
+  },
+  {
+   "crossing_type": "Removed Crossing",
+   "n": 61,
+   "mean": 0.8893,
+   "sd": 0.2311,
+   "share_eq_1": 0.3115
+  },
+  {
+   "crossing_type": "Single Culvert",
+   "n": 3053,
+   "mean": 0.5495,
+   "sd": 0.2785,
+   "share_eq_1": 0.0
+  }
+ ],
+ "A11_sklearn_r2_locked_T3": 0.3202067846017138
+}

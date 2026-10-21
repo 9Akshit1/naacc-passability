@@ -1,0 +1,17 @@
+TreeSHAP share of total |contribution| (group sums per row, then mean |.|):
+   30.2%  catchment area (d8accum)
+   15.9%  gradient + elevation
+   13.0%  terrain windows
+   12.7%  NBI structure size
+    9.4%  OSM bridge/culvert tags
+    5.4%  traffic + road class
+    5.3%  NBI other fields
+    4.2%  county income
+    3.9%  development (bdev)
+  R2=0.3217  all T3 features
+  R2=0.2985  without d8accum
+  R2=0.1731  without d8accum AND without NBI/OSM (Plunkett minus d8accum)
+  R2=0.2172  d8accum only
+  R2=0.2516  d8accum + NBI + OSM only
+  R2=0.1984  NBI + OSM only (no Plunkett predictors)
+  R2=0.3106  all but terrain windows

@@ -1,3 +1,5 @@
+> Superseded: New York only, first version (September 2026). Its catchment area was mislinked, see `reports/CHECKS.md` item 2. Current results: `reports/RESULTS.md`.
+
 # NAACC passability - model comparison (NY statewide subset)
 
 Subset: **21111 crossings** across **55 HUC8 watersheds** (NY, capped per watershed - see `src/build_subset.py`). Target mean 0.624, sd 0.310.

@@ -1,0 +1,10 @@
+{
+  "n_crossings": 1260,
+  "n_huc8": 7,
+  "target_mean": 0.5649091709678108,
+  "target_sd": 0.33711777467782844,
+  "best_spatial_model": "linear",
+  "e6_calibration_max_gap": 0.17946070562898186,
+  "e6_pred_sd_ratio_full": 0.3651717972015233,
+  "e6_note": "pred_sd_ratio < 1 reproduces the DSL-reported pathology (model predicts toward the mean, missing extremes)."
+}

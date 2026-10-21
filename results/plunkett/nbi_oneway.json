@@ -1,0 +1,20 @@
+{
+ "mutual nearest (used for all reported numbers)": {
+  "matched_share": 0.16360902255639098,
+  "r2_mean": 0.312580511507154,
+  "r2_sd": 0.0018712345517254978,
+  "mae_mean": 0.1945886716237987,
+  "mae_sd": 9.63264518518151e-05,
+  "spearman_mean": 0.5948720808128414,
+  "n_repeats": 3
+ },
+ "one-way nearest": {
+  "matched_share": 0.16882795223352498,
+  "r2_mean": 0.3124484887412182,
+  "r2_sd": 0.0019602720136788552,
+  "mae_mean": 0.1945940896867522,
+  "mae_sd": 0.00014565387217581235,
+  "spearman_mean": 0.5949105591256557,
+  "n_repeats": 3
+ }
+}

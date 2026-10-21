@@ -8,7 +8,7 @@ Source of the formulas and weights:
 https://streamcontinuity.org/resources/aquatic-connectivity-scoring-systems-non-tidal-crossings
 ("Aquatic Connectivity Scoring Systems for Non-tidal Crossings", rev. 2016-06-16)
 
-This is a faithful re-implementation of the *documented* algorithm. Known gaps
+This is a faithful re-implementation of the documented algorithm. Known gaps
 (quantified in ``reports/02_score_reconstruction.md``):
 
 * the NAACC application's exact rule for choosing the limiting structure / the
@@ -16,7 +16,7 @@ This is a faithful re-implementation of the *documented* algorithm. Known gaps
 * NAACC's internal defaults for "Unknown" / missing categoricals are only
   partly documented.
 
-So this is validated as an *approximation*, not a bit-exact reproduction.
+So this is validated as an approximation, not a bit-exact reproduction.
 """
 
 from __future__ import annotations

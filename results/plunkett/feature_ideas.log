@@ -1,0 +1,14 @@
+T3 base                                        huc8   R2=0.3227+-0.0004 MAE=0.1924 (505s)
+T3 base                                        state  R2=0.3008+-0.0000 MAE=0.1946 (80s)
++ log_area, stream power                       huc8   R2=0.3223+-0.0007 MAE=0.1925 (101s)
++ log_area, stream power                       state  R2=0.3003+-0.0000 MAE=0.1946 (88s)
++ terrain-scale features                       huc8   R2=0.3226+-0.0004 MAE=0.1924 (105s)
++ terrain-scale features                       state  R2=0.3016+-0.0000 MAE=0.1943 (77s)
++ constriction (struct size / expected width)  huc8   R2=0.3224+-0.0006 MAE=0.1925 (98s)
++ constriction (struct size / expected width)  state  R2=0.2989+-0.0000 MAE=0.1946 (74s)
++ scale + constriction                         huc8   R2=0.3220+-0.0006 MAE=0.1925 (107s)
++ scale + constriction                         state  R2=0.3016+-0.0000 MAE=0.1944 (111s)
+T2 base, weights 1/n_huc8^0.5                  huc8   R2=0.3208+-0.0007
+T2 base, weights 1/n_huc8^0.5                  state  R2=0.2952+-0.0000
+T2 base, weights 1/n_huc8^1.0                  huc8   R2=0.3092+-0.0004
+T2 base, weights 1/n_huc8^1.0                  state  R2=0.2841+-0.0000

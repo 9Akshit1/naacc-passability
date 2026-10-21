@@ -1,14 +1,14 @@
 """Assemble GIS-derived predictors for road-stream crossings.
 
 The DSL / Plunkett model predicts NAACC passability from GIS variables that are
-available *without a field survey* (drainage area, stream gradient, terrain,
+available without a field survey (drainage area, stream gradient, terrain,
 traffic, road class, county income). Reproducing the full DSL feature set
 requires regional raster processing (a 30 m DEM with D8 flow accumulation,
 multi-scale terrain windows, a development-density surface, ADT matching) that
 is out of scope here.
 
-This module builds a **reduced, honestly-labelled** predictor set from public
-web services, sufficient to reproduce the *structure* of the approach and the
+This module builds a reduced, honestly-labelled predictor set from public
+web services, sufficient to reproduce the structure of the approach and the
 catchment-area investigation:
 
 | predictor            | source                                   | DSL analogue        |
@@ -30,11 +30,11 @@ catchment-area investigation:
 | ``structure_age_yr``, ``structure_condition``, ``structure_material``, ``structure_length_m``, ``structure_is_bridge`` | NYSDOT bridge/large-culvert inventory (2026-09-24) | not in DSL's GIS-only set at all - actual structure data |
 | ``structure_opening_width_m`` (culvert-only), ``structure_num_spans``, ``structure_streambed_material`` (culvert-only), ``structure_culvert_skew_deg`` (culvert-only) | NYSDOT bridge/large-culvert inventory (2026-09-26 addition) | not in DSL's set - targets NAACC's own scoring criteria directly (constriction, natural-bottom continuity) |
 
-**AADT traffic (2026-09-23 addition):** NYSDOT publishes a public, live,
+AADT traffic (2026-09-23 addition): NYSDOT publishes a public, live,
 statewide AADT (Annual Average Daily Traffic) layer as an ArcGIS
 FeatureServer (verified 2026-09-23:
 ``gis.dot.ny.gov/hostingny/rest/services/Roadways/Traffic_Monitoring/FeatureServer/1``,
-157,331 road segments with a non-null AADT). This fills the *other*
+157,331 road segments with a non-null AADT). This fills the other
 DSL-flagged gap (traffic volume, ``adt``) not addressed until now. Downloaded
 once (paginated REST query), cached as GeoParquet, joined to crossings via
 ``geopandas.sjoin_nearest`` - same pattern as ``road_class``. Coverage is
@@ -43,7 +43,7 @@ state/county highway system, not every local road or driveway a crossing may
 sit on - see the actual match-rate printed by ``build_predictor_table``, not
 assumed here.
 
-**Multi-scale terrain (2026-09-23 addition):** the other omission the module
+Multi-scale terrain (2026-09-23 addition): the other omission the module
 docstring above has always listed as out of scope for lack of a bulk DEM
 pipeline. USGS's 3DEP ``ImageServer`` ``getSamples`` operation (verified live
 2026-09-23) accepts many points per POST request and returns elevation at up
@@ -56,7 +56,7 @@ reproduction of DSL's own terrain algorithm - it isn't published in enough
 detail to reproduce, and this isn't claimed to be it), roughness is the
 elevation standard deviation across the ring. See ``fetch_terrain_features_bulk``.
 
-**StreamCat (2026-09-20 addition):** EPA's StreamCat dataset
+StreamCat (2026-09-20 addition): EPA's StreamCat dataset
 (https://www.epa.gov/national-aquatic-resource-surveys/streamcat-dataset)
 provides ~600 pre-computed upstream-watershed metrics per NHDPlusV2 COMID, via
 a live, batched REST API (``api.epa.gov/StreamCat/streams/metrics`` -
@@ -64,9 +64,9 @@ confirmed working, no API key, no per-request rate limit like Overpass's).
 A curated subset (not all ~600, to avoid overfitting a 1,260-row / 7-group
 spatial-CV problem with a decorrelated grab-bag) was chosen for a plausible
 mechanistic link to culvert passability - see ``_STREAMCAT_METRICS`` below.
-Notably, StreamCat has **no stream/catchment slope variable**.
+Notably, StreamCat has no stream/catchment slope variable.
 
-**NHDPlus VAA slope (2026-09-20 addition):** fills the stream-gradient gap
+NHDPlus VAA slope (2026-09-20 addition): fills the stream-gradient gap
 StreamCat leaves and DSL explicitly flags as important. Downloaded once as a
 ~246 MB CONUS-wide parquet (``nhdplus_vaa`` function of the ``pynhd``/HyRiver
 library resolves the current URL - the API that used to serve this per-COMID
@@ -74,7 +74,7 @@ live via NLDI's ``/local``/``/tot`` endpoints was retired in USGS's migration
 to api.water.usgs.gov), then column-projected (comid/slope/streamorde only,
 via pyarrow, not a full load) and subset down to a small per-COMID cache like
 every other fetcher in this module. The 246 MB source file itself is
-deliberately **not** committed (see ``.gitignore``) - it is disposable, easily
+deliberately not committed (see ``.gitignore``) - it is disposable, easily
 re-downloaded, and out of proportion with this module's other KB-sized caches;
 only the derived per-COMID slope/order values are tracked.
 
@@ -88,7 +88,7 @@ retained separately as ``road_class_surveyed`` for audit / comparison only -
 it is never used as a model feature, since a real deployment target (an
 unassessed crossing) will not have it.
 
-**Two ways to get it, same output:** ``fetch_osm_road_class`` queries the live
+Two ways to get it, same output: ``fetch_osm_road_class`` queries the live
 Overpass API per point - the right tool for `predict.py`'s low-volume
 on-demand inference (no ~500MB download for a handful of crossings), but
 rate-limited to ~1 req/sec, making it impractical at full-dataset scale.
@@ -96,7 +96,7 @@ rate-limited to ~1 req/sec, making it impractical at full-dataset scale.
 OpenStreetMap extract (Geofabrik `.pbf`, ~497 MB, gitignored - see
 ``.gitignore``), parses it once into a cached GeoParquet of every tagged way
 (~1.9M features, also gitignored, rebuildable from the `.pbf`), and answers
-*every* crossing's nearest-way lookup in one vectorized
+every crossing's nearest-way lookup in one vectorized
 ``geopandas.sjoin_nearest`` call instead of one Overpass round-trip per
 crossing - the mechanism ``build_subset.py`` uses for dataset builds. Both
 write to the same per-crossing cache (`data/interim/cache/osm_road/`) and
@@ -603,7 +603,7 @@ def _aggregate_streamcat_record(rec: dict) -> dict:
     """Pure function: raw StreamCat API record (``{"precip8110ws": ..., ...}``)
     -> engineered ``sc_*`` feature dict, per ``_STREAMCAT_METRICS``. Land-cover
     sub-classes are summed into composite bands; a composite is only NaN if
-    *every* one of its sub-classes is missing (a missing sub-class alongside
+    every one of its sub-classes is missing (a missing sub-class alongside
     present ones is treated as 0%, not as "whole sum unknown"). Also carries
     through ``wsareasqkm`` - StreamCat's own independent upstream-watershed
     area, requested via ``showareasqkm=true`` - as ``sc_watershed_area_km2``,
@@ -1063,7 +1063,7 @@ def fetch_ecoregion_bulk(df: pd.DataFrame) -> pd.Series:
 #     (layer 0 "NYSDOT Bridges", 20,051 features, condition rating 1-7
 #     [higher=better], material/year-built fields; layer 1 "NYSDOT Large
 #     Culverts", 7,985 features, same schema). Coverage is expected well
-#     below 100%: this is the *state-maintained* inventory (mostly bridges
+#     below 100%: this is the state-maintained inventory (mostly bridges
 #     and larger/state-system culverts), not every small local culvert a
 #     NAACC crossing might be on - see the actual match rate printed by
 #     build_predictor_table, not assumed here. Both layers downloaded once,
@@ -1090,7 +1090,7 @@ def _download_structures_layer():
     (checked live), i.e. genuinely complementary, not redundant. Large
     culverts have neither field, so both are NaN/None for culvert matches.
 
-    2026-09-26 addition: ``width_ft`` (channel-opening width, **culvert-only**
+    2026-09-26 addition: ``width_ft`` (channel-opening width, culvert-only
     - NYSDOT's ``SpanLength``, verified against the state's own *Culvert
     Inventory and Inspection Manual* (fetched live and text-extracted): "the
     length of span is defined as the distance measured perpendicular to the
@@ -1441,11 +1441,11 @@ def compute_constriction_ratio(df: pd.DataFrame) -> pd.Series:
     """``structure_span_m / bankfull_width_m`` - the direct opening-vs-
     channel comparison. The "opening" side is NOT the same source column for
     both structure types, because the manual-verified physical meaning
-    differs (see ``_download_structures_layer``): for a **bridge**,
+    differs (see ``_download_structures_layer``): for a bridge,
     ``structure_length_m`` (from ``BridgeLengthft``) already IS the
     channel-spanning axis, confirmed by NYSDOT's own *Bridge and Large
     Culvert Inventory Manual* ("Structure Length must be greater than or
-    equal to the Span Length"); for a **culvert**, ``structure_length_m``
+    equal to the Span Length"); for a culvert, ``structure_length_m``
     (from ``StructureLength``/"Out to Out Length") is instead the
     tunnel/embankment axis, and it's ``structure_opening_width_m`` (from the
     verified ``SpanLength`` field) that's the channel-spanning one. Returns

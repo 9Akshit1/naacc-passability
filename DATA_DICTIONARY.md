@@ -1,3 +1,5 @@
+> Describes the New York files only. For the multi-state columns see Plunkett's `passability_predvars.txt`, `src/plunkett_features.py` and `docs/NBI_JOIN.md`.
+
 # Data dictionary
 
 ## Raw data
@@ -5,7 +7,7 @@
 **File:** `data/raw/ny_naacc_surveys.csv` (44,871 rows)
 **Source:** NYS DEC ArcGIS FeatureServer `NYS_NAACCSurveys_Projected` layer 0
 (`https://services6.arcgis.com/DZHaqZm9cxOD4CWM/arcgis/rest/services/NYS_NAACCSurveys_Projected/FeatureServer/0`)
-— public, no login. **Accessed:** 2026-09-10. Provenance: `data/raw/ny_naacc_PROVENANCE.json`.
+- public, no login. **Accessed:** 2026-09-10. Provenance: `data/raw/ny_naacc_PROVENANCE.json`.
 Downloaded via the ArcGIS REST `query` endpoint, paginated (2,000/page), geometry
 in WGS84.
 
@@ -22,7 +24,7 @@ survey of one structure at one crossing.
 | `Aqua_Pass_Score` | **NAACC aquatic passability score, 0-1** (`-1` = "no score - missing data"). The target. |
 | `AOP` | coarse class: Full AOP / Reduced AOP / No AOP / no score |
 | `Evaluation` | barrier class label (No / Insignificant / Minor / Moderate / Significant / Severe barrier) |
-| `Terrestrial_Passage_Score` | terrestrial (not aquatic) passability, 0-1 — not used here |
+| `Terrestrial_Passage_Score` | terrestrial (not aquatic) passability, 0-1 - not used here |
 | `GPS_X_Coordinate`, `GPS_Y_Coordinate` | field GPS lon/lat |
 | `Crossing_Type` | Culvert / Multiple Culvert / Bridge / Bridge Adequate / Ford / Inaccessible / No Crossing / ... |
 | `Number_Of_Culverts` | count (`-1` = missing) |
@@ -30,7 +32,7 @@ survey of one structure at one crossing.
 | `Approved` | NAACC QA flag (1 = approved) |
 | `County`, `Municipality`, `Road`, `Stream_Name` | location text |
 | `Road_Type` | Paved / Unpaved / Multilane road (>2 lanes) / Driveway / Trail / Railroad / No data |
-| `NHD_HUC8_Watershed` | HUC8 subbasin name (55 in NY) — used for spatial cross-validation |
+| `NHD_HUC8_Watershed` | HUC8 subbasin name (55 in NY) - used for spatial cross-validation |
 | `Date_Observed` | survey date |
 | `Crossing_Span` | constriction: Severe / Moderate / Spans Only Bankfull/Active Channel / Spans Full Channel & Banks |
 | `Inlet_Grade`, `Outlet_Grade` | At Stream Grade / Inlet Drop / Perched / Free Fall / Cascade / Clogged / ... |
@@ -38,7 +40,7 @@ survey of one structure at one crossing.
 | `Inlet_Openness`, `Outlet_Openness` | openness ratio, ft (`-1` = missing) |
 | `Inlet_Height`, `Outlet_Height`, `Outlet_Width` | structure dimensions, ft |
 | `Crossing_Structure_Length` | ft |
-| `Slope_Percent` | culvert slope, % (mostly missing — optional field) |
+| `Slope_Percent` | culvert slope, % (mostly missing - optional field) |
 | `Scour_Pool` | None / Small / Large |
 | `Armoring` | None / Not Extensive / Extensive |
 | `Barrier_Severity`, `Barrier_Name` | physical-barrier severity + type(s) |
@@ -66,7 +68,7 @@ and counts: `data/interim/cleaning_report.md` / `reports/01_dataset_audit.md`.
 | `year`, `date_observed` | most-recent survey |
 | `County`, `Road_Type`, `Crossing_Type`, `Stream_Name`, `AOP`, `Evaluation` | identity / context |
 | `Terrestrial_Passage_Score` | for reference |
-| the `SURVEY_FIELDS` (see `src/data.py`) | field-survey variables, kept **only** for the Phase-2 score reconstruction — never used as GIS-prediction features |
+| the `SURVEY_FIELDS` (see `src/data.py`) | field-survey variables, kept **only** for the Phase-2 score reconstruction - never used as GIS-prediction features |
 
 ## GIS predictor table (modelling subset)
 

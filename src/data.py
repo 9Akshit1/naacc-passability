@@ -1,17 +1,17 @@
 """Load and clean the NAACC New York survey export into one modelling dataset.
 
 Source: NYS DEC ArcGIS FeatureServer ``NYS_NAACCSurveys_Projected`` (public, no
-login), downloaded to ``data/raw/ny_naacc_surveys.csv`` — 44,871 survey records.
+login), downloaded to ``data/raw/ny_naacc_surveys.csv`` - 44,871 survey records.
 Provenance in ``data/raw/ny_naacc_PROVENANCE.json``.
 
 The filtering recipe follows the UMass Designing Sustainable Landscapes (DSL)
 "Aquatic Barriers" documentation (Plunkett et al. 2022), adapted to the fields
 available in this export. Every drop is counted and reported.
 
-One row of the modelling dataset = one **unique surveyed crossing** (most recent
+One row of the modelling dataset = one unique surveyed crossing (most recent
 survey, structures collapsed), with:
 
-* ``passability`` — the target: NAACC aquatic passability score in [0, 1]
+* ``passability`` - the target: NAACC aquatic passability score in [0, 1]
 * identity + location + HUC8 (for spatial cross-validation)
 * the raw field-survey variables (kept for the Phase-2 score reconstruction; NOT
   used as GIS-prediction features)

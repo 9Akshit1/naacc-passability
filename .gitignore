@@ -23,13 +23,22 @@ results/plunkett/oof_*.parquet
 # Plunkett's data file belongs to him and is not part of this repository
 data/raw/plunkett/
 
-# Drafts and private notes
-reports/DRAFT_*
-reports/EMAIL_*
-docs/EMAIL_*
-
 # Python and tool scratch files
 __pycache__/
 *.pyc
 .pytest_cache/
 catboost_info/
+
+# Private notes, kept only in the private working copy
+WRITEUP.md
+reports/0*
+reports/1*
+reports/EXPERIMENT_LOG.md
+reports/IMPACT_MEASUREMENT.md
+reports/METHODOLOGY.md
+reports/history/
+reports/old_versions/
+reports/DRAFT_*
+reports/EMAIL_*
+docs/EMAIL_*
+docs/naacc_scoring_WRONGFILE*

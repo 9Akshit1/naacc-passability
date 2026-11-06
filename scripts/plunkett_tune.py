@@ -1,8 +1,9 @@
-"""Random hyper-parameter search for LightGBM on the development set only.
+"""Random hyperparameter search for LightGBM on the development set only.
 
-Scored by HUC8-group CV with seed 100 (the reporting runs use seeds 0-2, so tuning and
-reporting use different watershed-to-fold assignments). The locked test set is never read.
-Feature set: Plunkett + NBI (+ OSM if --osm). Objective is part of the search space."""
+Each setting is scored with HUC8 group CV using seed 100. The reported runs use seeds 0 to 2, so tuning and reporting use
+different assignments of watersheds to folds. The test basins are never read. The features are Plunkett's predictors and the
+bridge inventory, plus OpenStreetMap with --osm. The loss function is part of the search.
+"""
 import json, sys, time
 import numpy as np, pandas as pd, lightgbm as lgb
 from src import plunkett_cv as cv, plunkett_features as pf

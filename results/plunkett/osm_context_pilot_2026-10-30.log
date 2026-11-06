@@ -1,0 +1,20 @@
+osm_road_found            1.000
+osm_road_rank             0.962
+osm_road_paved            0.402
+osm_road_lanes            0.179
+osm_road_maxspeed         0.106
+osm_road_width            0.002
+osm_road_oneway           0.962
+osm_water_found           1.000
+osm_water_kind            0.408
+osm_water_ditchlike       0.408
+osm_water_intermittent    0.408
+osm_water_named           0.408
+osm_skew_deg              0.391
+PA+RI development rows: 6045
+reference                          R2=0.3280+-0.0012 MAE=0.1860
++ road and waterway context        R2=0.3273+-0.0011 MAE=0.1862
++ waterway only                    R2=0.3266+-0.0018 MAE=0.1863
++ road only                        R2=0.3299+-0.0012 MAE=0.1858
++ skew only                        R2=0.3268+-0.0013 MAE=0.1863
+done

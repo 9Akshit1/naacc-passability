@@ -1,0 +1,13 @@
+development rows: 47530, features: 71
+reference: frozen LightGBM regression                huc8   R2=0.3254+-0.0024  MAE=0.1927  (55s)
+A  Huber alpha 0.5                                   huc8   R2=0.3245+-0.0021  MAE=0.1916  (56s)
+A  Huber alpha 0.2                                   huc8   R2=0.3071+-0.0010  MAE=0.1883  (54s)
+A  Fair loss                                         huc8   R2=0.3172+-0.0019  MAE=0.1886  (56s)
+A  L1                                                huc8   R2=0.2917+-0.0008  MAE=0.1865  (57s)
+neighbourhood features built: {'nb_n_1km': 1.0, 'nb_n_5km': 1.0, 'nb_dlogarea_5km': 0.997, 'nb_dgrad_1.5km': 0.939, 'nb_slope_same_stream': 0.799, 'nb_large_share_5km': 0.997}
+B  + neighbourhood context (all six)                 huc8   R2=0.3268+-0.0023  MAE=0.1926  (55s)
+B  + slope/area deltas only (no density)             huc8   R2=0.3259+-0.0021  MAE=0.1927  (55s)
+B  + density only                                    huc8   R2=0.3257+-0.0023  MAE=0.1927  (54s)
+C  top-15 features by in-fold gain                   huc8   R2=0.3136+-0.0014  MAE=0.1946  (91s)
+C  top-25 features by in-fold gain                   huc8   R2=0.3225+-0.0018  MAE=0.1932  (92s)
+done

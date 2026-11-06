@@ -1,3 +1,6 @@
+"""Tests for the New York pipeline: the NAACC score rebuild, data cleaning, cross-validation splitters, metrics and
+conformal intervals.
+"""
 import sys
 from pathlib import Path
 
@@ -20,9 +23,7 @@ RAW = ROOT / "data/raw/ny_naacc_surveys.csv"
 SUBSET = ROOT / "data/processed/subset_predictors.parquet"
 
 
-# ---------------------------------------------------------------------------
 # NAACC score reconstruction (pure computation - always runs)
-# ---------------------------------------------------------------------------
 
 
 class TestNaaccScoreFormulas:
@@ -89,9 +90,7 @@ class TestCleaning:
         assert all(b >= a for _, b, a in rep.steps)
 
 
-# ---------------------------------------------------------------------------
 # helpers
-# ---------------------------------------------------------------------------
 
 
 def test_polygon_area_unit_square():
@@ -106,9 +105,7 @@ def test_haversine_known_distance():
     assert d == pytest.approx(111.2, abs=1.0)
 
 
-# ---------------------------------------------------------------------------
 # OSM road-class crosswalk (pure function, no network - see gis_predictors.py)
-# ---------------------------------------------------------------------------
 
 
 def test_classify_osm_tags_railway_takes_priority():
@@ -359,17 +356,11 @@ def test_subset_predictors_plausible():
 
 @pytest.mark.skipif(not SUBSET.exists(), reason="subset predictors not built")
 def test_predict_crossings_end_to_end(monkeypatch):
-    """Regression test for a real bug found 2026-09-27: predict_crossings
-    crashed on every call (`DataFrame.setdefault()` doesn't exist - that's a
-    dict method) and, once that was fixed, would have crashed again inside
-    the model's ColumnTransformer because build_predictor_table was only
-    fetching drainage/elevation/road_class, not the sc_*/stream_slope/aadt/
-    terrain_*/ecoregion/structure_* columns the trained model actually
-    needs. Neither bug had any test coverage. This test monkeypatches
-    build_predictor_table to return real rows from the already-built subset
-    (no live network calls, no per-row rate limiting) so it stays fast, but
-    exercises the exact code path (County handling, DataFrame construction,
-    model.predict on the full feature set) that broke."""
+    """predict_crossings crashed on every call (a DataFrame has no setdefault method) and, after that was fixed, would
+    have failed again because build_predictor_table did not return the columns the trained model needs. Neither case had
+    a test. This test makes build_predictor_table return real rows from the built subset, so it runs fast with no network
+    calls, and it covers the code that broke: County handling, building the DataFrame, and model.predict on the full
+    feature set."""
     import src.predict as predict_mod
 
     real = pd.read_parquet(SUBSET).head(2).reset_index(drop=True)

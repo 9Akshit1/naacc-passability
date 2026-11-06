@@ -1,10 +1,9 @@
-"""Fine-scale (lidar-era, ~1 m) ground-elevation samples around each crossing from the USGS 3DEP ImageServer.
+"""Fine-scale ground elevation around each crossing from the USGS 3DEP ImageServer.
 
-For each crossing: the centre point plus 8 compass directions x 6 radii (3, 6, 10, 15, 25, 40 m) = 49 samples.
-The service returns 1 m-scale values where lidar DEMs exist (verified 2026-10-09 in NY: 37-40 distinct elevations
-on 41 points spaced 2 m apart); elsewhere it falls back to coarser data, so a per-crossing `fine_ok` flag is kept
-(fraction of distinct values) and coverage is reported rather than assumed.
-Samples are cached in batches under data/interim/cache/fine_dem/ so interrupted runs resume.
+For each crossing the code samples the centre point and 8 compass directions at 6 distances (3, 6, 10, 15, 25 and 40 m), which is
+49 points. Where lidar elevation exists the service returns values at about 1 m resolution, and elsewhere it returns coarser
+data. A flag `fine_ok` records the fraction of distinct values at each crossing, so coverage is measured and not assumed.
+Samples are cached in batches under data/interim/cache/fine_dem/ so an interrupted run can continue.
 """
 from __future__ import annotations
 

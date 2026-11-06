@@ -1,0 +1,16 @@
+1418817 roads, 48514 stream line pieces, 45254 intersection points
+
+Distance from the survey point to the nearest road x stream intersection (Pennsylvania):
+  Plunkett rows    n= 9361  within 15 m 0.328  within 30 m 0.528  within 100 m 0.627  median 27 m
+  extra SARP rows  n= 3538  within 15 m 0.060  within 30 m 0.098  within 100 m 0.191  median 552 m
+
+Model fitted on Plunkett development rows (public-data inputs), scored on the extra Pennsylvania rows:
+  intersection within 30 m       n=  345  R2= -0.000  Spearman=0.263  mean y=0.795
+  intersection within 15 m       n=  212  R2=  0.026  Spearman=0.266  mean y=0.780
+  no intersection within 100 m   n= 2862  R2= -0.025  Spearman=0.283  mean y=0.709
+  all extra PA rows              n= 3538  R2= -0.015  Spearman=0.290  mean y=0.721
+
+Reference, Plunkett Pennsylvania development rows, same model, HUC8 CV, by the same distance:
+  within 30 m                    n= 2894  R2=  0.290
+  beyond 30 m                    n= 2728  R2=  0.156
+done

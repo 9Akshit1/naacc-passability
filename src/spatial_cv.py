@@ -1,17 +1,17 @@
-"""Cross-validation splitters.
+"""Cross-validation splitters for the New York version.
 
-The research question is spatial transfer: can the model predict passability at
-crossings in watersheds it never trained on? A random split leaks watershed-level
-structure (geology, stream size regime, land use) into the test set and gives an
-over-optimistic score. We therefore compare:
+The question is whether the model can predict crossings in watersheds it has never seen. A random split puts crossings from the
+same watershed on both sides, so the test set shares geology, stream size and land use with the training set and the score is too
+high. The splitters here are:
 
-* ``random_kfold``            - ordinary k-fold on individual crossings (reference only)
-* ``huc8_group_kfold``        - entire HUC8 watersheds held out (one split)
-* ``repeated_huc8_group_kfold`` - the same, repeated with different random
-  watershed-to-fold assignments, so the headline score is a mean +/- spread
-  across several splits rather than whatever one split happened to draw
-* ``leave_one_huc8_out``      - every watershed with enough crossings held
-  out individually, for a per-watershed breakdown
+- random_kfold: ordinary k-fold on single crossings, for reference only
+- huc8_group_kfold: whole HUC8 watersheds held out, with one split
+- repeated_huc8_group_kfold: the same, repeated with different random assignments of watersheds to folds, so that the score is
+  a mean and a spread over several splits and not whatever one split happened to give
+- leave_one_huc8_out: each watershed with enough crossings held out alone, for a per-watershed breakdown
+
+huc8_group_kfold sorts the watersheds by size after shuffling, so its folds barely change with the seed. The multi-state code
+uses plunkett_cv.random_group_kfold instead.
 """
 
 from __future__ import annotations
@@ -29,16 +29,13 @@ def random_kfold(df: pd.DataFrame, n_splits: int = 5, seed: int = 0):
 
 def huc8_group_kfold(df: pd.DataFrame, group_col: str = "huc8_name",
                      n_splits: int | None = None, seed: int = 0):
-    """Group k-fold over ``group_col``, entire groups held out per fold.
+    """Group k-fold over ``group_col``, with entire groups held out in each fold.
 
-    Unlike ``sklearn.model_selection.GroupKFold`` (which has no ``shuffle``/
-    ``random_state`` in this project's sklearn version and is fully
-    deterministic given a group column - every "re-run" was silently
-    evaluating the exact same single split), this shuffles the group order
-    by ``seed`` before a greedy size-balanced assignment, so different
-    seeds give genuinely different held-out-watershed combinations. That
-    variation is what ``repeated_huc8_group_kfold`` uses to turn a single
-    lucky/unlucky split into a distribution.
+    ``sklearn.model_selection.GroupKFold`` has no ``shuffle`` or ``random_state`` in the scikit-learn version used here and
+    always gives the same split, so every "re-run" with it evaluated the same single split. This function shuffles the group
+    order with ``seed`` before a greedy size-balanced assignment, which is what ``repeated_huc8_group_kfold`` relies on to
+    turn one split into a distribution. The assignment then sorts the groups by size, so the folds still change little
+    with the seed (see ``plunkett_cv.random_group_kfold``).
     """
     groups = df[group_col].astype(str).values
     uniq = np.unique(groups)

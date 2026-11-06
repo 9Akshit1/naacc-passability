@@ -1,0 +1,31 @@
+labelled rows per aux label: {'perched_outlet': 20606, 'outlet_drop_log': 20606, 'outlet_free_fall': 20572, 'inlet_perched': 20597, 'severe_constriction': 20912, 'is_bridge': 22252, 'large_scour_pool': 21182, 'bankfull_log': 6680}
+seed 0 fold 0 done (73s)
+seed 0 fold 1 done (76s)
+seed 0 fold 2 done (68s)
+seed 0 fold 3 done (75s)
+seed 0 fold 4 done (87s)
+seed 0: reference=0.3273  + all aux=0.3267  + only perched_outlet=0.3271  + only outlet_free_fall=0.3268  + only is_bridge=0.3267
+seed 1 fold 0 done (77s)
+seed 1 fold 1 done (78s)
+seed 1 fold 2 done (53s)
+seed 1 fold 3 done (41s)
+seed 1 fold 4 done (38s)
+seed 1: reference=0.3222  + all aux=0.3219  + only perched_outlet=0.3228  + only outlet_free_fall=0.3223  + only is_bridge=0.3219
+
+score model, development rows, pooled out-of-fold R2 (mean of seeds):
+  reference                          R2=0.3247  (+0.0000)  seeds [0.3273, 0.3222]
+  + all aux                          R2=0.3243  (-0.0004)  seeds [0.3267, 0.3219]
+  + only perched_outlet              R2=0.3250  (+0.0002)  seeds [0.3271, 0.3228]
+  + only outlet_free_fall            R2=0.3245  (-0.0002)  seeds [0.3268, 0.3223]
+  + only is_bridge                   R2=0.3243  (-0.0004)  seeds [0.3267, 0.3219]
+
+how well each survey field is predicted from map data (held-out HUC8s; AUC for yes/no, R2 for log values):
+  perched_outlet         0.755   (rows labelled 20606)
+  outlet_drop_log        0.174   (rows labelled 20606)
+  outlet_free_fall       0.758   (rows labelled 20572)
+  inlet_perched          0.628   (rows labelled 20597)
+  severe_constriction    0.655   (rows labelled 20912)
+  is_bridge              0.908   (rows labelled 22252)
+  large_scour_pool       0.660   (rows labelled 21182)
+  bankfull_log           0.451   (rows labelled 6680)
+done

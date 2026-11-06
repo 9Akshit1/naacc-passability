@@ -1,9 +1,10 @@
-"""Fetch every external input for the multi-state (Plunkett) pipeline. Idempotent.
+"""Download the outside inputs for the multi-state pipeline. It can be run again safely.
 
-  1. Plunkett's dataset is NOT downloaded here. It was sent to us by Ethan Plunkett (UMass DSL) and is
-     his to distribute, so it is not in this repository. Put passability_data.parquet and
-     passability_predvars.txt in data/raw/plunkett/ (or set NAACC_PLUNKETT_DIR).
-  2. Census state boundaries, FHWA NBI 2025 (13 states), USGS HUC8 polygons, OSM bridge/culvert ways.
+Plunkett's dataset is not downloaded here. Ethan Plunkett sent it to me and it is his to distribute, so it is not in this
+repository. Put passability_data.parquet and passability_predvars.txt in data/raw/plunkett/, or set NAACC_PLUNKETT_DIR.
+
+This script fetches the Census state boundaries, the FHWA National Bridge Inventory 2025 files for 13 states, the USGS HUC8
+polygons, and the OpenStreetMap bridge and culvert ways.
 
     python -m scripts.download_multistate_inputs [--skip-osm]
 """

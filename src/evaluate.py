@@ -1,8 +1,6 @@
-"""Metrics for continuous passability prediction.
-
-Reports MAE / RMSE / R2 / Spearman (ranking) plus calibration and
-predict-toward-the-mean diagnostics - the last one because the DSL documentation
-states its GIS model "generally doesn't predict the more extreme values".
+"""Error measures for predicting a continuous score: MAE, RMSE, R2 and Spearman rank correlation, plus a calibration table and a
+check of how far predictions are pulled toward the mean. The DSL documentation says its model "generally doesn't predict the
+more extreme values", and the last check measures that.
 """
 
 from __future__ import annotations

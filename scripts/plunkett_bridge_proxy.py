@@ -1,5 +1,6 @@
-"""Is d8accum a proxy for 'bridge?'  (Plunkett's alternative explanation.)
-Dev set only, HUC8-group CV. `bridge` is a survey field used here ONLY as an analysis label."""
+"""Is d8accum only a stand-in for "is this a bridge"? This is Plunkett's alternative explanation.
+It uses the development set and HUC8 group CV. The survey field `bridge` is used here only as a label for the analysis.
+"""
 import numpy as np, lightgbm as lgb
 from sklearn.metrics import roc_auc_score
 from src import plunkett_cv as cv, plunkett_data as pdm

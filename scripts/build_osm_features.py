@@ -1,5 +1,7 @@
-"""Build data/processed/plunkett_features_osm.parquet (Plunkett + NBI + OSM) once ALL 13 OSM state files exist.
-Refuses to run with a missing state, so a partially fetched OSM layer can never be mistaken for 'no structure'."""
+"""Build data/processed/plunkett_features_osm.parquet (Plunkett's predictors, the bridge inventory and OpenStreetMap) once the
+OpenStreetMap files for all 13 states exist. It stops if a state is missing, so a partly downloaded layer cannot be mistaken
+for crossings that have no structure.
+"""
 import sys
 from pathlib import Path
 from src import plunkett_features as pf, osm_structures as osm

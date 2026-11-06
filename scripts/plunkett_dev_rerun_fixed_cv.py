@@ -1,6 +1,8 @@
-"""Re-run of the main development-set comparisons AFTER fixing the CV seed bug (src/plunkett_cv.random_group_kfold).
-Tiers T1/T2/T3; LightGBM default and tuned (5 genuinely different splits), RF Plunkett-style (2 splits, T1 only),
-final ensemble (3 splits, HUC8). Per-split R2 are saved so paired tier differences can be computed on identical folds."""
+"""Run the main development-set comparisons again after fixing the cross-validation seed problem in
+src/plunkett_cv.random_group_kfold. The feature sets are T1, T2 and T3. It runs LightGBM with default and tuned settings (5
+different splits), a random forest in Plunkett's style (2 splits, T1 only), and the final ensemble (3 splits, HUC8). The R2 of
+each split is saved so that differences between feature sets can be computed on identical folds.
+"""
 import json, time
 import numpy as np, pandas as pd, lightgbm as lgb
 from sklearn.ensemble import RandomForestRegressor

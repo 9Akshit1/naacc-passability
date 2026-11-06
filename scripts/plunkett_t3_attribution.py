@@ -1,7 +1,10 @@
-"""How much does catchment area (d8accum) drive the final-feature-set model, and what else matters?
-Development set only, HUC8 group CV (3 random splits), LightGBM default on T3 features.
-(1) TreeSHAP on held-out folds: mean |contribution| per feature group, as a share of the total.
-(2) Retrain ablations: without d8accum; d8accum alone; structure evidence (NBI+OSM) alone; etc."""
+"""How much does catchment area (d8accum) drive the T3 model, and what else matters?
+
+It uses the development set only, HUC8 group CV with 3 random splits, and LightGBM default settings on T3 features.
+(1) TreeSHAP on the held-out folds: the mean absolute contribution of each feature group, as a share of the total.
+(2) Models fitted again without d8accum, with d8accum alone, with only the structure evidence (bridge inventory and OpenStreetMap),
+    and so on.
+"""
 import json
 import numpy as np, pandas as pd, lightgbm as lgb
 from src import plunkett_cv as cv, plunkett_features as pf

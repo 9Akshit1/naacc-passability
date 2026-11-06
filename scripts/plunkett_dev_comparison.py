@@ -1,10 +1,11 @@
-"""Development-set comparison of feature tiers x models x CV schemes (locked test NOT read).
+"""Compare feature sets, models and cross-validation schemes on the development set. The test basins are not read.
 
-Tiers: T1 Plunkett predictors | T2 + NBI | T3 + NBI + OSM
-Models: lgbm_default | lgbm_tuned (best of scripts/plunkett_tune.py, chosen on seed 100) |
-        lgbm_xent_tuned | catboost | ensemble (mean of the tuned members)
-Schemes: random | huc8 | huc6 | state       Seeds 0,1,2 (state is deterministic)
-Writes results/plunkett/dev_comparison.json and OOF predictions (huc8, seed 0) per model."""
+Feature sets: T1 Plunkett's predictors, T2 adds the bridge inventory, T3 adds the bridge inventory and OpenStreetMap.
+Models: lgbm_default, lgbm_tuned (the best setting from scripts/plunkett_tune.py, chosen with seed 100), lgbm_xent_tuned,
+catboost, and an ensemble that averages the tuned models.
+Schemes: random, huc8, huc6 and state, with seeds 0, 1 and 2 (the state scheme does not depend on the seed).
+It writes results/plunkett/dev_comparison.json and the out-of-fold predictions (huc8, seed 0) for each model.
+"""
 import json, sys, time
 import numpy as np, pandas as pd, lightgbm as lgb
 from catboost import CatBoostRegressor

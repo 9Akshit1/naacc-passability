@@ -1,16 +1,13 @@
-"""Inference pipeline: unsurveyed crossings -> predicted passability + interval.
+"""Predict passability and an interval for crossings that have not been surveyed (New York version).
 
     python -m src.predict --crossings my_crossings.csv --out predictions.csv
 
-``my_crossings.csv`` needs at least ``crossing_id, lat, lon``. Optional
-``County`` (for census join) improves predictions. All other GIS predictors -
-drainage area, elevation, road class (from OpenStreetMap), upstream watershed
-metrics (from EPA StreamCat), and stream slope/order (NHDPlusV2 VAA) - are
-fetched automatically from the same public services used to train the model,
-with caching. No field-survey columns are required or used.
+The input file needs the columns crossing_id, lat and lon. A County column is optional and improves the result. The other
+predictors (drainage area, elevation, road class from OpenStreetMap, upstream watershed measures from EPA StreamCat, and stream
+slope and order from NHDPlusV2) are fetched from the same public services that were used to train the model, and are cached.
+No field survey columns are needed or used.
 
-The model is trained on the NY inland subset (see METHODOLOGY.md). Predictions
-outside that region / regime should be treated as illustrative.
+The model was trained on the New York inland subset, so predictions for other regions should be read as rough.
 """
 
 from __future__ import annotations
@@ -34,10 +31,9 @@ EXPERIMENT_RESULTS = Path("results/experiment_results.json")
 
 
 def _load_tuned_params() -> dict:
-    """Hyperparameters found by ``model_experiments.py``'s
-    ``tune_hyperparameters`` pass, if that's been run - so the deployed
-    model matches what the report evaluated, not silently the untuned
-    defaults. Missing/unreadable file just means "not tuned yet"."""
+    """Hyperparameters found by the ``tune_hyperparameters`` pass in ``model_experiments.py``, if it has been run, so that
+    the model used for predictions matches the one that was evaluated and not the untuned defaults. A missing or
+    unreadable file means the model has not been tuned yet."""
     if not EXPERIMENT_RESULTS.exists():
         return {}
     try:

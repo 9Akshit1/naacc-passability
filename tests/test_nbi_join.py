@@ -1,4 +1,5 @@
-"""NBI download/join tool, tested on a small made-up state file (no network)."""
+"""Tests for the National Bridge Inventory download and join, using a small made-up state file so that no network is needed.
+"""
 import numpy as np
 import pandas as pd
 import pytest

@@ -1,8 +1,12 @@
-"""Download the public NAACC_Culvert_Assessment_2 ArcGIS FeatureServer layer (no login needed).
+"""Download the public NAACC_Culvert_Assessment_2 ArcGIS layer, which needs no login. It is compiled by NAACC and The Nature
+Conservancy and covers 13 northeastern states and DC. It is a different snapshot from Plunkett's file. The result is saved to
+data/raw/naacc_public_layer.parquet.
 
-Compiled by NAACC / The Nature Conservancy; 13 northeastern states + DC. Used ONLY for auditing
-(target definition vs NAACC's own published score, and what Plunkett's filtering removed) - it is a
-different snapshot from Plunkett's file. Saved to data/raw/naacc_public_layer.parquet."""
+The layer was first used to compare Plunkett's scores with NAACC's published scores and to see what his filtering removed. It
+is also used by scripts/build_outlet_drop_join.py to look up outlet drop (see reports/OUTLET_DROP.md). The layer has no licence
+or terms text, and the downloaded file is not committed to this repository. NAACC and Ethan Plunkett should be asked before
+results built on it are used outside this project.
+"""
 import time
 from pathlib import Path
 import pandas as pd, requests

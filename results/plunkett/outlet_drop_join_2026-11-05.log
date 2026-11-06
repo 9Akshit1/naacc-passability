@@ -1,0 +1,26 @@
+Plunkett 56525, layer 53151
+pass 1 (id + location + score): 27376 accepted of 32107 id matches
+pass 2 (location + score): 216 accepted
+ambiguous (accepted rows disagree by > 0.05 ft): 1078 crossings set to no value
+NY export vs public layer where both hold a value: 7886 crossings, equal 0.994
+pass 3 (older NY export): 7108 crossings filled
+
+share of Plunkett crossings with an outlet-drop value, by state:
+        size    sum   mean
+state                     
+CT      4174   1751  0.420
+DE        40     39  0.975
+MA      7774   1093  0.141
+MD      2312   1403  0.607
+ME      2678   2251  0.841
+NH       549     18  0.033
+NJ      2092    524  0.250
+NY     23685  18132  0.766
+PA      9361   4296  0.459
+RI       423     18  0.043
+VA      1857   1257  0.677
+VT       202     28  0.139
+WV      1378    330  0.239
+
+TOTAL 31140 of 56525 (0.551)
+match distance (m) median 0.95, p95 1.01; score diff median 0.0000

@@ -1,8 +1,7 @@
-"""Feature-group ablations on Plunkett's own predictors (development set only, HUC8-group CV).
+"""Remove groups of Plunkett's own predictors to see which ones carry the signal (development set only, HUC8 group CV).
 
-Answers Plunkett's question: does catchment area (d8accum) matter, and is it a proxy for
-'bridge?' - plus which other predictor groups carry the signal. LightGBM, fixed settings
-(no tuning on this script), 3 differently-seeded HUC8 group assignments.
+It answers Plunkett's question about whether catchment area (d8accum) matters and whether it is only a stand-in for "is this a
+bridge". It uses LightGBM with fixed settings and 3 different assignments of watersheds to folds.
 """
 import json, sys, time
 import lightgbm as lgb

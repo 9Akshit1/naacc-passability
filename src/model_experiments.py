@@ -1,32 +1,20 @@
-"""Run the modelling experiments and write results/ + reports/03_model_comparison.md.
+"""Run the New York modelling experiments. The results go to results/ and a summary to results/ny_summaries/model_comparison.md.
 
-All on the NY inland subset (see METHODOLOGY.md for scope). Experiments:
+All experiments use the New York subset built by build_subset.py.
 
-* E0  baselines + model ladder, random k-fold vs HUC8 group k-fold, REPEATED
-      (N_REPEATS different random watershed-to-fold assignments, mean +/- std
-      reported - not a single split's number; see 2026-09-22 note below)
-* E1  catchment-area only (RF on drainage area) - how far does the "big stream
-      -> bridge -> passable" heuristic get you?
-* E2  full model with catchment removed
-* E3  residual model: f_catchment(x) + f_environment(residual)
-* E4  permutation importance (spatial CV)
-* E5  conformal prediction intervals (group-aware calibration)
-* E6  calibration + predict-toward-the-mean check vs the DSL-reported pathology
-* E7  prioritisation: does the environment model reorder the "worst crossings"?
-* E8  leave-one-HUC8-out: per-watershed breakdown of the full model
+    E0  model ladder, comparing random k-fold with HUC8 group k-fold repeated with N_REPEATS different assignments of
+        watersheds to folds, reported as mean and standard deviation
+    E1  random forest on drainage area alone
+    E2  full model with drainage area removed
+    E3  residual model: a drainage-area model plus a model of what is left over
+    E4  permutation importance
+    E5  conformal prediction intervals
+    E6  calibration, and how far predictions are pulled toward the mean
+    E7  whether the model changes which crossings rank as worst
+    E8  leave-one-HUC8-out scores for each watershed
 
-2026-09-22: two methodology fixes, both aimed at "is the headline number
-trustworthy," not at the predictors themselves.
-1. Repeated spatial CV (E0) - previously a SINGLE ``GroupKFold`` split (worse:
-   sklearn's ``GroupKFold`` in this project's sklearn version has no
-   ``random_state`` at all, so every "re-run" was silently the exact same
-   split). Given how much the headline R2 swung run to run across this
-   project's history on genuinely different data, one split was never enough
-   to trust on its own.
-2. Hyperparameter tuning (``models.py::tune_hyperparameters``) - every tree/
-   boosting model previously ran on hand-picked defaults; there was no
-   ``GridSearchCV``/``RandomizedSearchCV`` anywhere in this codebase before
-   this date.
+The E0 comparison repeats the watershed split because a single split is too noisy to trust. Model settings are tuned with
+models.tune_hyperparameters.
 """
 
 from __future__ import annotations
@@ -48,10 +36,10 @@ SUBSET = Path("data/processed/subset_predictors.parquet")
 RESULTS = Path("results")
 TABLES = RESULTS / "tables"
 FIG = RESULTS / "figures"
-REP = Path("reports")
+REP = Path("results/ny_summaries")
 TARGET = "passability"
 SEED = 20260910
-TUNING_SEED = SEED + 10_000  # deliberately different from the reporting splits' seeds
+TUNING_SEED = SEED + 10_000  # different from the seeds of the reporting splits
 N_REPEATS = 5                # independent spatial-CV splits averaged for the headline E0 number
 DSL_BASELINE_R2 = 0.31  # Plunkett et al. 2022, OOB R2 of the DSL GIS model
 
@@ -100,12 +88,9 @@ def run() -> dict:
                  "huc8_counts": df["huc8_name"].value_counts().to_dict(),
                  "target_mean": float(df[TARGET].mean()), "target_sd": float(df[TARGET].std())}
 
-    # One search pass per tunable model, scored under its own HUC8-group CV
-    # (seeded independently of the reporting splits below). A wider search
-    # (n_iter 40, inner_splits 5) was tried and discarded: it stabilized which
-    # model wins the secondary leave-one-HUC8-out diagnostic but didn't move
-    # the actual deployed ensemble's accuracy, at ~5x the runtime. See
-    # METHODOLOGY.md for the numbers.
+    # One search per tunable model, scored with its own HUC8 group CV (seeded separately from the reporting splits below).
+    # A wider search (n_iter 40, inner_splits 5) was tried and dropped. It made the winner of the leave-one-HUC8-out check
+    # more stable but did not change the accuracy of the ensemble in use, and it took about 5 times as long.
     print("tuning hyperparameters...", flush=True)
     tuned_params = tune_hyperparameters(df, seed=TUNING_SEED, n_iter=15, inner_splits=4)
     out["tuned_hyperparameters"] = tuned_params
@@ -114,7 +99,7 @@ def run() -> dict:
     def models_(numeric=None, categorical=None, seed=SEED):
         return make_models(numeric=numeric, categorical=categorical, seed=seed, tuned_params=tuned_params)
 
-    # ---- E0: model ladder, random vs spatial, REPEATED --------------
+    # E0: model ladder, random vs spatial, REPEATED
     ladder = {}
     for kind in ("random", "spatial"):
         for name, model in models_().items():
@@ -124,18 +109,12 @@ def run() -> dict:
     ladder_df.to_csv(TABLES / "e0_model_ladder.csv")
     out["e0_model_ladder"] = ladder_df.round(4).to_dict("index")
 
-    # voting_ensemble (2026-09-27) is included in the E0 ladder above - that's
-    # only N_REPEATS=5 fits, cheap - but is deliberately EXCLUDED from the
-    # model used for E1-E8 below. Those loops refit the model 1500+ times
-    # (E4: 44 features x 5 repeats x 7 folds; E8: 44 watersheds), and each
-    # ensemble fit spawns 4 sub-models that each already request n_jobs=-1 -
-    # a live test confirmed this combination hangs for 15+ hours on this
-    # Windows machine (joblib/loky repeatedly tearing down and respawning
-    # process pools - "leaked folder objects"/memmapping FileNotFoundErrors
-    # in the log, not a clean finish) before eventually crashing from
-    # resource exhaustion, never reaching E8. best_spatial (used below) is
-    # the best NON-ensemble model instead - a documented compute/feasibility
-    # tradeoff, not a claim the ensemble's diagnostics aren't worth having.
+    # The voting ensemble is in the E0 ladder above, which is only N_REPEATS = 5 fits, but it is left out of the model used
+    # for E1 to E8 below. Those loops refit the model more than 1500 times (E4: 44 features x 5 repeats x 7 folds, E8: 44
+    # watersheds), and each ensemble fit starts 4 sub-models that each already ask for n_jobs=-1. On this Windows machine
+    # that combination ran for over 15 hours, with joblib repeatedly tearing down and respawning process pools, and then
+    # crashed from resource exhaustion before reaching E8. best_spatial (used below) is the best model that is not the
+    # ensemble. This was a choice about compute, and does not mean the ensemble diagnostics are not worth having.
     best_ladder_model = min(
         [n for (k, n) in ladder if k == "spatial" and n not in ("mean",)],
         key=lambda n: ladder[("spatial", n)]["mae"])
@@ -145,12 +124,12 @@ def run() -> dict:
         key=lambda n: ladder[("spatial", n)]["mae"])
     out["best_spatial_model"] = best_spatial  # used for E1-E8 below (feasibility, see note above)
 
-    # ---- E1: catchment-only ---------------------------------------
+    # E1: catchment-only
     splits_sp = _splits(df, "spatial")
     oof_catch = cv_predict(catchment_only_model(SEED), df, list(splits_sp), TARGET)
     out["e1_catchment_only_spatial"] = regression_metrics(df[TARGET], oof_catch)
 
-    # ---- E2: full model minus catchment --------------------------
+    # E2: full model minus catchment
     from .models import NUMERIC_FEATURES_DEFAULT
     no_catch_numeric = [c for c in NUMERIC_FEATURES_DEFAULT
                         if c not in ("drainage_area_km2", "log_drainage_area", "basin_span_km")]
@@ -158,7 +137,7 @@ def run() -> dict:
     oof_no_catch = cv_predict(clone(m_no_catch), df, list(splits_sp), TARGET)
     out["e2_no_catchment_spatial"] = regression_metrics(df[TARGET], oof_no_catch)
 
-    # ---- E3: residual model -------------------------------------
+    # E3: residual model
     resid = df[TARGET] - oof_catch
     df_r = df.assign(_resid=resid)
     m_env = models_(numeric=no_catch_numeric)[best_spatial]
@@ -170,10 +149,10 @@ def run() -> dict:
     oof_full = cv_predict(clone(full_model), df, list(splits_sp), TARGET)
     out["e0_full_best_spatial"] = regression_metrics(df[TARGET], oof_full)
 
-    # ---- E4: permutation importance (spatial) -------------------
+    # E4: permutation importance (spatial)
     out["e4_perm_importance"] = _perm_importance(clone(full_model), df, list(splits_sp), n_repeat=5)
 
-    # ---- E8: leave-one-HUC8-out per-watershed breakdown ------------
+    # E8: leave-one-HUC8-out per-watershed breakdown
     print("E8: leave-one-HUC8-out...", flush=True)
     e8 = {}
     for huc, tr, te in leave_one_huc8_out(df, "huc8_name", min_test=40):
@@ -184,7 +163,7 @@ def run() -> dict:
     out["e8_leave_one_huc8_out"] = e8
     pd.DataFrame(e8).T.to_csv(TABLES / "e8_leave_one_huc8_out.csv")
 
-    # ---- E5: conformal intervals -------------------------------
+    # E5: conformal intervals
     # Pick a well-sized watershed (same >=40-crossing threshold as E8) so the
     # held-out test set is large enough for coverage to be a meaningful
     # number, rather than blindly the alphabetically-last of 55 watersheds
@@ -202,7 +181,7 @@ def run() -> dict:
                            **evaluate_coverage(iv, df[TARGET])}
     iv.join(df[[TARGET, "huc8_name"]]).to_csv(TABLES / "e5_conformal_intervals.csv")
 
-    # ---- E6: calibration + toward-the-mean ---------------------
+    # E6: calibration + toward-the-mean
     cal = calibration_table(df[TARGET], oof_full)
     cal.to_csv(TABLES / "e6_calibration.csv", index=False)
     out["e6_calibration_max_gap"] = float(cal["gap"].abs().max())
@@ -210,7 +189,7 @@ def run() -> dict:
     out["e6_note"] = ("pred_sd_ratio < 1 reproduces the DSL-reported pathology "
                       "(model predicts toward the mean, missing extremes).")
 
-    # ---- E7: prioritisation reordering ------------------------
+    # E7: prioritisation reordering
     out["e7_catchment_vs_full_priority"] = prioritization_overlap(oof_catch, oof_full, 0.2)
     out["e7_full_vs_nocatch_priority"] = prioritization_overlap(oof_full, oof_no_catch, 0.2)
 
@@ -275,15 +254,16 @@ def _write_report(o: dict):
              f"Target mean {o['target_mean']:.3f}, sd {o['target_sd']:.3f}.\n")
     L.append("> Scope: a prototype-scale reproduction of the *structure* of the DSL / Plunkett "
              "GIS-prediction approach with a reduced predictor set. Not the full DSL feature "
-             "engineering. See `reports/METHODOLOGY.md`.\n")
+             "engineering.\n")
     L.append(f"DSL-reported baseline (full feature set, 13-state, OOB): **R2 = {DSL_BASELINE_R2}**, "
              "and it \"generally doesn't predict the more extreme values\".\n")
 
     L.append("## Hyperparameter tuning\n")
     L.append("One `RandomizedSearchCV` pass per tunable model (RF/ExtraTrees/HistGBM/XGBoost), "
              "scored by negative MAE under its own HUC8-group CV split (seeded independently of "
-             "every split below). Not nested inside each individual reporting fold - see "
-             "`models.py::tune_hyperparameters` for the honesty note on rigor vs. compute cost.\n")
+             "every split below). It is not nested inside each reporting fold, because that would "
+             "multiply the cost by the number of repeats and folds (see "
+             "`models.py::tune_hyperparameters`).\n")
     for name, params in o.get("tuned_hyperparameters", {}).items():
         L.append(f"- **{name}**: `{params}`")
     L.append("")
@@ -353,7 +333,7 @@ def _write_report(o: dict):
         L.append(f"![{fn}](../results/figures/{fn})\n")
 
     REP.mkdir(parents=True, exist_ok=True)
-    (REP / "03_model_comparison.md").write_text("\n".join(L), encoding="utf-8")
+    (REP / "model_comparison.md").write_text("\n".join(L), encoding="utf-8")
 
 
 if __name__ == "__main__":

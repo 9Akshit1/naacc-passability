@@ -1,20 +1,16 @@
-"""Cross-validation protocol for the multi-state (Plunkett) dataset.
+"""How the multi-state data is split for testing.
 
-Rules fixed BEFORE any model was fit on this dataset (2026-10-08):
-
-1. Locked test set - ~15% of crossings, chosen as whole HUC6 basins (seeded,
-   state-diverse), are set aside. They are never used for fitting, feature
-   selection, hyper-parameter tuning, or model choice. They are scored once,
-   at the very end, for the final configuration and the baselines.
-2. Development set = everything else. All comparisons use grouped CV on it:
-   * ``huc8``  - hold out whole HUC8 watersheds (the standard used since 2026-09)
-   * ``huc6``  - hold out whole HUC6 basins (bigger blocks => less spatial leakage)
-   * ``state`` - leave-one-state-out (the "does it transfer to a new state?" test
-     that Plunkett flagged as the thing that degraded in the past)
-   * ``random`` - ordinary k-fold, reported only to show the optimism gap
-3. Hyper-parameters are tuned only on the development set, inside grouped CV.
-4. Reported numbers are pooled out-of-fold R2/MAE, and mean +/- sd over
-   repeated, differently-seeded group assignments (never a single split).
+1. About 15% of the crossings, chosen as whole HUC6 basins (picked with a fixed seed so that several states are included), are
+   set aside as the test set. The code calls this the locked set. It is not used for fitting, choosing inputs, tuning or
+   choosing a model, and it is scored once at the end for the final models and the baselines.
+2. Everything else is the development set, and every comparison on it uses grouped cross-validation:
+   - huc8: hold out whole HUC8 watersheds
+   - huc6: hold out whole HUC6 basins, which are larger blocks and so leak less between neighbours
+   - state: hold out one state at a time, to see whether a model carries over to a new state
+   - random: ordinary k-fold, shown only to measure how much a random split flatters a model
+3. Hyperparameters are tuned on the development set only, inside grouped cross-validation.
+4. Reported numbers are pooled out-of-fold R2 and MAE, and the mean and standard deviation over several splits made with
+   different seeds, and never the result of one split.
 """
 from __future__ import annotations
 
@@ -25,12 +21,12 @@ from sklearn.model_selection import KFold
 
 
 def random_group_kfold(df: pd.DataFrame, group_col: str, n_splits: int = 5, seed: int = 0):
-    """Whole groups held out; the group-to-fold assignment genuinely depends on ``seed``.
+    """Whole groups are held out, and the assignment of groups to folds depends on ``seed``.
 
-    Groups are visited in a seeded RANDOM order and each goes to the currently lightest fold
-    (ties broken at random). The older ``spatial_cv.huc8_group_kfold`` sorts groups by size after
-    shuffling, so for unique group sizes every seed gave the same split (found 2026-10-08: seeds
-    0-4 agreed on 95-100% of rows) - repeated runs with it do NOT measure split-to-split variance.
+    Groups are visited in a random order set by the seed, and each goes to the fold that is currently lightest (ties are
+    broken at random). The older ``spatial_cv.huc8_group_kfold`` sorts groups by size after shuffling, so when the group
+    sizes are all different every seed gave the same split (seeds 0 to 4 agreed on 95 to 100% of rows). Repeated runs
+    with it therefore do not measure the variation between splits.
     """
     groups = df[group_col].astype(str).values
     uniq = np.unique(groups)

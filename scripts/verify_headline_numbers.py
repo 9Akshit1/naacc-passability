@@ -1,12 +1,12 @@
-"""Re-derive the headline numbers from the raw data and the saved locked-test predictions.
+"""Recompute the headline numbers from the raw data and the saved test-basin predictions.
 
-Nothing here reuses the modelling or evaluation code, so a bug in that code cannot also hide here.
-It needs Plunkett's file (see README) and the feature table from src/plunkett_features.py.
+Nothing here uses the modelling or evaluation code, so a bug in that code cannot also hide here. It needs Plunkett's file (see the
+README) and the feature table from src/plunkett_features.py.
 
-    python -m scripts.verify_headline_numbers          # about 2 minutes; refits the random-forest baseline
-    python -m scripts.verify_headline_numbers --quick  # skip the refit
+    python -m scripts.verify_headline_numbers          # about 2 minutes, and refits the random forest baseline
+    python -m scripts.verify_headline_numbers --quick  # skips the refit
 
-Prints PASS or FAIL per check and exits with status 1 if any check fails.
+It prints PASS or FAIL for each check and exits with status 1 if any check fails.
 """
 import glob
 import json

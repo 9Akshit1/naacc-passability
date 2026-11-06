@@ -1,0 +1,8 @@
+kept Plunkett columns: ['adt', 'class', 'income']
+all rows: T3 reference                                  R2=0.3252 (sd 0.0022) [452s]
+all rows: no DSL rasters, public data instead           R2=0.2765 (sd 0.0004) [459s]
+all rows: T3 + public data (T4)                         R2=0.3352 (sd 0.0018) [611s]
+within 50 m: T3 reference                               R2=0.3285 (sd 0.0011) [83s]
+within 50 m: no DSL rasters, public data instead        R2=0.3062 (sd 0.0003) [186s]
+within 50 m: T3 + public data (T4)                      R2=0.3437 (sd 0.0005) [245s]
+done

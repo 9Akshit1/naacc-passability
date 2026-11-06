@@ -1,6 +1,8 @@
-"""Paired cluster-bootstrap (by HUC8) comparison of ALL locked-set predictions already produced.
-The random-forest baseline is refit with its original fixed seed/params (deterministic) because its
-predictions were not saved; no new model, tier or choice is introduced here."""
+"""Paired bootstrap comparison, resampling HUC8 watersheds, of all the test-basin predictions that already exist.
+
+The random forest baseline is fitted again with its original fixed seed and settings, which gives the same result, because its
+predictions were not saved. No new model or choice is added here.
+"""
 import json
 import numpy as np, pandas as pd
 from sklearn.ensemble import RandomForestRegressor

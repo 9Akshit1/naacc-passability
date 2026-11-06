@@ -1,7 +1,7 @@
 """Where do Plunkett's scores differ from the public NAACC layer for the same survey?
 
-The public layer (scripts/download_naacc_public_layer.py) has one row per structure, so a survey with several
-structures appears several times; its rows agree on the score, so they are reduced to one per survey id first.
+The public layer (scripts/download_naacc_public_layer.py) has one row for each structure, so a survey with several structures
+appears several times. Its rows agree on the score, so they are reduced to one per survey id first.
 
     python -m scripts.download_naacc_public_layer      # first, if data/raw/naacc_public_layer.parquet is missing
     python -m scripts.plunkett_public_layer_diff

@@ -1,8 +1,6 @@
-"""Integrity tests for the multi-state (Plunkett) pipeline.
-
-These guard the properties the reported numbers depend on: no survey-field leakage into
-predictors, group-clean cross-validation, a fixed disjoint locked test set, label-free
-NBI matching, and neighbour features that cannot see their own row or watershed.
+"""Tests for the multi-state pipeline. They protect what the reported numbers rely on: no survey field is used as a predictor,
+the cross-validation folds keep groups apart, the test set is fixed and separate, the bridge match does not use scores, and the
+neighbour features cannot see their own row or watershed.
 """
 import numpy as np
 import pandas as pd
@@ -120,7 +118,7 @@ def test_osm_feature_columns_have_no_distances_or_state():
 
 @needs_data
 def test_group_splitter_seeds_give_different_splits():
-    """Regression test for the 2026-10-08 bug: the older splitter returned (almost) the same split for every seed."""
+    """The older splitter returned (almost) the same split for every seed."""
     d = pdm.load(); dev = d[~cv.locked_test_mask(d)]
     def folds(seed):
         f = pd.Series(-1, index=dev.index)

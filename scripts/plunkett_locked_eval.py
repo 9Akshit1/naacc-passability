@@ -1,11 +1,13 @@
-"""ONE-TIME evaluation on the locked test set (whole HUC6 basins never used for anything).
+"""Score models on the set-aside test basins, once each.
 
-    python -m scripts.plunkett_locked_eval T1 T2          # tiers to score now
-A tier that already has an entry in results/plunkett/locked_results.json is REFUSED (so the
-locked set cannot be iterated against). Final recipe = src/plunkett_final.FinalEnsemble.
-Also scores, for reference, a Plunkett-style random forest on his predictors.
-Uncertainty: 90% intervals = prediction +- the 90th percentile of |dev out-of-fold residual|
-(HUC8-group CV OOF, so the width reflects spatial transfer), global and by prediction quintile.
+    python -m scripts.plunkett_locked_eval T1 T2          # the feature sets to score now
+
+A feature set that already has an entry in results/plunkett/locked_results.json is refused, so the test basins cannot be
+used to tune a model. The model is src/plunkett_final.FinalEnsemble. For reference it also scores a random forest in Plunkett's
+style on his predictors.
+
+The 90% intervals are the prediction plus or minus the 90th percentile of the absolute out-of-fold error on the development set
+(from HUC8 group CV, so the width reflects transfer to new watersheds), overall and for each fifth of the predictions.
 """
 import json, os, sys
 import numpy as np, pandas as pd

@@ -1,0 +1,10 @@
+seed 0 done (52s)
+seed 1 done (55s)
+seed 2 done (52s)
+                                             share_positive    auc     ap  caught_top10  caught_top20
+cut         model                                                                                    
+bad (<0.8)  classifier trained on the label           0.625  0.827  0.863         0.148         0.289
+            regression, ranked                        0.625  0.815  0.852         0.146         0.285
+poor (<0.5) classifier trained on the label           0.272  0.770  0.528         0.232         0.411
+            regression, ranked                        0.272  0.768  0.528         0.233         0.412
+done

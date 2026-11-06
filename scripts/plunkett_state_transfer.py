@@ -1,10 +1,11 @@
-"""Does a multi-state model degrade vs single-state models? (Plunkett's past experience.)
+"""Does a multi-state model do worse than single-state models? This is a question from Plunkett's earlier experience.
 
-For each state S (>=1000 development crossings) we score, on S's crossings only:
-  pooled     - trained on all states; S's watersheds held out (HUC8-group CV over everything)
-  state-only - trained only on S; S's watersheds held out (HUC8-group CV within S)
-  unseen     - trained on every OTHER state, S never seen (leave-one-state-out)
-Same features, same fixed LightGBM settings, development set only, 2 seeds."""
+For each state S with at least 1,000 development crossings, the score is measured on S's crossings only, for three models:
+  pooled      trained on all states, with S's watersheds held out (HUC8 group CV over everything)
+  state-only  trained on S alone, with S's watersheds held out (HUC8 group CV within S)
+  unseen      trained on every other state, never seeing S (leave-one-state-out)
+The features and the fixed LightGBM settings are the same in all three. Only the development set and 2 seeds are used.
+"""
 import json
 import numpy as np, pandas as pd, lightgbm as lgb
 from src import plunkett_cv as cv, plunkett_features as pf

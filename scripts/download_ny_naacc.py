@@ -1,4 +1,5 @@
-"""Re-download the NY NAACC survey layer from the NYS DEC ArcGIS FeatureServer."""
+"""Download the New York NAACC survey layer again from the NYS DEC ArcGIS service.
+"""
 import csv, json, time, pathlib, requests
 requests.packages.urllib3.disable_warnings()
 BASE = ("https://services6.arcgis.com/DZHaqZm9cxOD4CWM/arcgis/rest/services/"

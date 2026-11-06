@@ -1,20 +1,16 @@
-"""FHWA National Bridge Inventory (NBI, 2025 delimited files) -> per-crossing features.
+"""Join the FHWA National Bridge Inventory (NBI, 2025 delimited files) to crossings.
 
-Why NBI rather than a state DOT layer: it is ONE federally-defined dataset with the
-same fields and coding in every state, so using it does not inject a state-specific
-data source (the concern Ethan Plunkett raised about the NYSDOT layer). It covers
-every public-road bridge and every culvert/bridge-like structure longer than 6.1 m
-(20 ft) along the road. Crossings with no NBI structure within the match radius get
-``nbi_matched = 0`` and missing values - for those the model is effectively told
-"not a large public-road structure", which is a nationally consistent statement.
+The NBI is one federal dataset with the same fields and coding in every state, so using it does not bring in a state-specific
+source, which was Ethan Plunkett's concern about the New York DOT layer. It lists every public-road bridge and every culvert
+longer than 6.1 m (20 ft) on a road. A crossing with no structure within the match radius gets nbi_matched = 0 and missing
+values, which tells the model that it is probably not a large public-road structure.
 
-NBI fields are public inventory data - available for UNSURVEYED crossings - so they
-are legitimate deployment-time predictors (unlike the NAACC survey fields).
+NBI fields exist for crossings nobody has surveyed, so they can be used as inputs when the model is applied for real. The NAACC
+survey fields cannot.
 
-Match rule (label-free, fixed before modelling): structures with waterway service
-under (item 42B in {5,6,7,8,9}); mutual nearest neighbour between crossing and
-structure within ``radius_m``; the radius is chosen from the distance distribution
-(see ``match_diagnostics``), never from model performance.
+Matching rule: keep structures whose item 42B (what runs under the structure) is 5, 6, 7, 8 or 9, which means a waterway.
+A crossing and a structure are matched when each is the other's nearest neighbour and they are within radius_m. The radius
+was chosen from the distribution of match distances (see match_diagnostics) and not from model scores.
 """
 from __future__ import annotations
 

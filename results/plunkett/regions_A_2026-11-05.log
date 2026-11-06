@@ -1,0 +1,37 @@
+dev rows 47530, inputs: t3 71, no-DSL 175
+PART A: map-only leave-one-state-out, all development rows 47530
+
+no DSL rasters (portable)  (175 inputs)
+  [no] CT n= 4174 (regional from ['MA', 'RI', 'NH', 'VT'])  pooled 0.213  regional 0.220  ensemble 0.221  simweight 0.180  [56s]
+  [no] MA n= 7774 (regional from ['NH', 'RI', 'CT', 'VT'])  pooled 0.254  regional 0.229  ensemble 0.246  simweight 0.246  [54s]
+  [no] MD n= 1067 (regional from ['WV', 'PA', 'VA', 'NJ'])  pooled 0.334  regional 0.309  ensemble 0.326  simweight 0.327  [56s]
+  [no] ME n= 2678 (regional from ['NH', 'VT', 'MA', 'RI'])  pooled 0.194  regional 0.188  ensemble 0.195  simweight 0.182  [53s]
+  [no] NH n=  549 (regional from ['VT', 'MA', 'RI', 'CT'])  pooled 0.084  regional 0.113  ensemble 0.101  simweight 0.077  [50s]
+  [no] NJ n= 1964 (regional from ['CT', 'NY', 'PA', 'RI'])  pooled 0.123  regional 0.127  ensemble 0.127  simweight 0.107  [51s]
+  [no] NY n=21317 (regional from ['VT', 'CT', 'NH', 'MA'])  pooled 0.260  regional 0.246  ensemble 0.258  simweight 0.241  [46s]
+  [no] PA n= 5622 (regional from ['MD', 'NJ', 'WV', 'NY'])  pooled 0.289  regional 0.283  ensemble 0.288  simweight 0.272  [52s]
+  [no] RI n=  423 (regional from ['MA', 'CT', 'NH', 'VT'])  pooled 0.178  regional 0.150  ensemble 0.167  simweight 0.178  [70s]
+  [no] VA n=  413 (regional from ['WV', 'MD', 'PA', 'NJ'])  pooled 0.183  regional 0.158  ensemble 0.174  simweight 0.181  [70s]
+  [no] VT n=  202 (regional from ['NH', 'MA', 'NY', 'CT'])  pooled 0.357  regional 0.347  ensemble 0.352  simweight 0.335  [56s]
+  [no] WV n= 1347 (regional from ['VA', 'MD', 'PA', 'NJ'])  pooled 0.340  regional 0.323  ensemble 0.334  simweight 0.330  [32s]
+  [no] ALL held-out rows pooled together: pooled 0.2648  regional 0.2527  ensemble 0.2627  simweight 0.2477
+  [no] mean over states with n>=300 (11 states): pooled 0.2229  regional 0.2133  ensemble 0.2216  simweight 0.2108
+  [no] state wins vs pooled (n>=300): regional 3/11  ensemble 4/11  simweight 1/11
+
+with DSL rasters  (71 inputs)
+  [with] CT n= 4174 (regional from ['MA', 'RI', 'NH', 'VT'])  pooled 0.292  regional 0.285  ensemble 0.293  simweight 0.290  [13s]
+  [with] MA n= 7774 (regional from ['NH', 'RI', 'CT', 'VT'])  pooled 0.316  regional 0.296  ensemble 0.313  simweight 0.313  [16s]
+  [with] MD n= 1067 (regional from ['WV', 'PA', 'VA', 'NJ'])  pooled 0.353  regional 0.349  ensemble 0.365  simweight 0.353  [17s]
+  [with] ME n= 2678 (regional from ['NH', 'VT', 'MA', 'RI'])  pooled 0.270  regional 0.230  ensemble 0.258  simweight 0.272  [14s]
+  [with] NH n=  549 (regional from ['VT', 'MA', 'RI', 'CT'])  pooled 0.043  regional 0.081  ensemble 0.067  simweight 0.045  [14s]
+  [with] NJ n= 1964 (regional from ['CT', 'NY', 'PA', 'RI'])  pooled 0.126  regional 0.110  ensemble 0.121  simweight 0.112  [16s]
+  [with] NY n=21317 (regional from ['VT', 'CT', 'NH', 'MA'])  pooled 0.307  regional 0.287  ensemble 0.301  simweight 0.287  [15s]
+  [with] PA n= 5622 (regional from ['MD', 'NJ', 'WV', 'NY'])  pooled 0.312  regional 0.299  ensemble 0.307  simweight 0.304  [15s]
+  [with] RI n=  423 (regional from ['MA', 'CT', 'NH', 'VT'])  pooled 0.248  regional 0.228  ensemble 0.243  simweight 0.249  [13s]
+  [with] VA n=  413 (regional from ['WV', 'MD', 'PA', 'NJ'])  pooled 0.160  regional 0.152  ensemble 0.162  simweight 0.150  [14s]
+  [with] VT n=  202 (regional from ['NH', 'MA', 'NY', 'CT'])  pooled 0.411  regional 0.396  ensemble 0.406  simweight 0.413  [15s]
+  [with] WV n= 1347 (regional from ['VA', 'MD', 'PA', 'NJ'])  pooled 0.342  regional 0.370  ensemble 0.360  simweight 0.327  [13s]
+  [with] ALL held-out rows pooled together: pooled 0.3097  regional 0.2933  ensemble 0.3060  simweight 0.2974
+  [with] mean over states with n>=300 (11 states): pooled 0.2519  regional 0.2442  ensemble 0.2536  simweight 0.2455
+  [with] state wins vs pooled (n>=300): regional 2/11  ensemble 5/11  simweight 4/11
+done

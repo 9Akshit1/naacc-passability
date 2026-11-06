@@ -1,9 +1,9 @@
-"""Plunkett's question: if the earlier NY-only pipeline used d8accum for catchment area, does it improve?
+"""Plunkett's question: if the earlier New York pipeline had used d8accum for catchment area, would it improve?
 
-Same crossings (NY surveys present in both datasets), same old feature set and model
-(project HistGradientBoosting pipeline), same HUC8-group folds/seeds. Only the catchment
-columns differ.  A = old NLDI area | B = d8accum-based area (30 m cells -> km2) | C = both.
-No locked-set rows are used (development-set crossings only)."""
+It uses the same crossings (New York surveys that are in both datasets), the same old features and model (the project's
+HistGradientBoosting pipeline) and the same HUC8 group folds and seeds. Only the catchment columns change: A is the old NLDI area,
+B is the area from d8accum (30 m cells converted to km2), and C is both. Only development crossings are used.
+"""
 import numpy as np, pandas as pd
 from src import models as M, plunkett_cv as cv, plunkett_data as pdm
 d = pdm.load(); lock = cv.locked_test_mask(d)

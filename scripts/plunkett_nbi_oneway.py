@@ -1,7 +1,8 @@
-"""Does the mutual-nearest rule matter? Same model, NBI joined two ways (development set only).
+"""Does it matter whether the bridge match has to be mutual? The same model is run with the bridge inventory joined two ways
+(development set only).
 
-In deployment the candidate crossings are every crossing on the network, not just surveyed ones, so the mutual
-test (which depends on which other crossings exist) behaves differently there. The one-way rule does not.
+When the model is applied, the candidate crossings are every crossing on the network and not only the surveyed ones, so the
+mutual test, which depends on which other crossings exist, behaves differently. The one-way rule does not.
 
     python -m scripts.plunkett_nbi_oneway
 """

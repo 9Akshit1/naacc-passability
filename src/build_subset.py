@@ -1,39 +1,13 @@
-"""Select a spatial modelling subset and fetch its GIS predictors.
+"""Choose a sample of New York watersheds and fetch the map-based predictors for their crossings.
 
-Scope note (see reports/METHODOLOGY.md): reproducing the full DSL / Plunkett GIS
-feature set requires regional raster processing that is out of scope here. This
-fetches a reduced predictor set from public web services (USGS NLDI drainage
-basin, USGS 3DEP elevation, US Census county income + population density, road
-class from OpenStreetMap, EPA StreamCat upstream-watershed metrics, NHDPlusV2
-stream slope/order) for a sample of NY HUC8 watersheds.
+The predictors come from public web services (see gis_predictors.py) and not from the regional raster processing that
+DSL used. The sample uses all 55 HUC8 watersheds in New York, with at most PER_HUC8 crossings from each so that no single
+watershed (Middle Hudson alone has 5,215 of the 28,141 crossings) dominates the folds. With PER_HUC8 = 1000 the subset has
+21,111 crossings and no watershed is more than about 4.7% of it.
 
-Run: ``python -m src.build_subset``  (resumable; writes
-``data/processed/subset_predictors.parquet``)
+    python -m src.build_subset
 
-**2026-09-22: scaled to all 55 HUC8 watersheds** (previously a hand-picked 16,
-excluding coastal/Great-Lakes-mouth ones over NLDI snap-error concerns). Two
-things changed that make the full set now the better default:
-1. The StreamCat watershed-area backfill (gis_predictors.py::
-   fetch_streamcat_batch) now recovers rows where NLDI's basin-polygon fetch
-   snaps badly, instead of just losing them - the concrete failure mode the
-   coastal exclusion was hedging against.
-2. Every prior scaling step (7->16 watersheds) improved the spatial-CV result;
-   there was no sign of diminishing returns yet, so leaving 39 more
-   watersheds on the table was the more likely-costly choice.
-``PER_HUC8`` still caps the largest watersheds (Middle Hudson alone has 5,215
-of the dataset's 28,141 crossings) so no single one dominates every spatial
-fold; smaller watersheds just contribute all they have.
-
-**2026-09-23: raised ``PER_HUC8`` 300 -> 1000** (11,489 -> 21,111 crossings;
-computed directly from the full dataset's per-watershed counts, not a guess).
-Uncapping entirely would let Middle Hudson alone be ~18.5% of the whole
-dataset; 1000 keeps any single watershed under ~4.7% while still letting the
-~30 watersheds with >300 crossings contribute meaningfully more than before.
-Also added two new predictors (``do_aadt``, ``do_terrain``) - see
-``gis_predictors.py`` module docstring for the NYSDOT AADT traffic layer and
-USGS 3DEP bulk multi-scale terrain sampling, both added the same day to fill
-the two predictor gaps this project's docs have listed as omitted since the
-start.
+The run can be stopped and restarted. It writes data/processed/subset_predictors.parquet.
 """
 
 from __future__ import annotations
@@ -71,21 +45,10 @@ def main(limit: int | None = None) -> None:
     print(f"subset: {len(sub)} crossings across {sub['huc8_name'].nunique()} HUC8 watersheds")
     print(sub.groupby("huc8_name").size().to_string())
 
-    # road_class_mode="bulk": a local OSM spatial index (built once from a NY
-    # extract, see gis_predictors.py) instead of one rate-limited Overpass
-    # call per crossing - infeasible at this scale (28k rows * ~2s/row would
-    # be ~16h). sleep=0.1 only paces the still-per-row NLDI/EPQS calls.
-    # do_aadt/do_terrain (2026-09-23): NYSDOT traffic + USGS 3DEP bulk terrain
-    # sampling, both vectorized/batched like road_class_mode="bulk" - no new
-    # per-row rate limit added.
-    # do_ecoregion/do_structures (2026-09-24): EPA ecoregion (regional-
-    # heterogeneity control) + NYSDOT bridge/large-culvert inventory (actual
-    # structure data) - see gis_predictors.py sections 9-10 for the
-    # diagnostic reasoning behind each. Both also vectorized/batched.
-    # do_constriction (2026-09-26): structure opening width vs. USGS
-    # regionalized bankfull-width curves - see gis_predictors.py section 11.
-    # do_precip (2026-09-29): NOAA Atlas 14 storm-intensity grids (distinct
-    # from StreamCat's mean-annual precip) - see gis_predictors.py section 12.
+    # road_class_mode="bulk" uses a local OpenStreetMap index built once from a New York extract (see gis_predictors.py)
+    # instead of one rate-limited Overpass call per crossing, which would take about 16 hours for 28,000 rows at 2 s each.
+    # sleep=0.1 only paces the NLDI and EPQS calls, which are still made once per row. The traffic, terrain, ecoregion,
+    # structure, constriction and precipitation options are vectorised or batched in the same way (see gis_predictors.py).
     pred = build_predictor_table(sub, do_drainage=True, do_elev=True, do_road_class=True,
                                  road_class_mode="bulk",
                                  do_streamcat=True, do_vaa=True,

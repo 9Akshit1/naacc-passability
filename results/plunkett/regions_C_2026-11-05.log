@@ -1,0 +1,31 @@
+dev rows 47530, inputs: t3 71, no-DSL 175
+
+PART C: map-only, no DSL rasters; rows 47530; states with per-state models (>=800 rows): ['NY', 'MA', 'PA', 'CT', 'ME', 'NJ', 'WV', 'MD']
+   fold done
+   fold done
+   fold done
+   fold done
+   fold done
+  overall:  pooled 0.2768  pooled+state 0.2767  per-state 0.2604  ensemble 0.2733
+  NY n=21317  pooled 0.275  pooled+state 0.276  per-state 0.271  ensemble 0.275
+  MA n= 7774  pooled 0.258  pooled+state 0.253  per-state 0.238  ensemble 0.251
+  PA n= 5622  pooled 0.301  pooled+state 0.304  per-state 0.285  ensemble 0.300
+  CT n= 4174  pooled 0.234  pooled+state 0.235  per-state 0.190  ensemble 0.222
+  ME n= 2678  pooled 0.216  pooled+state 0.210  per-state 0.184  ensemble 0.208
+  NJ n= 1964  pooled 0.140  pooled+state 0.143  per-state 0.116  ensemble 0.146
+  WV n= 1347  pooled 0.337  pooled+state 0.335  per-state 0.266  ensemble 0.312
+  MD n= 1067  pooled 0.334  pooled+state 0.330  per-state 0.264  ensemble 0.312
+
+PART C: map + perched yes/no, no DSL rasters; rows 26038; states with per-state models (>=800 rows): ['NY', 'PA', 'ME', 'CT', 'MA']
+   fold done
+   fold done
+   fold done
+   fold done
+   fold done
+  overall:  pooled 0.6979  pooled+state 0.6986  per-state 0.6498  ensemble 0.6860
+  NY n=16135  pooled 0.696  pooled+state 0.696  per-state 0.694  ensemble 0.696
+  PA n= 2981  pooled 0.700  pooled+state 0.701  per-state 0.690  ensemble 0.698
+  ME n= 2251  pooled 0.666  pooled+state 0.662  per-state 0.639  ensemble 0.657
+  CT n= 1751  pooled 0.702  pooled+state 0.703  per-state 0.183  ensemble 0.572
+  MA n= 1093  pooled 0.706  pooled+state 0.708  per-state 0.432  ensemble 0.627
+done

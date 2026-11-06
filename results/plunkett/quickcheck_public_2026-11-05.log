@@ -1,0 +1,11 @@
+NY development crossings with a perched answer: 13254, perched share 0.281
+T3 map inputs (with DSL rasters)     map only R2=0.2937 (sd 0.0018)   + perched yes/no R2=0.6895 (sd 0.0009)
+no DSL rasters, public data          map only R2=0.2288 (sd 0.0035)   + perched yes/no R2=0.6803 (sd 0.0015)
+StreamCat + NHDPlus + snap only      map only R2=0.1881 (sd 0.0026)   + perched yes/no R2=0.6676 (sd 0.0015)
+
+no DSL rasters + perched yes/no, with random answer errors (assumption):
+  error rate 0%: R2=0.6803 (sd 0.0015)
+  error rate 10%: R2=0.4883 (sd 0.0010)
+  error rate 20%: R2=0.3638 (sd 0.0032)
+  error rate 30%: R2=0.2875 (sd 0.0021)
+done

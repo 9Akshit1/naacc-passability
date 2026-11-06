@@ -1,69 +1,50 @@
 # Checks, corrections and open questions
 
-A running record of what was wrong, what was re-verified, and what is still uncertain. Dated 20 October 2026. The
-earlier audit (`05_audit_2026-10-08.md`) has the working for the first items.
+This file lists the mistakes that were found in this project and fixed, the checks that were repeated with separate code, and the questions that are still open.
 
-## Errors found and fixed
+## Mistakes that were found and fixed
 
-1. Cross-validation seeds did not change the split. The older `spatial_cv.huc8_group_kfold` shuffled groups and then
-   sorted them by size, so every seed gave nearly the same folds. The "five independent splits, sd 0.002" quoted for the
-   New York work measured nothing. The multi-state code uses `plunkett_cv.random_group_kfold`, which depends on the
-   seed (tested). The real split-to-split spread is 0.002 to 0.003. Conclusions did not change.
-2. The first catchment area (NLDI) was linked to the wrong stream reach for many crossings. Its rank correlation with
-   DSL's `d8accum` is 0.28, and against field-measured bankfull width it is 0.34 against 0.67 for `d8accum` (n = 1,840).
-   The earlier statement that catchment area is unimportant is withdrawn. The StreamCat metrics were joined through the
-   same link, so what was said about them is unreliable.
-3. The file `docs/naacc_scoring.pdf` was a web page, not the scoring document. The real document is
-   `docs/naacc_scoring_systems_2016-06-16.html`; all 13 weights and tables were checked against `src/naacc_score.py`.
-4. The old write-up called the five field-observed score components "just over half" of the weight. They are 43.8%
-   (50.7% with armoring and internal structures).
-5. The old write-up argued that R2 near 0.27 to 0.31 is a ceiling for GIS-only models because half of the score is
-   unobservable. That argument was too strong. The published score is predictable at 0.35 on the New York subset,
-   while a reconstruction from components reaches only 0.22, so GIS captures rules that the component formula does not.
-   The write-up was replaced.
-6. The scoring reconstruction said NAACC's rule for crossings with several structures is not public. It is: the
-   structure with the highest openness sets the crossing's value. The reconstruction is 35% less accurate on those
-   crossings. It is not used in the multi-state work, which takes NAACC's published score.
-7. The headline gain was written as +0.035 in earlier messages. That is the mean of the bootstrap; the difference of the
-   two locked scores is 0.320 minus 0.286 = +0.034. The interval is unchanged.
-8. The count of surveys that differ between Plunkett's file and the public layer was taken per row, and the layer has
-   one row per structure. Counted per survey the numbers are smaller (see below).
+1. The cross-validation seed did not change the splits. The first splitting function (`spatial_cv.huc8_group_kfold`) shuffled the watersheds and then sorted them by size, so every seed produced nearly the same folds. The claim for the New York version that five independent splits gave a spread of 0.002 therefore measured nothing. The multi-state code uses `plunkett_cv.random_group_kfold`, whose folds do depend on the seed, and a test checks that. The real spread between splits is 0.002 to 0.003, and no conclusion changed.
 
-## Re-verified on 20 October 2026 with separate code (`scripts/verify_headline_numbers.py`)
+2. The first drainage area was attached to the wrong stream for many crossings. It came from the USGS NLDI service, which snaps a point to the nearest stream line. Its rank correlation with DSL's `d8accum` is only 0.28, and against field-measured bankfull width it is 0.34, compared with 0.67 for `d8accum` (1,840 crossings). The earlier statement that drainage area is not important is withdrawn. The StreamCat measures had been joined through the same stream link, so what was said about them is also unreliable.
 
-- 56,525 surveys, unique crossing codes, scores between 0 and 1, and none of the 39 predictors is a survey field.
-- The locked set is the 7 recorded basins, no HUC8 lies on both sides, and the closest locked crossing to development
-  data is 319 m away.
-- The saved locked predictions reproduce R2 0.2991, 0.3154, 0.3202 and MAE 0.2046, 0.2000, 0.1988, and their targets
-  match the raw file.
-- Refitting the random-forest baseline gives 0.2862, as stored. The paired bootstrap gives +0.034 (0.026 to 0.045).
-- The NBI join rebuilt from the raw FHWA files gives the same 68,102 structures and the same 9,248 matches. The NBI
-  and OSM joins use coordinates only, never a score.
-- Calibration slope is 1.00 and the 90% interval covers 89.2%.
+3. The file `docs/naacc_scoring.pdf` was a copy of a web page and not the scoring document. The real document is `docs/naacc_scoring_systems_2016-06-16.html`. All 13 weights and tables in it were checked against `src/naacc_score.py`.
 
-## New checks this round
+4. An earlier write-up said the five score components that come from field observation make up "just over half" of the weight. They make up 43.8%, or 50.7% when armoring and internal structures are included.
 
-- Smallest useful NBI join: a matched flag takes development R2 from 0.287 to 0.307; length and span bring it to
-  0.311; all 24 fields give 0.313 (`scripts/plunkett_nbi_minimal.py`).
-- Mutual-nearest against one-way matching: 0.3126 against 0.3124 (`scripts/plunkett_nbi_oneway.py`).
-- Neighbouring survey scores inside a surveyed area: 0.340 to 0.355 under random holdout, so little to gain
-  (`scripts/plunkett_infill_mode.py`).
+5. An earlier write-up argued that an R² near 0.27 to 0.31 is a ceiling for any model that uses only map data, because about half of the score comes from things only a visit can show. That argument was too strong and was withdrawn. The published score can be predicted with an R² of 0.35 on the New York subset, while a reconstruction from its separate components reaches only 0.22, so the map data captures rules that the component formula does not.
+
+6. An earlier note said NAACC's rule for crossings with several structures is not public. It is public: the structure with the highest openness sets the value for the crossing. The reconstruction in `src/naacc_score.py` is 35% less accurate on those crossings. The multi-state work does not use it, because it uses the published score.
+
+7. The gain of the full model over the random forest was first reported as +0.035. That was the mean of the bootstrap. The difference of the two test scores is 0.320 minus 0.286, which is +0.034, and the interval is unchanged.
+
+8. The number of surveys that differ between Plunkett's file and the public NAACC layer had been counted per row, and the layer has one row per structure. Counted per survey the numbers are smaller, as listed below.
+
+## Checks repeated with separate code
+
+`scripts/verify_headline_numbers.py` recomputes these from the raw file and the saved predictions, and all of them pass:
+
+- The file has 56,525 surveys with unique crossing codes and scores between 0 and 1, and none of the 39 predictors is a survey field.
+- The test set is the 7 recorded basins, no HUC8 watershed is on both sides of the split, and the nearest test crossing is 319 m from a development crossing.
+- The saved test predictions reproduce the R² values 0.2991, 0.3154 and 0.3202 and the MAE values 0.2046, 0.2000 and 0.1988, and their targets match the raw file.
+- Refitting the random forest gives 0.2862, as stored, and the paired bootstrap gives +0.034 (0.026 to 0.045).
+- Rebuilding the bridge inventory join from the raw FHWA files gives the same 68,102 structures and the same 9,248 matched crossings. The bridge and OpenStreetMap joins use coordinates only.
+- The calibration slope is 1.00 and the 90% intervals cover 89.2% of the test crossings.
+
+## Further checks on the bridge inventory and neighbouring surveys
+
+A single 0/1 flag for "matched" raises development R² from 0.287 to 0.307. Adding length and span brings it to 0.311, and all 24 bridge fields give 0.313 (`scripts/plunkett_nbi_minimal.py`). Matching only when two structures are mutual nearest neighbours gives 0.3126, and matching one way gives 0.3124 (`scripts/plunkett_nbi_oneway.py`). Using the scores of neighbouring surveyed crossings inside a partly surveyed area raises R² from 0.340 to 0.355 under a random split, so there is little to gain from it (`scripts/plunkett_infill_mode.py`).
 
 ## Scores that differ from the public NAACC layer
 
-For the 27,451 surveys in both files that have a public score, 99.6% agree to within 0.001. 97 differ by at least
-0.001, 41 by more than 0.05 and 5 by more than 0.2. All 41 have the same observation date in both files. Plunkett's
-score is lower in 32 of them. They are concentrated in 2015 (23 of 41, against 16% of all shared surveys) and 2019 (11),
-not in recent surveys, and multiple-culvert crossings are twice as common among them (22% against 11%). The public
-layer's last-edit dates fall after the survey, so coordinator edits and different handling of crossings with several
-structures are both plausible. The cause is not established (`scripts/plunkett_public_layer_diff.py`).
+For the 27,451 surveys that are in both files and have a public score, 99.6% agree to within 0.001. For 97 surveys the two scores differ by at least 0.001, for 41 by more than 0.05, and for 5 by more than 0.2. All 41 have the same observation date in both files, and Plunkett's score is lower for 32 of them. They are concentrated in surveys from 2015 (23 of the 41, although 2015 holds 16% of the shared surveys) and 2019 (11), and crossings with several culverts are twice as common among them (22% against 11%). The public layer's last-edit dates come after the survey dates, so edits by coordinators and different handling of crossings with several structures are both plausible. The cause has not been established (`scripts/plunkett_public_layer_diff.py`).
 
-## Still uncertain
+## Questions that are still open
 
-- Surveyed crossings are not the population the model would be applied to.
-- The cell size of `d8accum` (30 m assumed) is not documented in the file; no result depends on it.
-- The meaning of `tsurveyed = 2` (1,546 rows) and how one survey per crossing was chosen are undocumented.
-- Why NJ is poorly predicted in every setup.
-- Whether OSM adds anything beyond NBI (+0.005, interval includes zero).
-- Plunkett's current accuracy and validation method are unknown to us.
-- The volunteer error rate for a yes/no perched-outlet check is unmeasured.
+- Crossings that have been surveyed are not the same as the crossings the model would be applied to.
+- The cell size of `d8accum` is not stated in the file. We assumed 30 m, and no result depends on it.
+- We do not know what `tsurveyed = 2` means (1,546 rows), or how one survey was chosen for each crossing.
+- We do not know why New Jersey is poorly predicted in every setup.
+- It is not clear that OpenStreetMap adds anything beyond the bridge inventory. The gain is +0.005 and its interval includes zero.
+- We do not know the current accuracy or validation method of the DSL model.
+- The error rate of volunteers answering a yes/no question about a perched outlet has not been measured.

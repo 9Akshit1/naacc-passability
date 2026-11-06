@@ -1,5 +1,6 @@
-"""Dev-set tests of derived features and sample weighting (T3 baseline = Plunkett + NBI + OSM, LightGBM default).
-HUC8-group and leave-one-state-out CV; 3 seeds for HUC8. Locked set not read."""
+"""Development-set tests of derived features and sample weighting. The baseline is T3 (Plunkett, bridge inventory and OpenStreetMap)
+with LightGBM default settings, using HUC8 group CV and leave-one-state-out CV, with 3 seeds for HUC8. The test basins are not read.
+"""
 import numpy as np, pandas as pd, lightgbm as lgb, time
 from src import plunkett_cv as cv, plunkett_features as pf
 d = pd.read_parquet("data/processed/plunkett_features_osm.parquet")

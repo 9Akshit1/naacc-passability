@@ -1,0 +1,21 @@
+layer survey ids repeated with a recorded drop: 4608; share where the repeated rows disagree by > 0.05 ft: 0.3123
+rows 26038, perched share 0.271
+
+=== error kind: sym (random flips at rate e)
+ map only (no answer): R2=0.2331 Spearman=0.513 capture=0.357
+ rows = noise the model was TRAINED on, columns = noise in the TEST answers:   R2 (Spearman, capture of worst 20%)
+   train\test                        0.0                       0.1                       0.2                       0.3
+         0.0    0.695 (0.77,0.72)      0.403 (0.65,0.59)      0.121 (0.54,0.48)     -0.182 (0.41,0.40)   
+         0.1    0.638 (0.76,0.72)      0.493 (0.69,0.62)      0.350 (0.61,0.53)      0.205 (0.53,0.46)   
+         0.2    0.565 (0.75,0.71)      0.469 (0.69,0.62)      0.373 (0.62,0.53)      0.278 (0.56,0.46)   
+         0.3    0.464 (0.71,0.69)      0.407 (0.66,0.61)      0.350 (0.62,0.53)      0.293 (0.57,0.46)   
+
+=== error kind: miss (e = miss rate 0/10/20/30%, false-alarm rate e/6 = 0/1.7/3.3/5%)
+ map only (no answer): R2=0.2331 Spearman=0.513 capture=0.357
+ rows = noise the model was TRAINED on, columns = noise in the TEST answers:   R2 (Spearman, capture of worst 20%)
+   train\test                        0.0                       0.1                       0.2                       0.3
+         0.0    0.695 (0.77,0.72)      0.586 (0.73,0.69)      0.484 (0.69,0.66)      0.376 (0.64,0.61)   
+         0.1    0.681 (0.77,0.72)      0.591 (0.73,0.69)      0.509 (0.69,0.66)      0.416 (0.65,0.62)   
+         0.2    0.664 (0.77,0.72)      0.585 (0.73,0.69)      0.513 (0.69,0.67)      0.431 (0.65,0.62)   
+         0.3    0.627 (0.76,0.72)      0.561 (0.72,0.69)      0.502 (0.69,0.66)      0.435 (0.65,0.62)   
+done

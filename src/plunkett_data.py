@@ -1,25 +1,21 @@
-"""Loader for the UMass DSL (Plunkett) multi-state passability dataset.
+"""Load the multi-state crossing file from Ethan Plunkett (UMass DSL).
 
-Source: ``passability_data.zip`` from Ethan Plunkett (UMass DSL), 2026-10-08 -
-56,525 NAACC surveys in 13 states that fall on the DSL stream/road networks,
-with the predictors his production pipeline uses. Raw files are in
-``data/raw/plunkett/`` or wherever ``NAACC_PLUNKETT_DIR`` points (``passability_data.parquet`` +
-``passability_predvars.txt``).
+The file has 56,525 NAACC surveys in 13 states that fall on the DSL stream and road networks, with the predictors from his
+pipeline. The files passability_data.parquet and passability_predvars.txt are in data/raw/plunkett/, or in the folder named by
+the environment variable NAACC_PLUNKETT_DIR.
 
-What this module adds on top of the raw file:
+This module adds:
 
-* ``state``   - 2-letter state from a point-in-polygon join with the Census state
-  boundaries (every point falls inside a state polygon; verified).
-* ``huc8`` / ``huc6`` / ``huc4`` - USGS WBD watershed ids (HUC8 polygon join), used
-  ONLY as cross-validation groups, never as model inputs.
-* No rows are dropped silently. ``audit_flags`` lists suspicious rows; callers
-  decide, and every filter is reported.
+- state, found by locating each point in the Census state boundaries (every point falls inside one state)
+- huc8, huc6 and huc4, the USGS watershed ids from a HUC8 polygon join, used only to group crossings for cross-validation
+  and never as model inputs
 
-Survey-derived columns (``bridge``, ``crossing_type``, ``terrestrial_passage_score``,
-``tsurveyed``, ``roadtile``, ``moved``, ``date_observed``, ``database``, coordinates)
-are NOT predictors: most are field observations that would not exist for an
-unsurveyed crossing (``bridge``/``crossing_type`` in particular would leak the answer).
-Only the columns in Plunkett's ``passability_predvars.txt`` are eligible.
+No rows are dropped. audit_flags marks suspicious rows and the caller decides what to do with them.
+
+Some columns in the file come from the survey and are not predictors: bridge, crossing_type, terrestrial_passage_score,
+tsurveyed, roadtile, moved, date_observed, database and the coordinates. Most are field observations that an unsurveyed
+crossing would not have, and bridge and crossing_type would give away the answer. Only the columns listed in
+passability_predvars.txt can be used as inputs.
 """
 from __future__ import annotations
 

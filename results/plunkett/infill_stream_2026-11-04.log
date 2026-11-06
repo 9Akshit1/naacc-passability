@@ -1,0 +1,11 @@
+development rows 47530; on a stream within 100 m: 0.640
+seed 0: no neighbour scores=0.3378  radius neighbours=0.3594  stream neighbours=0.3424  radius + stream=0.3602
+seed 1: no neighbour scores=0.3372  radius neighbours=0.3590  stream neighbours=0.3430  radius + stream=0.3596
+seed 2: no neighbour scores=0.3383  radius neighbours=0.3600  stream neighbours=0.3433  radius + stream=0.3607
+
+held-out crossings with at least one surveyed crossing on the same stream path: 0.526
+  no neighbour scores      R2=0.3377  (+0.0000)  seeds [0.3378, 0.3372, 0.3383]
+  radius neighbours        R2=0.3594  (+0.0217)  seeds [0.3594, 0.359, 0.36]
+  stream neighbours        R2=0.3429  (+0.0052)  seeds [0.3424, 0.343, 0.3433]
+  radius + stream          R2=0.3602  (+0.0224)  seeds [0.3602, 0.3596, 0.3607]
+done

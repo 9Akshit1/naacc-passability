@@ -1,12 +1,12 @@
-"""Assemble the multi-state feature table: Plunkett predictors + NBI (+ OSM when cached)
-+ leakage-safe neighbour-label features.
+"""Build the multi-state feature table: Plunkett's predictors, the National Bridge Inventory, OpenStreetMap when it has been
+downloaded, and features from the scores of nearby surveyed crossings.
 
-Feature groups (names used throughout the experiment scripts):
-  PLUNKETT  - Plunkett's own 38 predictors (passability_predvars.txt), unchanged
-  NBI       - FHWA National Bridge Inventory join (src/nbi.py)
-  OSM       - OSM bridge/culvert tags (src/osm_structures.py)
-  NEIGHBOUR - label summaries of nearby SURVEYED crossings in OTHER watersheds,
-              computed only from the training fold (see neighbour_features)
+The feature groups are:
+  PLUNKETT   the predictors in passability_predvars.txt, unchanged
+  NBI        the FHWA National Bridge Inventory join (src/nbi.py)
+  OSM        OpenStreetMap bridge and culvert tags (src/osm_structures.py)
+  NEIGHBOUR  summaries of the scores of nearby surveyed crossings in other watersheds, computed from the training fold only
+             (see neighbour_features)
 """
 from __future__ import annotations
 
@@ -88,9 +88,7 @@ def neighbour_prep(tr: pd.DataFrame, te: pd.DataFrame):
     return tr, te
 
 
-# ---------------------------------------------------------------------------
 # Auxiliary-supervision stacking: P(bridge) learned from the survey 'bridge' field
-# ---------------------------------------------------------------------------
 AUX_COL = "aux_p_bridge"
 
 
@@ -123,9 +121,7 @@ def aux_bridge_prep_factory(feature_cols, n_inner: int = 5, seed: int = 0):
     return prep
 
 
-# ---------------------------------------------------------------------------
 # Derived features (functions of Plunkett's predictors and NBI size fields only)
-# ---------------------------------------------------------------------------
 _WINDOWS = [90, 150, 210, 270, 330, 390, 450, 510, 570, 630]
 
 

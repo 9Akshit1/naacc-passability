@@ -1,7 +1,9 @@
-"""Pilot evaluation of fine-scale (1 m-class) ground-profile features. 6,000 random NY development crossings.
-(1) distinctness / coverage, (2) passability score with and without fd_* features (paired folds, 5 random splits),
-(3) outlet drop (field-measured, ft) as an auxiliary target: R2 and perched-outlet AUC with and without fd_*.
-Locked set untouched."""
+"""Pilot test of fine-scale (about 1 m) ground-profile features on 6,000 random New York development crossings.
+
+It checks (1) how many distinct values there are and how much of the area is covered, (2) the passability score with and without
+the fd_* features, on paired folds and 5 random splits, and (3) the field-measured outlet drop in feet as an extra target, giving
+R2 and the AUC for perched outlets with and without the fd_* features. The test basins are not used.
+"""
 import numpy as np, pandas as pd, lightgbm as lgb
 from sklearn.metrics import roc_auc_score
 from src import fine_dem, plunkett_cv as cv, plunkett_features as pf

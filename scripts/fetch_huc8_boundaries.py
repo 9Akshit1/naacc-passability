@@ -1,9 +1,8 @@
-"""Fetch HUC8 (sub-basin) polygons from the USGS WBD service for the study bbox.
+"""Download HUC8 (sub-basin) polygons from the USGS WBD service for the study area.
 
-Used to give every crossing in the Plunkett multi-state dataset a HUC8 id, so the
-cross-validation can hold out whole watersheds (same standard as the NY-only work).
-The polygons are lightly generalised (maxAllowableOffset ~ 100 m) - fine for
-point-in-polygon on crossings, and it keeps the download to a few MB.
+They give every crossing in Plunkett's multi-state file a HUC8 id, so that cross-validation can hold out whole watersheds, as
+in the New York work. The polygons are slightly generalised (maxAllowableOffset about 100 m), which is fine for locating points
+and keeps the download to a few MB.
 
     python scripts/fetch_huc8_boundaries.py
 """

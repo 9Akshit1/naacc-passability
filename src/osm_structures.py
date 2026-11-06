@@ -1,17 +1,15 @@
-"""OpenStreetMap bridge / culvert ways -> per-crossing features (nationally consistent).
+"""Bridge and culvert ways from OpenStreetMap, matched to crossings.
 
-Full state OSM extracts download at ~250 KB/s here (hours for 13 states), so instead
-we ask the Overpass API only for the tagged structures that matter:
+A full OpenStreetMap extract for each of 13 states downloads slowly here, so the Overpass API is asked only for the tagged
+structures that matter:
 
-* highway ways with a ``bridge`` tag      (road carried over something)
-* highway ways with ``tunnel=culvert``    (road carried over a stream in a culvert)
-* waterway ways with ``tunnel=culvert``   (stream passes through a culvert)
+- highway ways with a bridge tag (a road carried over something)
+- highway ways with tunnel=culvert (a road carried over a stream in a culvert)
+- waterway ways with tunnel=culvert (a stream passing through a culvert)
 
-Each crossing is matched to the nearest such way within ``MATCH_M`` metres
-(point-to-line distance in EPSG:5070). OSM is volunteer-mapped, so completeness
-differs by state; that is a real limitation, tested explicitly with
-leave-one-state-out evaluation and by checking per-state match rates.
-Results are cached per state under ``data/raw/osm/``.
+Each crossing is matched to the nearest such way within MATCH_M metres (point-to-line distance in EPSG:5070). OpenStreetMap is
+mapped by volunteers, so how complete it is differs by state. We checked that with leave-one-state-out tests and by looking
+at the match rate in each state. Results are cached per state under data/raw/osm/.
 """
 from __future__ import annotations
 
@@ -218,12 +216,10 @@ def match_crossings(cross: pd.DataFrame, states: list[str], lat="lat_nad83", lon
 
 
 
-# ---------------------------------------------------------------------------
 # Alternative source: a Geofabrik state extract (.pbf). Used for Pennsylvania because the
 # public Overpass servers kept timing out on its dense tiles. Produces the SAME table as
 # load_state_structures(); validated against the Overpass result on Rhode Island
-# (see reports/04_multistate_plunkett_results.md).
-# ---------------------------------------------------------------------------
+# (see scripts/validate_osm_pbf.py).
 import re as _re
 
 PBF_DIR = OSM_DIR / "pbf"

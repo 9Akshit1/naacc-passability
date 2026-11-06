@@ -1,11 +1,11 @@
-"""Frozen final-model recipe (chosen on the DEVELOPMENT set only, 2026-10-08).
+"""The final model: an equal-weight average of three models.
 
-Equal-weight average of three members:
-  * LightGBM, L2 objective, extra-trees splits (best regression config of the 36-config search)
-  * LightGBM, cross-entropy objective (bounded 0-1 output; best xent config of the same search)
-  * CatBoost depth 6
-The search was scored by HUC8-group CV with seed 100 on the development set; see
-results/plunkett/tune.jsonl. Nothing here was altered after looking at the locked test set.
+- LightGBM with a squared-error objective and extra-trees splits, the best regression setting from a search of 36 settings
+- LightGBM with a cross-entropy objective, which keeps its output between 0 and 1, the best setting of that type from the same search
+- CatBoost with depth 6
+
+The search was scored with HUC8 group cross-validation on the development set using seed 100 (results/plunkett/tune.jsonl).
+Nothing here was changed after the test basins were scored.
 """
 from __future__ import annotations
 

@@ -1,0 +1,31 @@
+A rows 47530, B rows 54459, public features 140
+B by region: {'Bother': 33814, 'B13': 20645} | label mean A 0.641, B13 0.687, Bother 0.654
+
+E1: train on A only, score B
+  A -> B13                                         n= 20645  R2=-0.0264  Spearman=0.266
+  A -> Bother                                      n= 33814  R2=-0.0138  Spearman=0.240
+  A -> Alabama                                     n=  4513  R2=-0.0514  Spearman=0.098
+  A -> Wisconsin                                   n=  4106  R2=0.0395  Spearman=0.409
+  A -> Michigan                                    n=  4065  R2=0.1018  Spearman=0.429
+  A -> Arkansas                                    n=  3313  R2=-0.1561  Spearman=0.129
+  A -> Georgia                                     n=  2949  R2=-0.0687  Spearman=0.123
+  A -> Idaho                                       n=  2589  R2=0.0546  Spearman=0.340
+  A -> North Carolina                              n=  2222  R2=0.1480  Spearman=0.369
+  A -> South Carolina                              n=  2057  R2=0.0903  Spearman=0.351
+
+E2: pooled grouped CV, A-train only versus A-train + B-train
+  seed 0: A|A=0.2259  A|B13=-0.0281  A|Bo=-0.0155  AB|A=0.2023  AB|B13=0.0450  AB|Bo=0.0955
+  seed 1: A|A=0.2258  A|B13=-0.0307  A|Bo=-0.0165  AB|A=0.1998  AB|B13=0.0410  AB|Bo=0.0957
+  seed 2: A|A=0.2263  A|B13=-0.0298  A|Bo=-0.0152  AB|A=0.2023  AB|B13=0.0447  AB|Bo=0.0926
+  scored on A   : trained on A only R2=0.2260   trained on A+B R2=0.2015   change -0.0245
+  scored on B13 : trained on A only R2=-0.0295   trained on A+B R2=0.0436   change +0.0731
+  scored on Bo  : trained on A only R2=-0.0157   trained on A+B R2=0.0946   change +0.1103
+
+E3: leave one state out (non-NAACC states)
+  Alabama          n= 4513  A only R2=-0.0519   A + other-state B R2=-0.0583   change -0.0064
+  Wisconsin        n= 4106  A only R2=0.0379   A + other-state B R2=0.1052   change +0.0673
+  Michigan         n= 4065  A only R2=0.1004   A + other-state B R2=0.0898   change -0.0106
+  Arkansas         n= 3313  A only R2=-0.1569   A + other-state B R2=-0.0153   change +0.1416
+  Georgia          n= 2949  A only R2=-0.0699   A + other-state B R2=-0.0034   change +0.0665
+  Idaho            n= 2589  A only R2=0.0534   A + other-state B R2=0.0704   change +0.0170
+done

@@ -1,7 +1,5 @@
-"""How much of the NBI gain comes from a small set of fields?
-
-Development set only (locked basins untouched), HUC8-group CV, LightGBM with the
-default settings used in plunkett_dev_comparison.py, 3 differently seeded splits.
+"""How much of the bridge inventory gain comes from a small set of fields? It uses the development set only, HUC8 group CV,
+LightGBM with the default settings of plunkett_dev_comparison.py, and 3 differently seeded splits.
 
     python -m scripts.plunkett_nbi_minimal
 """

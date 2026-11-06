@@ -1,0 +1,5 @@
+cut,model,share_positive,auc,ap,caught_top10,caught_top20
+bad (<0.8),classifier trained on the label,0.6249,0.827,0.8631,0.1479,0.2888
+bad (<0.8),"regression, ranked",0.6249,0.8154,0.8517,0.1459,0.2848
+poor (<0.5),classifier trained on the label,0.2716,0.7702,0.5283,0.2321,0.4114
+poor (<0.5),"regression, ranked",0.2716,0.7684,0.5278,0.233,0.4121

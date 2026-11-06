@@ -1,0 +1,61 @@
+=== 1. locked numbers recomputed independently
+keys in locked_results.json: ['T1_rf_plunkett_style', 'T0_dev_mean', 'T1_plunkett', 'T2_plunkett+nbi', 'delta_r2[T2_plunkett+nbi-T1_rf_plunkett_style]', 'delta_r2[T1_rf_plunkett_style-T1_plunkett]', 'delta_r2[T2_plunkett+nbi-T1_plunkett]', '_meta', 'T3_plunkett+nbi+osm', 'delta_r2[T3_plunkett+nbi+osm-T1_plunkett]', 'delta_r2[T3_plunkett+nbi+osm-T2_plunkett+nbi]', 'T4_t3+streamcat+vaa', 'T4P_no_dsl_rasters', 'T5M_same_rows_map_only', 'T5Q_quickcheck_nodsl']
+ T3   n=8995 R2(sklearn)=0.3202 MAE=0.1988 NaN 0
+ T4   n=8995 R2(sklearn)=0.3257 MAE=0.1963 NaN 0
+ T4P  n=8995 R2(sklearn)=0.2778 MAE=0.2047 NaN 0
+ T5 pred_map_only    n=5337 R2(sklearn)=0.1940 MAE=0.2169 Spearman=0.4628  pred range 0.280..0.991 NaN 0
+ T5 pred_quickcheck  n=5337 R2(sklearn)=0.6727 MAE=0.1379 Spearman=0.7548  pred range 0.117..0.992 NaN 0
+  json T1_rf_plunkett_style         r2=0.2862 n=8995
+  json T0_dev_mean                  r2=-0.0000 n=8995
+  json T1_plunkett                  r2=0.2991 n=8995
+  json T2_plunkett+nbi              r2=0.3154 n=8995
+  json T3_plunkett+nbi+osm          r2=0.3202 n=8995
+  json T4_t3+streamcat+vaa          r2=0.3257 n=8995
+  json T4P_no_dsl_rasters           r2=0.2778 n=8995
+  json T5M_same_rows_map_only       r2=0.1940 n=5337
+  json T5Q_quickcheck_nodsl         r2=0.6727 n=5337
+
+=== 2. locked / train separation
+ locked by mask 8995, in T3 predictions file 8995, identical sets: True
+ duplicate crossing codes in whole table: 0
+ train 26881, test 5337; shared crossing codes: 0; shared HUC6: []; shared HUC8: []
+ T5 rows are exactly the locked rows with a drop: True
+ locked HUC6 basins: ['020402', '020501', '020600', '020801', '020802', '043002', '050100']
+
+=== 3. join audit
+C:\Users\eruku\Akshith\IMPACT\NAACC\naacc-passability\scripts\audit_quickcheck_2026-11-05.py:75: DeprecationWarning: DataFrameGroupBy.apply operated on the grouping columns. This behavior is deprecated, and in a future version of pandas the grouping columns will be excluded from the operation. Either pass `include_groups=False` to exclude the groupings or explicitly select the grouping columns after groupby to silence this warning.
+  print(" share with drop by state (all rows):", d.groupby("state").apply(lambda g: round(g.q_perched.notna().mean(), 2)).to_dict())
+ accepted by pass: {1.0: 27369, nan: 21833, 3.0: 7108, 2.0: 215}
+ drop_ws summary (ft): {'count': 32218.0, 'mean': 0.486, 'std': 1.333, 'min': 0.0, '25%': 0.0, '50%': 0.0, '75%': 0.4, 'max': 20.9}
+ share > 0.25 ft: 0.289; share exactly 0: 0.668
+ id matches 32107: within 30 m 32105, score diff < 0.02 32001, both 31999
+ rejected only by score (location ok): 106; only by location: 2; both: 0
+   of those score-rejected, median score diff 0.076, mean Plunkett score 0.711 vs layer 0.529
+ aquatic_score: crossings WITH recorded drop vs WITHOUT (selection check)
+         count   mean    std  min    25%    50%    75%  max
+False  24307.0  0.685  0.307  0.0  0.523  0.760  0.960  1.0
+True   32218.0  0.608  0.301  0.0  0.436  0.677  0.853  1.0
+ share with drop by state (all rows): {'CT': 0.44, 'DE': 0.98, 'MA': 0.14, 'MD': 0.66, 'ME': 0.91, 'NH': 0.04, 'NJ': 0.25, 'NY': 0.78, 'PA': 0.47, 'RI': 0.05, 'VA': 0.75, 'VT': 0.14, 'WV': 0.26}
+
+=== 4. inputs
+C:\Users\eruku\AppData\Roaming\Python\Python313\site-packages\numpy\lib\_function_base_impl.py:3023: RuntimeWarning: invalid value encountered in divide
+  c /= stddev[:, None]
+C:\Users\eruku\AppData\Roaming\Python\Python313\site-packages\numpy\lib\_function_base_impl.py:3024: RuntimeWarning: invalid value encountered in divide
+  c /= stddev[None, :]
+ 175 portable inputs. non-statcat/vaa names:
+   ['adt', 'class', 'income', 'nbi_owner', 'nbi_func_class', 'nbi_year_built', 'nbi_lanes', 'nbi_adt', 'nbi_skew_deg', 'nbi_kind', 'nbi_type', 'nbi_main_spans', 'nbi_max_span_m', 'nbi_length_m', 'nbi_roadway_width_m', 'nbi_deck_width_m', 'nbi_vert_clr_under_m', 'nbi_lat_clr_under_m', 'nbi_substructure_cond', 'nbi_channel_cond', 'nbi_culvert_cond', 'nbi_waterway_eval', 'nbi_impr_len_m', 'nbi_year_recon', 'nbi_scour_critical', 'nbi_is_culvert', 'nbi_matched', 'osm_bridge_hw_rank', 'osm_bridge_lanes', 'osm_bridge_maxspeed', 'osm_bridge_layer', 'osm_bridge_is_named', 'osm_bridge_is_culvertlike', 'osm_bridge_flag', 'osm_stream_culvert_flag', 'snap_m', 'snap2_m', 'order_line', 'ftype_line']
+ survey-like names among inputs: ['nbi_substructure_cond', 'nbi_culvert_cond', 'nbi_is_culvert', 'osm_bridge_is_culvertlike', 'osm_stream_culvert_flag', 'vaa_slope_drop_down', 'vaa_slope_drop_up']
+ top |corr| with aquatic_score: {'nbi_matched': 0.396, 'osm_bridge_flag': 0.38, 'nbi_is_culvert': 0.337, 'nbi_type': 0.302, 'snap_m': 0.238}
+ top |corr| with q_perched:    {'nbi_is_culvert': 0.26, 'nbi_type': 0.246, 'nbi_matched': 0.191, 'vaa_slope': 0.189, 'osm_bridge_flag': 0.184}
+ any input identical to label? []
+
+=== 5. is the gain real? development rows with a recorded drop, HUC8-grouped CV, seeds 0,1
+ yes/no alone                                     R2=0.6182 (sd 0.0004)  MAE=0.1530
+ continuous drop alone (ft)                       R2=0.7503 (sd 0.0003)  MAE=0.1081
+ map only                                         R2=0.2285 (sd 0.0000)  MAE=0.2083
+ map + yes/no                                     R2=0.6832 (sd 0.0007)  MAE=0.1329
+ map + SHUFFLED yes/no (control)                  R2=0.2293 (sd 0.0000)  MAE=0.2081
+ map + yes/no shuffled within state (control)     R2=0.2284 (sd 0.0000)  MAE=0.2083
+ map + continuous drop                            R2=0.8056 (sd 0.0001)  MAE=0.0922
+ label mean by yes/no: {0.0: {'size': 19257, 'mean': 0.76, 'std': 0.173}, 1.0: {'size': 7624, 'mean': 0.237, 'std': 0.213}}
+done

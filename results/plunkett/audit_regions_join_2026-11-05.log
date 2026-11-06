@@ -1,0 +1,50 @@
+=== 1. state agreement on accepted id-matches (pass 1)
+ accepted pairs 31992; layer State != Plunkett state: 22
+{('NY', 'PA'): 1, ('WV', 'VA'): 21}
+
+=== 2. crossings without a value: is there a layer point nearby?
+ without a value: 25385; layer point within 30 m: 0.167; within 100 m: 0.173; none within 100 m: 0.827
+  of those within 30 m: score differs by >= 0.02: 0.163; ambiguous-excluded: 0.255
+ by state, share of no-value crossings with NO layer point within 100 m:
+       n_no_value  absent_from_layer
+state                               
+CT         2423.0               0.91
+DE            1.0               0.00
+MA         6681.0               0.96
+MD          909.0               0.26
+ME          427.0               0.00
+NH          531.0               1.00
+NJ         1568.0               0.93
+NY         5553.0               0.74
+PA         5065.0               0.81
+RI          405.0               0.99
+VA          600.0               0.64
+VT          174.0               1.00
+WV         1048.0               0.91
+
+=== 3. survey-id range (older database ids are small)
+                          n  with_value
+idbin                                  
+(0.0, 20000.0]         5403       0.001
+(20000.0, 40000.0]     9622       0.935
+(40000.0, 60000.0]     9513       0.809
+(60000.0, 80000.0]    10422       0.757
+(80000.0, 100000.0]   11029       0.387
+(100000.0, 120000.0]  10536       0.217
+           min   median       max
+state                            
+CT      1126.0  42665.0  118762.0
+DE     26271.0  26864.5   28973.0
+MA       123.0  68309.5  118574.0
+MD     20885.0  44020.0  103692.0
+ME     20963.0  36263.5   64854.0
+NH      1779.0   2142.0  107346.0
+NJ     13386.0  86564.5  118695.0
+NY     10201.0  73190.0  118766.0
+PA     11772.0  75369.0  118796.0
+RI       876.0   8606.0  114877.0
+VA     21864.0  36614.0   99906.0
+VT      1455.0   2904.5   93493.0
+WV     21868.0  93788.5  115981.0
+share of crossings with survey id < 20000 by state: {'CT': 0.2, 'DE': 0.0, 'MA': 0.4, 'MD': 0.0, 'ME': 0.0, 'NH': 0.95, 'NJ': 0.05, 'NY': 0.01, 'PA': 0.01, 'RI': 0.6, 'VA': 0.0, 'VT': 0.83, 'WV': 0.0}
+done

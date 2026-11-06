@@ -1,22 +1,12 @@
-"""Reconstruction of the NAACC 2016 aquatic passability scoring algorithm.
+"""Recompute the NAACC 2016 aquatic passability score from the field survey measurements.
 
-Purpose (Phase 2 of the plan): understand exactly what the target variable
-represents by recomputing it from the field-survey variables and checking it
-against the ``Aqua_Pass_Score`` NAACC publishes.
+The aim is to understand what the score measures, by rebuilding it and comparing the result with the Aqua_Pass_Score that NAACC
+publishes. The formulas and weights are from "Aquatic Connectivity Scoring Systems for Non-tidal Crossings" (revised
+2016-06-16), https://streamcontinuity.org/resources/aquatic-connectivity-scoring-systems-non-tidal-crossings.
 
-Source of the formulas and weights:
-https://streamcontinuity.org/resources/aquatic-connectivity-scoring-systems-non-tidal-crossings
-("Aquatic Connectivity Scoring Systems for Non-tidal Crossings", rev. 2016-06-16)
-
-This is a faithful re-implementation of the documented algorithm. Known gaps
-(quantified in ``reports/02_score_reconstruction.md``):
-
-* the NAACC application's exact rule for choosing the limiting structure / the
-  inlet-vs-outlet openness input is not fully public;
-* NAACC's internal defaults for "Unknown" / missing categoricals are only
-  partly documented.
-
-So this is validated as an approximation, not a bit-exact reproduction.
+The rebuilt score is close to the published one but not identical, for two reasons. The NAACC application's rule for choosing
+the limiting structure, and for choosing between inlet and outlet openness, is only partly documented, and so are its defaults
+for unknown or missing categories. In the New York data the correlation with the published score is 0.89.
 """
 
 from __future__ import annotations
@@ -26,7 +16,7 @@ from dataclasses import dataclass
 import numpy as np
 import pandas as pd
 
-# ---- component weights (sum = 1.000) -----------------------------------
+# component weights (sum = 1.000)
 WEIGHTS = {
     "outlet_drop": 0.161,
     "physical_barriers": 0.135,
@@ -43,7 +33,7 @@ WEIGHTS = {
     "internal_structures": 0.032,
 }
 
-# ---- categorical component score maps ----------------------------------
+# categorical component score maps
 _CONSTRICTION = {
     "severe": 0.0, "moderate": 0.5,
     "spans only bankfull/active channel": 0.9, "spans only bankfull": 0.9,
@@ -72,7 +62,7 @@ def _cat(series: pd.Series, mapping: dict[str, float], default: float = np.nan) 
     return s.map(lambda v: mapping.get(v, default) if isinstance(v, str) else np.nan)
 
 
-# ---- continuous component score functions -----------------------------
+# continuous component score functions
 
 
 def openness_score(openness_ft: pd.Series) -> pd.Series:
@@ -111,8 +101,8 @@ def compute_passability(df: pd.DataFrame) -> ScoreResult:
     comp["openness"] = openness_score(df.get("Outlet_Openness", df.get("Inlet_Openness")))
     comp["height"] = height_score(df.get("Outlet_Height", df.get("Inlet_Height")))
 
-    # Outlet drop: prefer drop-to-water-surface; fall back to drop-to-stream-bottom
-    # only when the water-surface value is genuinely absent.
+    # Outlet drop: use the drop to the water surface, and fall back to the drop to the stream bottom only when the
+    # water-surface value is missing.
     drop = pd.to_numeric(df["Outlet_Drop_To_Water_Surface"], errors="coerce")
     if "Outlet_Drop_To_Stream_Bottom" in df.columns:
         db = pd.to_numeric(df["Outlet_Drop_To_Stream_Bottom"], errors="coerce")
@@ -130,9 +120,8 @@ def compute_passability(df: pd.DataFrame) -> ScoreResult:
     comp["water_depth"] = _cat(df["Water_Depth_Matches_Stream"], _WATER_DEPTH, default=np.nan)
     comp["water_velocity"] = _cat(df["Water_Velocity"], _WATER_VEL, default=np.nan)
 
-    # Weighted composite. For components with no data, redistribute their weight
-    # proportionally across the components that do (so a partly-filled survey is
-    # not silently penalised).
+    # Weighted composite. A component with no data gives its weight to the components that have data, in proportion
+    # to their weights, so that a partly filled survey is not penalised.
     w = pd.Series(WEIGHTS)
     filled = comp.notna()
     eff_w = filled.mul(w, axis=1)

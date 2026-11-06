@@ -1,12 +1,11 @@
-"""Separate question: if a crossing sits among surveyed crossings, do neighbouring survey scores help?
+"""If a crossing sits among surveyed crossings, do the scores of its neighbours help?
 
-This is NOT the headline protocol. The headline numbers hold out whole watersheds, which answers
-"how well does the model work in a place it has no surveys". Here crossings are held out one fifth at a
-time at random, and the model may use the scores of nearby surveyed crossings (training fold only), which
-answers "how well can a gap be filled inside an already-surveyed area". Surveys are clustered by
-programme and county, so random holdout is optimistic about real gaps; read the result as an upper bound.
+This is not the main test. The main numbers hold out whole watersheds, which shows how well the model works in a place with no
+surveys. Here one fifth of the crossings are held out at random each time, and the model may use the scores of nearby surveyed
+crossings from the training part only. That shows how well a gap could be filled inside an area that is already surveyed.
+Surveys are clustered by program and county, so a random holdout is optimistic for real gaps and the result is an upper bound.
 
-Development set only. T2 features (his predictors + NBI), LightGBM default settings.
+It uses the development set, T2 features (Plunkett's predictors and the bridge inventory) and LightGBM default settings.
 
     python -m scripts.plunkett_infill_mode
 """

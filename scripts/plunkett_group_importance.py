@@ -1,5 +1,6 @@
-"""Grouped permutation importance (development set, HUC8-group folds, LightGBM default, T2 features).
-Drop in held-out R2 when one feature GROUP is shuffled within the test fold (10 repeats)."""
+"""Permutation importance for groups of features (development set, HUC8 group folds, LightGBM default settings, T2 features).
+It reports the drop in held-out R2 when one group of features is shuffled within the test fold, with 10 repeats.
+"""
 import json
 import numpy as np, pandas as pd, lightgbm as lgb
 from src import plunkett_cv as cv, plunkett_features as pf

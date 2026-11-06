@@ -1,9 +1,11 @@
-"""Re-check 'which NAACC score components can GIS predict' with the corrected multi-state features.
+"""Check again which parts of the NAACC score can be predicted from map data, using the corrected multi-state features.
 
-The earlier claim (METHODOLOGY / WRITEUP) used the NY pipeline whose catchment area was defective. Here: NY dev-set
-crossings present in both datasets; components recomputed by src/naacc_score.py (weights/tables verified against NAACC's
-published document 2026-10-08); predicted from Plunkett + NBI + OSM features with HUC8-group CV (5 random splits).
-Also tests NAACC's documented multiple-structure rule via the reconstruction error."""
+The earlier claim came from the New York pipeline, whose drainage area was attached to the wrong stream for many crossings. Here
+we use the New York development crossings that are in both datasets. The score components are recomputed by src/naacc_score.py
+(its weights and tables were checked against NAACC's published document) and predicted from Plunkett, bridge inventory and
+OpenStreetMap features with HUC8 group CV on 5 random splits. It also tests NAACC's documented rule for crossings with several
+structures, by measuring the error of the reconstruction.
+"""
 import numpy as np, pandas as pd, lightgbm as lgb
 from src import plunkett_cv as cv, plunkett_features as pf, naacc_score as ns
 

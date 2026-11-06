@@ -1,4 +1,6 @@
-"""Check that the PBF-based OSM parser reproduces the Overpass result (Rhode Island), so using it for PA is sound."""
+"""Check that the parser for OpenStreetMap PBF files gives the same result as the Overpass service for Rhode Island, so that using it for
+Pennsylvania is sound.
+"""
 import json
 import geopandas as gpd, pandas as pd, numpy as np
 from src import osm_structures as o, plunkett_data as pdm

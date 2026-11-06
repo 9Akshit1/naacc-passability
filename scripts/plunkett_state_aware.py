@@ -1,7 +1,10 @@
-"""Would a STATE-AWARE model (state as a categorical input) do better in states that have training surveys?
-Labelling practice differs by state (e.g. 'Bridge Adequate' = fixed score 1.0 is used for 0%-83% of bridges), which GIS
-cannot see. This is a separate in-state tier, NOT a replacement for the state-agnostic model (Plunkett's stated
-concern). Development set, HUC8 group CV (5 random splits): T3 features +/- state."""
+"""Would a model that has state as an input do better in states that have training surveys?
+
+Labelling practice differs by state. For example, "Bridge Adequate", which gives a fixed score of 1.0, is used for between 0%
+and 83% of bridges depending on the state, and map data cannot show that. This is a separate within-state model and not a
+replacement for the model that ignores state, which was Plunkett's stated concern. It uses the development set and HUC8 group CV
+with 5 random splits, comparing T3 features with and without state.
+"""
 import numpy as np, pandas as pd, lightgbm as lgb
 from src import plunkett_cv as cv, plunkett_features as pf
 d = pd.read_parquet("data/processed/plunkett_features_osm.parquet"); dev = d[~cv.locked_test_mask(d)].copy()

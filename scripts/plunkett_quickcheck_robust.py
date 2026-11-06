@@ -1,5 +1,7 @@
-"""Quick-check tier robustness + single locked look. Volunteer error simulated by flipping the perched answer with prob e
-(symmetric, random - an assumption, not a measured volunteer error rate). Locked NY crossings scored ONCE at the end."""
+"""How the one-question check holds up when volunteers are wrong. Volunteer error is simulated by flipping the perched answer with
+probability e, at random and in both directions. That is an assumption and not a measured error rate. The test basins in New York
+are scored once at the end.
+"""
 import numpy as np, pandas as pd, lightgbm as lgb
 from src import plunkett_cv as cv, plunkett_features as pf
 d = pd.read_parquet("data/processed/plunkett_features_osm.parquet"); lock = cv.locked_test_mask(d)

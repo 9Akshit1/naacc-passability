@@ -1,8 +1,5 @@
-"""Split-conformal prediction intervals.
-
-Gives a distribution-free interval with (approximately) the requested coverage,
-without assuming a probabilistic model. Uses a group-aware calibration split so
-the guarantee reflects spatial transfer rather than in-watershed noise.
+"""Split-conformal prediction intervals. They have roughly the requested coverage without assuming a probability model. The
+calibration split keeps whole watersheds together, so the coverage reflects transfer to new watersheds and not noise inside one.
 """
 
 from __future__ import annotations

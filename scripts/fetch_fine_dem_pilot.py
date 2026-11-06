@@ -1,4 +1,5 @@
-"""Pilot: fine-scale DEM samples for 6,000 random NY development crossings that also have survey fields."""
+"""Pilot: fine-scale elevation samples for 6,000 random New York development crossings that also have survey fields.
+"""
 import numpy as np, pandas as pd
 from src import fine_dem, plunkett_cv as cv
 d = pd.read_parquet("data/processed/plunkett_features_osm.parquet"); lock = cv.locked_test_mask(d)

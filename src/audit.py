@@ -1,7 +1,5 @@
-"""Phase 1 dataset audit for the NAACC NY passability data.
-
-Produces ``reports/01_dataset_audit.md`` and figures in ``results/figures/``.
-Answers the Phase-1 questions from the project plan with real numbers.
+"""Summarise the New York survey data: how the scores are distributed, where values are missing, and the counts by
+watershed, county and year. Writes a markdown summary to results/ny_summaries/dataset_audit.md and figures to results/figures/.
 """
 
 from __future__ import annotations
@@ -17,7 +15,7 @@ import pandas as pd
 from .data import IDENTITY_FIELDS, SURVEY_FIELDS, build_modeling_dataset, load_raw
 
 FIG = Path("results/figures")
-REP = Path("reports")
+REP = Path("results/ny_summaries")
 
 
 def _fig_path(name: str) -> Path:
@@ -30,11 +28,11 @@ def run_audit() -> str:
     model, clean_rep = build_modeling_dataset()
 
     L: list[str] = []
-    L.append("# NAACC New York passability data - Phase 1 audit\n")
+    L.append("# NAACC New York passability data: dataset summary\n")
     L.append("Source: NYS DEC ArcGIS FeatureServer `NYS_NAACCSurveys_Projected` "
              "(public, no login). See `data/raw/ny_naacc_PROVENANCE.json`.\n")
 
-    # ---- raw dataset questions -------------------------------------------
+    # raw dataset questions
     raw["score"] = pd.to_numeric(raw["Aqua_Pass_Score"], errors="coerce")
     n_scored = raw["score"].between(0, 1).sum()
     L.append("## Raw export\n")
@@ -55,12 +53,12 @@ def run_audit() -> str:
              "structures (each culvert is its own row) and repeat surveys of the same crossing "
              "over time. Both are resolved in cleaning.\n")
 
-    # ---- cleaning ----------------------------------------------------
+    # cleaning
     L.append("## Cleaning to the modelling dataset\n")
     L.append(clean_rep.to_markdown())
     L.append("")
 
-    # ---- modelling dataset --------------------------------------------
+    # modelling dataset
     m = model
     L.append("## Modelling dataset\n")
     L.append(f"- **{len(m):,} unique surveyed crossings**")
@@ -102,7 +100,7 @@ def run_audit() -> str:
     L.append(f"- max surveys of one crossing: {rep_surv.max()}")
     L.append("")
 
-    # ---- figures ----------------------------------------------------
+    # figures
     _figures(raw, m)
     L.append("## Figures\n")
     for fn, cap in [
@@ -115,7 +113,7 @@ def run_audit() -> str:
         L.append(f"![{cap}](../results/figures/{fn})\n")
 
     REP.mkdir(parents=True, exist_ok=True)
-    (REP / "01_dataset_audit.md").write_text("\n".join(L), encoding="utf-8")
+    (REP / "dataset_audit.md").write_text("\n".join(L), encoding="utf-8")
     return "\n".join(L)
 
 
@@ -161,4 +159,4 @@ def _figures(raw: pd.DataFrame, m: pd.DataFrame) -> None:
 
 if __name__ == "__main__":
     run_audit()
-    print("wrote reports/01_dataset_audit.md")
+    print("wrote results/ny_summaries/dataset_audit.md")

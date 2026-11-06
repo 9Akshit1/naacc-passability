@@ -1,0 +1,26 @@
+linked to a stream: 0.837; within 50 m: 0.608
+development rows 47530, linked 0.823, within 50 m 0.588
+area columns: ['sc_catarea', 'sc_wsarea'] | sc columns 124 | vaa columns 12
+
+PART 1: added information
+reference (T3)                                                 R2=0.3252 (sd 0.0022)  [119s]
+reference + snap distance only                                 R2=0.3268 (sd 0.0027)  [146s]
++ StreamCat soil_lithology (ws+cat) + snap                     R2=0.3334 (sd 0.0027)  [172s]
++ StreamCat land_cover (ws+cat) + snap                         R2=0.3288 (sd 0.0020)  [136s]
++ StreamCat climate_terrain (ws+cat) + snap                    R2=0.3333 (sd 0.0028)  [126s]
++ StreamCat human (ws+cat) + snap                              R2=0.3279 (sd 0.0030)  [151s]
++ NHDPlus VAA (slope, order, flow, neighbours) + snap          R2=0.3295 (sd 0.0026)  [210s]
++ ALL StreamCat + VAA + snap                                   R2=0.3352 (sd 0.0018)  [491s]
++ ALL StreamCat + VAA, values only within 50 m, + snap         R2=0.3342 (sd 0.0028)  [385s]
++ ALL, evaluated only on rows within 50 m (reference below)    R2=0.3437 (sd 0.0005)  [485s]
+reference, evaluated only on rows within 50 m                  R2=0.3285 (sd 0.0011)  [234s]
+
+PART 2: public data in place of the DSL catchment area and gradient
+all rows: reference                                            R2=0.3252 (sd 0.0022)  [200s]
+all rows: without d8accum                                      R2=0.3011 (sd 0.0020)  [208s]
+all rows: without d8accum, + StreamCat/NHDPlus area, slope, flow R2=0.3207 (sd 0.0026)  [149s]
+within 50 m: reference                                         R2=0.3285 (sd 0.0011)  [90s]
+within 50 m: without d8accum                                   R2=0.2971 (sd 0.0012)  [91s]
+within 50 m: without d8accum, + StreamCat/NHDPlus area, slope, flow R2=0.3245 (sd 0.0011)  [101s]
+within 50 m: without d8accum, gradient; + StreamCat/NHDPlus    R2=0.3158 (sd 0.0012)  [210s]
+done

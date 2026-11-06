@@ -1,8 +1,12 @@
-"""Emulate the documented DSL pipeline: Random Forest + ADDITIVE STEPWISE variable selection that maximises the
-out-of-bag R2 (DSL doc, section 2.2 step 2). Variables are added as groups (the scale-dependent variables come as a set
-of window sizes). Fitted on the development set only; then (a) its OOB R2 (the metric DSL quotes), (b) HUC8-group CV R2
-of the selected forest (honest spatial metric), (c) the locked-test R2 (one look; a NEW reference model, scored once).
-Reduced forest size (100 trees, 40% row subsample) so the ~55 selection fits are tractable - a limitation."""
+"""Rebuild the DSL pipeline as documented: a random forest with additive stepwise variable selection that maximises out-of-bag R2
+(DSL documentation, section 2.2, step 2). Variables are added as groups, because the scale-dependent variables come as a set of
+window sizes.
+
+It is fitted on the development set only. It reports (a) the out-of-bag R2, which is the figure DSL quotes, (b) the HUC8 group CV
+R2 of the selected forest, which is the better measure of spatial transfer, and (c) the R2 on the test basins, as a new reference
+model scored once. To keep the roughly 55 selection fits manageable the forest is smaller (100 trees, 40% of rows per tree),
+which is a limitation.
+"""
 import json, time
 import numpy as np, pandas as pd
 from sklearn.ensemble import RandomForestRegressor

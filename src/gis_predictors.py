@@ -1,109 +1,26 @@
-"""Assemble GIS-derived predictors for road-stream crossings.
+"""Fetch map-based predictors for road-stream crossings from public web services (the New York version).
 
-The DSL / Plunkett model predicts NAACC passability from GIS variables that are
-available without a field survey (drainage area, stream gradient, terrain,
-traffic, road class, county income). Reproducing the full DSL feature set
-requires regional raster processing (a 30 m DEM with D8 flow accumulation,
-multi-scale terrain windows, a development-density surface, ADT matching) that
-is out of scope here.
+DSL builds its predictors from regional raster processing, which this version does not reproduce. Each predictor below is
+fetched from a public service and cached under data/interim/cache/, so a run that is interrupted can continue.
 
-This module builds a reduced, honestly-labelled predictor set from public
-web services, sufficient to reproduce the structure of the approach and the
-catchment-area investigation:
+    drainage_area_km2, basin_span_km  USGS NLDI upstream basin polygon: its area and the diagonal of its bounding box
+    elev_m                            USGS 3DEP point elevation
+    terrain_slope_*, terrain_rough_*  slope and roughness from 3DEP elevations on rings 100 m and 500 m around the crossing
+    county_income, county_pop_density US Census American Community Survey, by county
+    road_class                        nearest OpenStreetMap highway or railway way (see below)
+    sc_*                              14 EPA StreamCat measures for the upstream watershed
+    stream_slope, stream_order        NHDPlusV2 value added attributes
+    aadt, log_aadt                    New York DOT traffic counts, joined to the nearest road segment; the counts cover
+                                      state and county roads, so many crossings have no match
+    ecoregion                         EPA Level III ecoregion
+    structure_*                       New York DOT bridge and large-culvert inventory, joined to the nearest point within 100 m
 
-| predictor            | source                                   | DSL analogue        |
-|----------------------|------------------------------------------|---------------------|
-| ``drainage_area_km2``| USGS NLDI upstream-basin polygon area     | ``d8accum``         |
-| ``basin_relief_m``   | bbox of the basin polygon (crude)        | (weak) terrain      |
-| ``elev_m``           | USGS 3DEP point elevation (EPQS)          | ``elevation``       |
-| ``county_income``    | US Census ACS 5-yr, county (B19013_001E)  | ``income`` (exact)  |
-| ``county_pop_density``| Census ACS pop / county land area        | ``bdev`` (weak)     |
-| ``road_class``       | OpenStreetMap, nearest tagged way (GIS-only) | ``class``        |
-| ``sc_*`` (14 vars)   | EPA StreamCat, upstream-watershed (GIS-only) | terrain/climate/land-cover/infra (see below) |
-| ``stream_slope``     | NHDPlusV2 Value Added Attributes (VAA)   | ``slope`` (exact - the DSL-flagged gap) |
-| ``stream_order``     | NHDPlusV2 VAA, Strahler order             | (bonus - not in DSL's set) |
-| ``lat`` / ``lon``    | crossing location                        | -                   |
-| ``aadt`` / ``log_aadt`` | NYSDOT statewide AADT layer (2026-09-23) | ``adt`` (exact - the other DSL-flagged gap) |
-| ``terrain_slope_{100,500}m`` | USGS 3DEP bulk elevation sampling (2026-09-23) | multi-scale terrain windows (approximate) |
-| ``terrain_rough_{100,500}m`` | USGS 3DEP bulk elevation sampling (2026-09-23) | multi-scale terrain windows (approximate) |
-| ``ecoregion``         | EPA Level III Ecoregion polygon (2026-09-24) | not a DSL predictor - see below |
-| ``structure_age_yr``, ``structure_condition``, ``structure_material``, ``structure_length_m``, ``structure_is_bridge`` | NYSDOT bridge/large-culvert inventory (2026-09-24) | not in DSL's GIS-only set at all - actual structure data |
-| ``structure_opening_width_m`` (culvert-only), ``structure_num_spans``, ``structure_streambed_material`` (culvert-only), ``structure_culvert_skew_deg`` (culvert-only) | NYSDOT bridge/large-culvert inventory (2026-09-26 addition) | not in DSL's set - targets NAACC's own scoring criteria directly (constriction, natural-bottom continuity) |
+The road class can be fetched two ways. fetch_osm_road_class asks the Overpass service about each point, which suits a few
+crossings but is limited to about one request per second. fetch_osm_road_class_bulk reads a Geofabrik extract of New York once
+and answers all the crossings in one nearest-way join. Both write to the same cache and use the same tag classification.
 
-AADT traffic (2026-09-23 addition): NYSDOT publishes a public, live,
-statewide AADT (Annual Average Daily Traffic) layer as an ArcGIS
-FeatureServer (verified 2026-09-23:
-``gis.dot.ny.gov/hostingny/rest/services/Roadways/Traffic_Monitoring/FeatureServer/1``,
-157,331 road segments with a non-null AADT). This fills the other
-DSL-flagged gap (traffic volume, ``adt``) not addressed until now. Downloaded
-once (paginated REST query), cached as GeoParquet, joined to crossings via
-``geopandas.sjoin_nearest`` - same pattern as ``road_class``. Coverage is
-expected to be well below 100%: NYSDOT's count program covers primarily the
-state/county highway system, not every local road or driveway a crossing may
-sit on - see the actual match-rate printed by ``build_predictor_table``, not
-assumed here.
-
-Multi-scale terrain (2026-09-23 addition): the other omission the module
-docstring above has always listed as out of scope for lack of a bulk DEM
-pipeline. USGS's 3DEP ``ImageServer`` ``getSamples`` operation (verified live
-2026-09-23) accepts many points per POST request and returns elevation at up
-to 1 m resolution where lidar coverage exists - a genuine bulk alternative to
-the single-point EPQS service already used for ``elev_m``, so no DEM raster
-download/rasterio dependency was needed. For each crossing, a small compass
-ring of points is sampled at 100 m and 500 m radii; slope is a standard
-central-difference gradient magnitude between opposite ring points (not a
-reproduction of DSL's own terrain algorithm - it isn't published in enough
-detail to reproduce, and this isn't claimed to be it), roughness is the
-elevation standard deviation across the ring. See ``fetch_terrain_features_bulk``.
-
-StreamCat (2026-09-20 addition): EPA's StreamCat dataset
-(https://www.epa.gov/national-aquatic-resource-surveys/streamcat-dataset)
-provides ~600 pre-computed upstream-watershed metrics per NHDPlusV2 COMID, via
-a live, batched REST API (``api.epa.gov/StreamCat/streams/metrics`` -
-confirmed working, no API key, no per-request rate limit like Overpass's).
-A curated subset (not all ~600, to avoid overfitting a 1,260-row / 7-group
-spatial-CV problem with a decorrelated grab-bag) was chosen for a plausible
-mechanistic link to culvert passability - see ``_STREAMCAT_METRICS`` below.
-Notably, StreamCat has no stream/catchment slope variable.
-
-NHDPlus VAA slope (2026-09-20 addition): fills the stream-gradient gap
-StreamCat leaves and DSL explicitly flags as important. Downloaded once as a
-~246 MB CONUS-wide parquet (``nhdplus_vaa`` function of the ``pynhd``/HyRiver
-library resolves the current URL - the API that used to serve this per-COMID
-live via NLDI's ``/local``/``/tot`` endpoints was retired in USGS's migration
-to api.water.usgs.gov), then column-projected (comid/slope/streamorde only,
-via pyarrow, not a full load) and subset down to a small per-COMID cache like
-every other fetcher in this module. The 246 MB source file itself is
-deliberately not committed (see ``.gitignore``) - it is disposable, easily
-re-downloaded, and out of proportion with this module's other KB-sized caches;
-only the derived per-COMID slope/order values are tracked.
-
-``road_class`` is fetched from OpenStreetMap (nearest ``highway``/``railway``
-tagged way within ``radius_m`` of the crossing point) and crosswalked into the
-same category space the field survey uses (paved / unpaved / trail /
-multilane road (>2 lanes) / driveway / railroad), so it is a drop-in
-replacement with no schema change downstream. This is a GIS-only predictor
-available for any unsurveyed crossing. The field-observed ``Road_Type`` is
-retained separately as ``road_class_surveyed`` for audit / comparison only -
-it is never used as a model feature, since a real deployment target (an
-unassessed crossing) will not have it.
-
-Two ways to get it, same output: ``fetch_osm_road_class`` queries the live
-Overpass API per point - the right tool for `predict.py`'s low-volume
-on-demand inference (no ~500MB download for a handful of crossings), but
-rate-limited to ~1 req/sec, making it impractical at full-dataset scale.
-``fetch_osm_road_class_bulk`` (2026-09-22 addition) instead downloads one NY
-OpenStreetMap extract (Geofabrik `.pbf`, ~497 MB, gitignored - see
-``.gitignore``), parses it once into a cached GeoParquet of every tagged way
-(~1.9M features, also gitignored, rebuildable from the `.pbf`), and answers
-every crossing's nearest-way lookup in one vectorized
-``geopandas.sjoin_nearest`` call instead of one Overpass round-trip per
-crossing - the mechanism ``build_subset.py`` uses for dataset builds. Both
-write to the same per-crossing cache (`data/interim/cache/osm_road/`) and
-classify via the same ``_classify_osm_tags``, so downstream code cannot tell
-which one produced a given cached value.
-
-Every fetcher caches to ``data/interim/cache/`` and is resumable.
+The survey's own road type is kept as road_class_surveyed for comparison and is never a model input, because a crossing that
+has not been surveyed does not have it.
 """
 
 from __future__ import annotations
@@ -141,9 +58,7 @@ def _get(url, *, params=None, timeout=60, tries=6):
     return None
 
 
-# ---------------------------------------------------------------------------
-# 1. County-level census (income + population density)
-# ---------------------------------------------------------------------------
+# County census data: income and population density
 
 
 def fetch_ny_county_census() -> pd.DataFrame:
@@ -191,9 +106,7 @@ def attach_county_census(df: pd.DataFrame) -> pd.DataFrame:
     return m
 
 
-# ---------------------------------------------------------------------------
-# 2. Upstream drainage area via USGS NLDI basin polygon
-# ---------------------------------------------------------------------------
+# Upstream drainage area from the USGS NLDI basin polygon
 
 
 def _polygon_area_km2(coords: list[list[float]]) -> float:
@@ -221,8 +134,8 @@ def fetch_drainage_area(lon: float, lat: float, cid: str) -> dict | None:
             return json.loads(f.read_text())
         except json.JSONDecodeError:
             pass
-    # Drainage areas above this are almost certainly an NLDI snap to a trunk
-    # river or a coastal/tidal segment, not the small stream the crossing is on.
+    # An area this large is almost certainly a snap to a trunk river or to a coastal or tidal segment, not the
+    # small stream the crossing is on.
     MAX_PLAUSIBLE_KM2 = 20000.0
     try:
         pos = _get("https://api.water.usgs.gov/nldi/linked-data/comid/position",
@@ -261,9 +174,7 @@ def _haversine_km(lat1, lon1, lat2, lon2) -> float:
     return 2 * r * math.asin(math.sqrt(a))
 
 
-# ---------------------------------------------------------------------------
-# 3. Point elevation (USGS 3DEP EPQS)
-# ---------------------------------------------------------------------------
+# Point elevation from USGS 3DEP (EPQS)
 
 
 def fetch_elevation(lon: float, lat: float, cid: str) -> float | None:
@@ -288,9 +199,7 @@ def fetch_elevation(lon: float, lat: float, cid: str) -> float | None:
         return None
 
 
-# ---------------------------------------------------------------------------
-# 4. Road class via OpenStreetMap (Overpass API) - GIS-only, no field survey
-# ---------------------------------------------------------------------------
+# Road class from OpenStreetMap (Overpass API)
 
 # OSM surface tag -> paved/unpaved, for crosswalking into the survey's buckets.
 _PAVED_SURFACES = {
@@ -333,9 +242,8 @@ def _classify_osm_tags(tags: dict) -> str:
     if surface in _PAVED_SURFACES:
         return "paved"
     if hw:
-        # OSM highway ways with no surface tag are, in this region, almost
-        # always conventional paved roads (unpaved rural roads tend to carry
-        # an explicit surface tag).
+        # In this region an OpenStreetMap highway way with no surface tag is almost always a paved road, because
+        # unpaved rural roads usually carry a surface tag.
         return "paved"
     return "unknown"
 
@@ -400,10 +308,8 @@ def fetch_osm_road_class(lon: float, lat: float, cid: str, *, radius_m: float = 
         return None
 
 
-# ---------------------------------------------------------------------------
-# 4b. Bulk local OSM road-class lookup (2026-09-22 addition) - see module
-#     docstring for why this exists alongside the per-point fetcher above.
-# ---------------------------------------------------------------------------
+# Road class from a local OpenStreetMap extract (see the module docstring for why this exists next to the
+# per-point fetcher above)
 
 _OSM_PBF_URL = "https://download.geofabrik.de/north-america/us/new-york-latest.osm.pbf"
 _OSM_PBF_PATH = CACHE / "_osm_ny_raw.pbf"
@@ -513,22 +419,15 @@ def fetch_osm_road_class_bulk(df: pd.DataFrame, *, radius_m: float = 75.0) -> pd
     return cids.map(cached).fillna("unknown")
 
 
-# ---------------------------------------------------------------------------
-# 5. EPA StreamCat upstream-watershed metrics (COMID-keyed, batched, no
-#    per-request rate limit - unlike Overpass, hundreds of COMIDs go in one
-#    POST). Requires COMID, so this runs after the drainage-area fetch.
-# ---------------------------------------------------------------------------
+# EPA StreamCat upstream-watershed measures, looked up by COMID in batches. This runs after the drainage-area
+# fetch because it needs the COMID.
 
-# Raw StreamCat metric name -> (engineered feature name, watershed AOI, group).
-# 'ws' = accumulated over the full upstream watershed, not just the local
-# catchment - the mechanistically relevant scale for flow regime / land use
-# upstream of a crossing, not just the small patch of ground it sits on.
-# Chosen for a plausible causal link to culvert passability, not "all ~600
-# available" - with only 7 HUC8 groups for spatial CV, throwing in a large
-# decorrelated grab-bag of metrics raises overfitting risk more than it adds
-# signal. Land cover fractions are summed into 3 composite bands (forest /
-# wetland / agriculture) rather than kept as ~9 separate correlated NLCD
-# classes, for the same reason.
+# Raw StreamCat name -> (feature name, watershed area of interest, group). 'ws' means accumulated over the whole
+# upstream watershed and not only the local catchment.
+#
+# We chose measures with a plausible link to culvert passability instead of taking all of the roughly 600
+# available. With only 7 HUC8 groups for spatial CV, a large set of unrelated measures raises the risk of
+# overfitting. Land cover fractions are summed into 3 bands (forest, wetland, agriculture) for the same reason.
 _STREAMCAT_METRICS = {
     "precip8110":  ("sc_precip_mm", "climate", None),       # 30-yr normal precip - flashiness / design-storm driver
     "runoff":      ("sc_runoff_mm", "climate", None),       # mean runoff
@@ -551,15 +450,10 @@ _STREAMCAT_METRICS = {
 }
 
 
-# Local-catchment-scale ("cat" aoi) counterparts for a subset of the metrics
-# above, added 2026-09-25: not the whole upstream basin average, but just the
-# small patch of ground draining directly to the crossing's own reach - a
-# genuinely different physical quantity StreamCat's API can return in the
-# same request (``aoi=ws,cat``, verified live - no extra API call needed).
-# Requested only for land cover / infrastructure / soils / terrain, where
-# local vs. basin-wide values plausibly differ; not for climate normals
-# (precip/runoff/baseflow barely vary at this scale within one small
-# catchment) or population/dam density (already well captured basin-wide).
+# Local-catchment ('cat') versions of some of the measures above. These describe the ground that drains directly
+# to the crossing's own reach and not the whole upstream basin. The same request returns both (aoi=ws,cat). They
+# are requested only for land cover, infrastructure, soils and terrain, where the local and basin-wide values
+# can differ, and not for climate or for population and dam density.
 _STREAMCAT_CAT_METRICS = {
     "rddens":       ("sc_road_density_local", None),
     "rdcrs":        ("sc_road_stream_crossing_density_local", None),
@@ -578,13 +472,10 @@ _STREAMCAT_CAT_METRICS = {
 
 
 def _aggregate_streamcat_cat_record(rec: dict) -> dict:
-    """Same aggregation pattern as ``_aggregate_streamcat_record``, but for
-    the local-catchment-scale metrics in ``_STREAMCAT_CAT_METRICS``, reading
-    the ``...cat``-suffixed API fields instead of ``...ws``. Also carries
-    ``catareasqkm`` (StreamCat's own local-catchment area) as
-    ``sc_local_catchment_area_km2`` - a genuinely different quantity from
-    ``sc_watershed_area_km2`` (whole upstream basin), useful on its own as a
-    "how much of the total drainage is right here" signal."""
+    """Same aggregation as ``_aggregate_streamcat_record``, but for the local-catchment measures in
+    ``_STREAMCAT_CAT_METRICS``, reading the ``...cat`` fields instead of ``...ws``. It also carries ``catareasqkm``
+    (StreamCat's own local-catchment area) as ``sc_local_catchment_area_km2``. This differs from
+    ``sc_watershed_area_km2`` (the whole upstream basin) and shows how much of the total drainage is right here."""
     out = {"sc_local_catchment_area_km2": rec.get("catareasqkm")}
     sums = {}
     for raw_name, (feat_name, agg) in _STREAMCAT_CAT_METRICS.items():
@@ -626,16 +517,13 @@ def _aggregate_streamcat_record(rec: dict) -> dict:
 
 
 def fetch_streamcat_batch(comids: list, *, chunk_size: int = 300) -> pd.DataFrame:
-    """Batched StreamCat lookup for a list of COMIDs. Caches one JSON file per
-    COMID (matching this module's per-crossing resumable-cache convention)
-    but fetches in large chunks - StreamCat's API has no per-request rate
-    limit, so this is orders of magnitude faster than the per-row Overpass
-    fetcher. Requests both ``aoi=ws`` (whole upstream watershed) and
-    ``aoi=cat`` (local catchment, 2026-09-25 addition) in the same call - the
-    API returns both scales' fields together, no extra request needed.
-    Returns a DataFrame indexed by ``comid`` with the engineered ``sc_*``
-    (watershed-scale) and ``sc_*_local``/``sc_local_catchment_area_km2``
-    (local-catchment-scale) columns."""
+    """Look up StreamCat measures for a list of COMIDs in batches.
+
+    Each COMID gets its own cache file, like the other fetchers in this module, but requests go out in large chunks. The
+    StreamCat API has no per-request rate limit, so this is far faster than the per-row Overpass fetcher. Each request asks
+    for both ``aoi=ws`` (whole upstream watershed) and ``aoi=cat`` (local catchment), and the API returns both together.
+    Returns a DataFrame indexed by ``comid`` with the ``sc_*`` (watershed) columns and the ``sc_*_local`` and
+    ``sc_local_catchment_area_km2`` (local catchment) columns."""
     cf = CACHE / "streamcat"
     cf.mkdir(exist_ok=True)
     comids = sorted({int(c) for c in comids if pd.notna(c)})
@@ -647,12 +535,9 @@ def fetch_streamcat_batch(comids: list, *, chunk_size: int = 300) -> pd.DataFram
         if f.exists():
             try:
                 rec = json.loads(f.read_text())
-                # Cache files written before the 2026-09-25 aoi=cat addition
-                # have no "...cat"-suffixed metric keys - refetch those so the
-                # new local-catchment features aren't silently all-missing.
-                # NOTE: "catareasqkm" alone does NOT indicate this - it comes
-                # from showareasqkm=true independently of aoi, so it was
-                # already present in every pre-existing cache file too.
+                # Cache files from before the local-catchment (aoi=cat) measures were added have no '...cat'
+                # keys, so they are fetched again. 'catareasqkm' alone does not show this, because it comes from
+                # showareasqkm=true whatever the aoi.
                 if not rec or any(f"{n}cat" in rec for n in _STREAMCAT_CAT_METRICS):
                     cached[c] = rec
                     continue
@@ -688,13 +573,9 @@ def fetch_streamcat_batch(comids: list, *, chunk_size: int = 300) -> pd.DataFram
     return pd.DataFrame(rows).set_index("comid")
 
 
-# ---------------------------------------------------------------------------
-# 6. NHDPlusV2 VAA: stream slope + Strahler order (COMID-keyed). Fills the
-#    stream-gradient gap StreamCat leaves and DSL explicitly flags. One-time
-#    bulk download (~246 MB, CONUS-wide), then reduced to a small per-COMID
-#    cache like every other fetcher here; the raw download itself is not
-#    committed (see .gitignore) - the derived per-COMID cache is.
-# ---------------------------------------------------------------------------
+# NHDPlusV2 value added attributes: stream slope and Strahler order, looked up by COMID. DSL names stream
+# gradient as important and StreamCat has no slope. The 246 MB CONUS-wide file is downloaded once and reduced to
+# a small per-COMID cache. The raw file is not committed (see .gitignore) and the cache is.
 
 _VAA_URL = ("https://www.hydroshare.org/resource/"
            "6092c8a62fac45be97a09bfd0b0bf726/data/contents/nhdplusVAA.parquet")
@@ -719,11 +600,9 @@ def _download_nhdplus_vaa_raw() -> Path | None:
 
 
 def _clean_vaa_slope(v) -> float | None:
-    """NHDPlus VAA uses -9998 as a "no data" sentinel for ``slope`` (real
-    slopes are physically non-negative) - about 0.9% of CONUS flowlines.
-    Treated as missing, not as a literal value: feeding -9998 straight into
-    the model would corrupt it far worse than a plain NaN, which the
-    pipeline's median-imputer already handles correctly."""
+    """NHDPlus VAA uses -9998 for "no data" in ``slope`` (real slopes are never negative). This affects about 0.9% of
+    CONUS flowlines. It is treated as missing and not as a value, because passing -9998 to the model would do far more
+    damage than a NaN, which the median imputer handles."""
     if v is None or (isinstance(v, float) and math.isnan(v)) or v < 0:
         return None
     return float(v)
@@ -770,21 +649,12 @@ def fetch_nhdplus_vaa_batch(comids: list) -> pd.DataFrame:
     return pd.DataFrame(rows).set_index("comid")
 
 
-# ---------------------------------------------------------------------------
-# 7. NYSDOT AADT traffic volume - one of the two DSL-flagged omitted
-#    predictors (the other is terrain, below). Public statewide ArcGIS
-#    FeatureServer, verified live 2026-09-23:
-#    https://gis.dot.ny.gov/hostingny/rest/services/Roadways/Traffic_Monitoring/FeatureServer/1
-#    (layer 1, "AADT", polyline geometry, field ``AADT`` = current estimated
-#    annual average daily traffic; 157,331 features statewide with a non-null
-#    AADT value, of 174,842 total). Downloaded once (paginated, 2000
-#    features/request - the service's own ``maxRecordCount``), cached as
-#    GeoParquet, then joined to crossings the same way ``road_class`` is
-#    (geopandas ``sjoin_nearest``, EPSG:5070 for a real-metre max_distance).
-#    No per-crossing cache file (unlike the other fetchers here): the join
-#    itself is vectorized and has no rate limit, so re-running it costs
-#    seconds, not requests - only the one-time bulk download is cached.
-# ---------------------------------------------------------------------------
+# New York DOT annual average daily traffic (AADT). The source is the public statewide ArcGIS FeatureServer
+# https://gis.dot.ny.gov/hostingny/rest/services/Roadways/Traffic_Monitoring/FeatureServer/1 (layer 1, field
+# AADT, with a value on 157,331 of 174,842 features). It is downloaded once in pages of 2,000 (the service's
+# maxRecordCount), cached as GeoParquet, and joined to crossings the way road_class is, with geopandas
+# sjoin_nearest in EPSG:5070 so that max_distance is in metres. There is no per-crossing cache, because the join
+# is vectorised and has no rate limit.
 
 _AADT_QUERY_URL = "https://gis.dot.ny.gov/hostingny/rest/services/Roadways/Traffic_Monitoring/FeatureServer/1/query"
 _AADT_PATH = CACHE / "_aadt_ny_raw.parquet"
@@ -848,24 +718,12 @@ def fetch_aadt_bulk(df: pd.DataFrame, *, radius_m: float = 200.0) -> pd.Series:
     return pd.to_numeric(joined["AADT"], errors="coerce").reindex(df.index)
 
 
-# ---------------------------------------------------------------------------
-# 8. Multi-scale local terrain (slope + roughness) - the other DSL-flagged
-#    omitted predictor ("multi-scale terrain windows"). USGS 3DEP's
-#    ImageServer ``getSamples`` operation, verified live 2026-09-23, accepts
-#    a POST of up to (at least) 500 points per call and returns per-point
-#    elevation at the best available resolution (down to 1m where lidar
-#    coverage exists) - unlike the single-point EPQS service already used
-#    for ``elev_m``, this is a genuine bulk endpoint. For each crossing, 4
-#    compass-offset points are sampled at two radii (100m, 500m); slope is
-#    the central-difference gradient magnitude between opposite points
-#    (standard finite-difference terrain slope, not a DSL/USGS-published
-#    formula reproduction), roughness is the standard deviation of the ring
-#    elevations. Points with no DEM coverage (open water, out of state) are
-#    silently dropped by the service, not filled with a placeholder - a
-#    crossing missing one or more ring points just gets a partial or NaN
-#    slope/roughness for that radius, same missingness handling as every
-#    other predictor here.
-# ---------------------------------------------------------------------------
+# Local terrain slope and roughness from the USGS 3DEP ImageServer getSamples operation. It takes a POST of at
+# least 500 points and returns elevation at the best available resolution, down to 1 m where lidar exists. For
+# each crossing, 4 points are sampled at each of two radii (100 m and 500 m). Slope is the central-difference
+# gradient between opposite points, and roughness is the standard deviation of the elevations on the ring.
+# Points with no coverage (open water, outside the state) are dropped by the service, so a crossing can have a
+# partial or missing slope or roughness at a radius. That is handled like any other missing value.
 
 _TERRAIN_URL = "https://elevation.nationalmap.gov/arcgis/rest/services/3DEPElevation/ImageServer/getSamples"
 _TERRAIN_RADII_M = (100.0, 500.0)
@@ -908,9 +766,8 @@ def fetch_terrain_features_bulk(df: pd.DataFrame, *, batch_size: int = 500) -> p
                 pass
         need.append((cid, float(df.loc[i, "lon"]), float(df.loc[i, "lat"])))
 
-    # One flat list of (cid, radius, direction) + matching (lon, lat) points
-    # for every crossing needing a fetch, so a single batched pass covers
-    # every point regardless of how many crossings are involved.
+    # One flat list of (crossing id, radius, direction) and the matching (lon, lat) points for every crossing
+    # that needs a fetch, so that one batched pass covers all of them.
     requests_meta: list[tuple[str, float, str]] = []
     points: list[tuple[float, float]] = []
     for cid, lon, lat in need:
@@ -926,11 +783,9 @@ def fetch_terrain_features_bulk(df: pd.DataFrame, *, batch_size: int = 500) -> p
         chunk = points[start:start + batch_size]
         geom = json.dumps({"points": [[lo, la] for lo, la in chunk],
                            "spatialReference": {"wkid": 4326}})
-        # A transient failure here (observed live during development - one
-        # batch call returned zero samples where a retry succeeded) would
-        # otherwise silently zero out an entire batch's worth of crossings,
-        # not just individual points - retry with backoff like every other
-        # network call in this module, instead of a single bare attempt.
+        # A call can fail once and work on a retry (one batch returned zero samples during development). Without
+        # a retry that would blank a whole batch of crossings, so this retries with backoff like the other
+        # network calls in this module.
         samples = []
         wait = 5.0
         for attempt in range(4):
@@ -979,28 +834,15 @@ def fetch_terrain_features_bulk(df: pd.DataFrame, *, batch_size: int = 500) -> p
     return pd.DataFrame(rows, index=df.index)
 
 
-# ---------------------------------------------------------------------------
-# 9. EPA Level III Ecoregion (regional-heterogeneity control) - not a DSL
-#    predictor, but a response to a diagnostic finding in this project's own
-#    results (2026-09-24): spatial (HUC8 hold-out) CV is consistently much
-#    worse than random CV, and the catchment-area-only model is actively
-#    NEGATIVE (R2 < 0) - both consistent with the landscape-to-passability
-#    relationship differing by region (a given drainage area plausibly means
-#    something different for passability in the Adirondacks than on Long
-#    Island), which a global model with no regional indicator has to average
-#    over, potentially washing out or flipping otherwise-real relationships.
-#    Public EPA ArcGIS MapServer, verified live 2026-09-24:
-#    https://geodata.epa.gov/arcgis/rest/services/ORD/USEPA_Ecoregions_Level_III_and_IV/MapServer/11
-#    (Level III Ecoregion Polygons, field ``US_L3NAME`` - 11 ecoregions
-#    intersect NY's bounding box, e.g. "Northeastern Highlands" (Adirondacks),
-#    "Northeastern Coastal Zone", "Atlantic Coastal Pine Barrens" (Long
-#    Island)). NOT filtered by the layer's own ``STATE_NAME`` attribute,
-#    which was checked and found to under-report NY's ecoregions (4 of the
-#    real 11 that intersect it) - a true geometry intersect against NY's
-#    bounding box is used instead. Downloaded once, cached as GeoParquet,
-#    joined to crossings via point-in-polygon (not nearest - a crossing is
-#    either inside a region or not).
-# ---------------------------------------------------------------------------
+# EPA Level III ecoregion, so that the model can account for regional differences. Spatial (HUC8 hold-out) CV
+# scored much worse than random CV, and the model using drainage area alone had R2 below 0, which fits the
+# relationship between landscape and passability differing by region.
+#
+# The source is the public EPA ArcGIS MapServer
+# https://geodata.epa.gov/arcgis/rest/services/ORD/USEPA_Ecoregions_Level_III_and_IV/MapServer/11 (field
+# US_L3NAME). 11 ecoregions intersect New York's bounding box. The layer's own STATE_NAME filter finds only 4 of
+# them, so a geometry intersect with the bounding box is used instead. It is downloaded once, cached as
+# GeoParquet, and joined by point-in-polygon.
 
 _ECOREGION_QUERY_URL = ("https://geodata.epa.gov/arcgis/rest/services/ORD/"
                        "USEPA_Ecoregions_Level_III_and_IV/MapServer/11/query")
@@ -1049,88 +891,49 @@ def fetch_ecoregion_bulk(df: pd.DataFrame) -> pd.Series:
     return joined["US_L3NAME"].reindex(df.index).fillna("unknown")
 
 
-# ---------------------------------------------------------------------------
-# 10. NYSDOT structure inventory (bridges + large culverts) - the single most
-#     mechanistically direct predictor category available. NAACC's own
-#     scoring algorithm (see naacc_score.py) runs on field-measured
-#     STRUCTURE properties - outlet drop, structure type, constriction ratio
-#     - not landscape context. Every predictor above this point can only
-#     proxy for why a structure might have been built a certain way; this is
-#     actual structure data (age, material, condition rating, geometry) for
-#     crossings NYSDOT maintains inventory on. Public ArcGIS FeatureServer,
-#     verified live 2026-09-24:
-#     https://gis.dot.ny.gov/hostingny/rest/services/Asset/NYSDOT_Structures/FeatureServer
-#     (layer 0 "NYSDOT Bridges", 20,051 features, condition rating 1-7
-#     [higher=better], material/year-built fields; layer 1 "NYSDOT Large
-#     Culverts", 7,985 features, same schema). Coverage is expected well
-#     below 100%: this is the state-maintained inventory (mostly bridges
-#     and larger/state-system culverts), not every small local culvert a
-#     NAACC crossing might be on - see the actual match rate printed by
-#     build_predictor_table, not assumed here. Both layers downloaded once,
-#     unified into one schema, joined to crossings via nearest-point within
-#     ``radius_m`` (same pattern as ``road_class``/``aadt``).
-# ---------------------------------------------------------------------------
+# New York DOT structure inventory (bridges and large culverts). NAACC's own score is built from measured
+# structure properties such as outlet drop, structure type and constriction, so actual structure data (age,
+# material, condition rating, geometry) is closer to the score than any landscape predictor.
+#
+# The source is the ArcGIS FeatureServer
+# https://gis.dot.ny.gov/hostingny/rest/services/Asset/NYSDOT_Structures/FeatureServer. Layer 0 ('NYSDOT
+# Bridges') has 20,051 features with a condition rating from 1 to 7, where higher is better. Layer 1 ('NYSDOT
+# Large Culverts') has 7,985 features with the same schema. Coverage is well below 100%, because this is the
+# state-maintained inventory and not every small local culvert (build_predictor_table prints the match rate).
+# Both layers are downloaded once, put into one schema, and joined by nearest point within radius_m, as for
+# road_class and aadt.
 
 _STRUCTURES_URL = "https://gis.dot.ny.gov/hostingny/rest/services/Asset/NYSDOT_Structures/FeatureServer"
 _STRUCTURES_PATH = CACHE / "_structures_ny_raw.parquet"
-_STRUCTURES_CURRENT_YEAR = 2026  # for structure_age_yr; matches this addition's build date
+_STRUCTURES_CURRENT_YEAR = 2026  # used to compute structure_age_yr
 
 
 def _download_structures_layer():
-    """Bulk-download + unify NYSDOT Bridges (layer 0) and Large Culverts
-    (layer 1) into one GeoDataFrame with a common schema (``YearBuilt``,
-    ``ConditionRating``, ``GTMSMaterial``, ``length_ft``, ``is_bridge``,
-    ``NBI_SuperstructureCondition``, ``FHWA_Condition_Status``). The last two
-    are bridge-only fields (2026-09-25 addition) - checked live: the Bridges
-    layer's ``NBI_DeckCondition``/``NBI_SubstructureCondition`` are 0/20,051
-    populated statewide (entirely empty, not pulled), but
-    ``NBI_SuperstructureCondition`` is 19,920/20,051 (~99.3%) and
-    ``FHWA_Condition_Status`` is 20,051/20,051 (100%) - both real and worth
-    having despite only correlating 0.75 with the existing ``ConditionRating``
-    (checked live), i.e. genuinely complementary, not redundant. Large
-    culverts have neither field, so both are NaN/None for culvert matches.
+    """Download the NYSDOT Bridges (layer 0) and Large Culverts (layer 1) and put them in one GeoDataFrame with a common
+    schema: ``YearBuilt``, ``ConditionRating``, ``GTMSMaterial``, ``length_ft``, ``is_bridge``, ``NBI_SuperstructureCondition``
+    and ``FHWA_Condition_Status``. The last two exist only for bridges. In the Bridges layer ``NBI_DeckCondition`` and
+    ``NBI_SubstructureCondition`` are empty on all 20,051 features and are not used. ``NBI_SuperstructureCondition`` is filled
+    on 19,920 (about 99.3%) and ``FHWA_Condition_Status`` on all 20,051. They correlate only 0.75 with ``ConditionRating``, so
+    they add something. Large culverts have neither field, so both are missing for culvert matches.
 
-    2026-09-26 addition: ``width_ft`` (channel-opening width, culvert-only
-    - NYSDOT's ``SpanLength``, verified against the state's own *Culvert
-    Inventory and Inspection Manual* (fetched live and text-extracted): "the
-    length of span is defined as the distance measured perpendicular to the
-    centerline of the culvert" (i.e. across the waterway, not along it), and
-    by definition capped near 20ft ("if total span exceeds 20 feet, the
-    structure is to be classified as a bridge") - a live 2000-row sample
-    matches exactly: 100% populated, range 2-22ft. A DIFFERENT field,
-    ``OutToOutWidth``, was tried first and DROPPED after checking the same
-    manual: its only documented culvert-specific note ties it to headwalls,
-    not the waterway opening, and a live check found it correlates just 0.04
-    with the verified ``SpanLength`` - i.e. it measures something else
-    entirely (plausibly a roadway/embankment-width quantity, unconfirmed),
-    not a constriction-relevant width. Using it as an "opening width" would
-    have been the same mistake as the bridge deck-width proxy below, just
-    not yet caught by an implausible-value check - caught here instead by
-    reading the primary source before trusting a field name. A bridge-side
-    opening-width version was also tried (``DeckAreaSqFt / BridgeLengthft``)
-    and DROPPED after live verification: for a simple rectangular deck this
-    ratio is a width, but 207/20,051 real bridges produced physically
-    impossible values (up to 4,230 ft) - ``BridgeLengthft`` is the span
-    along the road and ``DeckAreaSqFt`` includes ramps/medians on skewed or
-    interchange-style bridges, so the ratio silently breaks down for exactly
-    the complex structures where it matters most. The same manual confirms
-    ``BridgeLengthft`` (already captured as ``structure_length_m``) IS the
-    channel-spanning axis for bridges, unlike a culvert's ``StructureLength``
-    (the tunnel/embankment axis) - see ``fetch_bankfull_width_bulk`` for how
-    this asymmetry is handled in the constriction-ratio calculation.
-    ``num_spans`` (both types, ``NumberOfSpans``, 100% populated),
-    ``streambed_material`` (culvert-only, NYSDOT's own
-    natural-bottom-continuity field - directly matches a NAACC scoring
-    criterion), ``culvert_skew_deg`` (culvert-only, ``CulvertSkew`` - 51.5%
-    read exactly 0 in a live sample, but unlike width a 0 skew is a real,
-    common physical value (perpendicular crossing), so NOT treated as a
-    sentinel here). Considered and rejected after live checks:
-    ``GeneralRecommendation`` (correlates 0.72 with the existing
-    ``ConditionRating`` in a live 2000-row sample - same dilution risk as the
-    StreamCat local-catchment revert, not worth it for a mostly-redundant
-    field) and ``AbutmentHeight`` (only 193/2000, ~9.6%, populated within
-    culverts alone - under 2% of all crossings once combined with the
-    ~20-25% overall structure match rate, too sparse to carry real signal)."""
+    The culvert opening width is ``width_ft``, NYSDOT's ``SpanLength``. NYSDOT's Culvert Inventory and Inspection Manual
+    defines it as the distance perpendicular to the centreline of the culvert (across the waterway, not along it), and says
+    a structure with a total span over 20 ft is classified as a bridge. A sample of 2,000 rows agrees: the field is always
+    filled and ranges from 2 to 22 ft. We first tried ``OutToOutWidth`` and dropped it, because the manual ties it to
+    headwalls and not to the waterway opening, and it correlates only 0.04 with ``SpanLength``. We also tried a width for
+    bridges as ``DeckAreaSqFt / BridgeLengthft`` and dropped it, because 207 of 20,051 bridges gave impossible values (up to
+    4,230 ft): ``BridgeLengthft`` runs along the road, and ``DeckAreaSqFt`` includes ramps and medians on skewed or
+    interchange-style bridges. The manual confirms that ``BridgeLengthft`` (already used as ``structure_length_m``) is the
+    axis that spans the channel for bridges, unlike a culvert's ``StructureLength``, which runs along the culvert.
+    ``fetch_bankfull_width_bulk`` handles that difference in the constriction ratio.
+
+    Other fields kept: ``num_spans`` (both types, ``NumberOfSpans``, always filled), ``streambed_material`` (culverts only,
+    NYSDOT's natural-bottom continuity field, which matches a NAACC scoring criterion) and ``culvert_skew_deg`` (culverts
+    only, ``CulvertSkew``). In a sample, 51.5% of skews read exactly 0. Unlike the width, a skew of 0 is a real and common
+    value (a perpendicular crossing), so it is not treated as a placeholder. Two fields were considered and not used:
+    ``GeneralRecommendation`` correlates 0.72 with ``ConditionRating`` in a 2,000-row sample, so it mostly repeats it, and
+    ``AbutmentHeight`` is filled on only 193 of 2,000 culverts, which is under 2% of all crossings once it is combined with
+    the match rate of about 20 to 25%."""
     try:
         import geopandas as gpd
     except ImportError:
@@ -1181,17 +984,11 @@ def _download_structures_layer():
     out["width_ft"] = width_ft
     out["num_spans"] = pd.to_numeric(out.get("NumberOfSpans"), errors="coerce")
 
-    # structural type/shape (2026-09-29 addition): bridges and culverts use
-    # DIFFERENT NYSDOT fields for this (GTMSStructure vs TypeMaxSpanDesign -
-    # confirmed via a live schema query, neither exists on the other layer),
-    # both 100% populated in live samples, both coded "NN - Description"
-    # strings (e.g. "40 - Single Box Culvert", "02 - Stringer/Multi-Beam or
-    # Girder") from the same NYSDOT GTMS coding scheme - stripping the
-    # leading code leaves a human-readable structural-shape category (box/
-    # pipe/arch/slab/frame/girder/truss/...) directly relevant to NAACC's
-    # own structure-shape scoring criterion, not previously captured by any
-    # existing field here (structure_material is the physical material -
-    # concrete/steel/etc - a different axis from shape).
+    # Structure type and shape. Bridges and culverts use different NYSDOT fields for this (GTMSStructure and
+    # TypeMaxSpanDesign, found with a schema query). Both are coded as 'NN - Description' strings such as '40 -
+    # Single Box Culvert'. Dropping the code leaves a shape category (box, pipe, arch, slab, frame, girder,
+    # truss and so on) that relates to NAACC's structure-shape criterion. It is a different axis from
+    # structure_material.
     def _strip_code(s):
         if not isinstance(s, str):
             return None
@@ -1202,33 +999,16 @@ def _download_structures_layer():
                           if "TypeMaxSpanDesign" in out else None)
     out["structure_type"] = struct_type
 
-    # years since last inspection (2026-09-29 addition): LastInspectionDate
-    # is an epoch-millisecond timestamp, ~99.9% populated in live samples -
-    # a data-recency signal distinct from structure_age_yr (which is time
-    # since BUILT, not time since last CHECKED - a structure could be old
-    # but recently re-inspected and confirmed sound, or vice versa). NYSDOT's
-    # own Culvert Inventory manual (fetched live earlier this project)
-    # documents a mandatory ~2-year "Biennial Inspection" cycle, so the raw
-    # distribution was checked for plausibility rather than trusted
-    # blindly: 92.8% of matched structures show 0-4 years since inspection
-    # (consistent with that cycle plus reasonable scheduling slack), a
-    # sparse genuine-looking backlog trickle covers 5-39 years (3-25
-    # structures per year), then a SEPARATE, much denser cluster appears at
-    # 40-48 years (13 to 759 structures per year) concentrated in
-    # LastInspectionDate == 1978/1979 specifically - a clean statistical
-    # break, not a smooth tail, and the same year the manual's "Record Code"
-    # section describes as the cutover from NYSDOT's "legacy system of
-    # inventorying structures." Thousands of structures genuinely going
-    # unispected for 40+ years under a binding 2-year federal/state mandate
-    # is implausible; a pre-digitization placeholder date surviving the
-    # legacy-system migration is the far more likely explanation, but this
-    # is inferred from the statistical break plus the manual's own
-    # "legacy system" language, not a fact NYSDOT's documentation states
-    # outright - so treated the same way the ConditionRating==0 sentinel
-    # was: values at/above the break (>=40) are set to missing rather than
-    # trusted as real, rather than either silently keeping a likely-corrupt
-    # signal or silently dropping the field's genuine 5-39 year backlog
-    # tail along with it.
+    # Years since last inspection. LastInspectionDate is an epoch-millisecond timestamp that is filled for about
+    # 99.9% of structures. It differs from structure_age_yr, which is the time since the structure was built.
+    #
+    # NYSDOT's culvert inventory manual describes a biennial inspection cycle, and 92.8% of matched structures
+    # were inspected 0 to 4 years ago, which fits. A second, much denser cluster appears at 40 to 48 years (13
+    # to 759 structures per year), almost all with a LastInspectionDate in 1978 or 1979. The manual gives that
+    # period as the change from the legacy inventory system. Thousands of structures going 40 years without
+    # inspection under a two-year requirement is not plausible, so these are most likely placeholder dates. That
+    # is an inference and not something NYSDOT states. Values of 40 or more are therefore set to missing, as the
+    # ConditionRating == 0 placeholder was.
     insp_ms = pd.to_numeric(out.get("LastInspectionDate"), errors="coerce")
     insp_year = pd.to_datetime(insp_ms, unit="ms", errors="coerce").dt.year
     yrs_insp = (_STRUCTURES_CURRENT_YEAR - insp_year).clip(lower=0)
@@ -1239,35 +1019,25 @@ def _download_structures_layer():
 
 
 def _clean_structure_condition(v) -> float | None:
-    """NYSDOT's condition-rating scale is documented 1-7 (7=best); a "0"
-    value (66 of 4,492 real matches, checked live 2026-09-24: a clean gap to
-    the next value at 1.0, not sparse noise) is a "not yet rated" sentinel,
-    not a real out-of-range condition - the same sentinel-vs-missing pattern
-    as NHDPlus VAA's -9998 slope, see ``_clean_vaa_slope``."""
+    """NYSDOT's condition rating runs from 1 to 7 (7 is best). A value of 0 (66 of 4,492 matches, with a clean gap to the
+    next value at 1.0) means "not yet rated" and is not a real condition, so it becomes missing. NHDPlus VAA's -9998 slope
+    is handled the same way in ``_clean_vaa_slope``."""
     if v is None or (isinstance(v, float) and math.isnan(v)) or v <= 0:
         return None
     return float(v)
 
 
 def fetch_structure_inventory_bulk(df: pd.DataFrame, *, radius_m: float = 100.0) -> pd.DataFrame:
-    """Vectorized nearest-structure lookup: for every row of ``df``, finds
-    the nearest NYSDOT bridge or large culvert within ``radius_m`` and
-    returns ``structure_age_yr``, ``structure_condition`` (1-7, higher is
-    better), ``structure_material`` (categorical), ``structure_length_m``,
-    ``structure_is_bridge`` (categorical: "bridge"/"culvert"/"none"),
-    ``structure_superstructure_condition`` (NBI 0-9 scale, bridges only,
-    2026-09-25 addition), ``structure_fhwa_status`` (categorical
-    Good/Fair/Poor, bridges only, 2026-09-25 addition), ``structure_opening_width_m``,
-    ``structure_num_spans``, ``structure_streambed_material`` (categorical,
-    culvert-only), ``structure_culvert_skew_deg`` (culvert-only) - the last
-    four are a 2026-09-26 addition, see ``_download_structures_layer`` for
-    the live-verification rationale behind each. ``structure_type``
-    (categorical - structural shape: box/pipe/arch/slab/frame/girder/
-    truss/..., "none" if unmatched) and ``structure_yrs_since_inspection``
-    (numeric - years since NYSDOT's LastInspectionDate, distinct from
-    structure_age_yr's time-since-BUILT) are a 2026-09-29 addition, same
-    source layer, see ``_download_structures_layer`` for the field-level
-    verification."""
+    """For every row of ``df``, find the nearest NYSDOT bridge or large culvert within ``radius_m`` and return:
+
+    ``structure_age_yr``, ``structure_condition`` (1 to 7, higher is better), ``structure_material`` (categorical),
+    ``structure_length_m``, ``structure_is_bridge`` ("bridge", "culvert" or "none"), ``structure_superstructure_condition``
+    (NBI 0 to 9 scale, bridges only), ``structure_fhwa_status`` (Good, Fair or Poor, bridges only),
+    ``structure_opening_width_m``, ``structure_num_spans``, ``structure_streambed_material`` (culverts only),
+    ``structure_culvert_skew_deg`` (culverts only), ``structure_type`` (shape: box, pipe, arch, slab, frame, girder, truss
+    and so on, or "none" if there is no match) and ``structure_yrs_since_inspection`` (years since NYSDOT's
+    LastInspectionDate, which is not the same as the time since the structure was built). See
+    ``_download_structures_layer`` for how each field was checked."""
     import geopandas as gpd
 
     cols = ["structure_age_yr", "structure_condition", "structure_material",
@@ -1303,9 +1073,8 @@ def fetch_structure_inventory_bulk(df: pd.DataFrame, *, radius_m: float = 100.0)
           else pd.Series(index=df.index, dtype="object"))
     ib = (joined.get("is_bridge").reindex(df.index) if "is_bridge" in joined
          else pd.Series(index=df.index, dtype="object"))
-    # NBI_SuperstructureCondition uses "N" for not-applicable alongside the
-    # numeric 0-9 scale - to_numeric(errors="coerce") turns that into NaN,
-    # which is the right treatment (not a rating, not a sentinel to clean).
+    # NBI_SuperstructureCondition uses 'N' for not applicable next to the 0 to 9 scale.
+    # to_numeric(errors='coerce') turns it into NaN, which is the right result.
     super_cond = (pd.to_numeric(joined.get("NBI_SuperstructureCondition"), errors="coerce").reindex(df.index)
                  if "NBI_SuperstructureCondition" in joined else pd.Series(index=df.index, dtype="float64"))
     fhwa = (joined.get("FHWA_Condition_Status").reindex(df.index) if "FHWA_Condition_Status" in joined
@@ -1330,9 +1099,8 @@ def fetch_structure_inventory_bulk(df: pd.DataFrame, *, radius_m: float = 100.0)
     out["structure_fhwa_status"] = fhwa.where(matched).fillna("none")
     out["structure_opening_width_m"] = (width_ft * 0.3048).where(matched)
     out["structure_num_spans"] = num_spans.where(matched)
-    # CulvertSkew/StreamBedMaterial are culvert-only fields (NaN/None on the
-    # bridges layer) - `.where(matched)` alone is enough, no bridge-specific
-    # masking needed since bridge rows already read NaN/None from the join.
+    # CulvertSkew and StreamBedMaterial exist only for culverts (NaN or None on the bridges layer), so
+    # .where(matched) is enough.
     out["structure_culvert_skew_deg"] = skew.where(matched)
     out["structure_streambed_material"] = streambed.where(matched).fillna("none")
     out["structure_type"] = stype.where(matched).fillna("none")
@@ -1343,29 +1111,21 @@ def fetch_structure_inventory_bulk(df: pd.DataFrame, *, radius_m: float = 100.0)
     return out
 
 
-# ---------------------------------------------------------------------------
-# 11. Constriction ratio - structure opening width vs. the stream's natural
-#     (bankfull) width. A narrow structure relative to the channel is a
-#     direct passability problem (velocity/depth changes, perching risk).
-#     Bankfull width comes from USGS's published regional regression
-#     (Mulvihill et al. 2009, SIR 2009-5144, table 3), 7 hydrologic regions
-#     plus a statewide fallback. Region boundaries come from USGS
-#     StreamStats' own ArcGIS service (gis.streamstats.usgs.gov/arcgis/rest/
-#     services/nss/regions/MapServer/28, grid_name=="bkfullreg_g"). Matches
-#     98.0% of crossings to a region by point-in-polygon; the rest use the
-#     statewide equation. (Tried as a model feature and reverted - see
-#     METHODOLOGY.md - but still computed and cached.)
-# ---------------------------------------------------------------------------
+# Constriction ratio: the structure's opening width divided by the stream's natural bankfull width. A narrow
+# structure compared with the channel changes velocity and depth and can perch. Bankfull width comes from the
+# USGS regional regression (Mulvihill et al. 2009, SIR 2009-5144, table 3), with 7 hydrologic regions and a
+# statewide equation as a fallback. The region boundaries come from the USGS StreamStats ArcGIS service
+# (gis.streamstats.usgs.gov/arcgis/rest/services/nss/regions/MapServer/28, grid_name == 'bkfullreg_g'). 98.0% of
+# crossings fall in a region by point-in-polygon and the rest use the statewide equation. It was tried as a
+# model feature and dropped, but it is still computed and cached.
 
 _BANKFULL_REGIONS_URL = ("https://gis.streamstats.usgs.gov/arcgis/rest/services/"
                          "nss/regions/MapServer/28/query")
 _BANKFULL_REGIONS_PATH = CACHE / "_bankfull_regions_ny.geojson"
 
-# Table 3, Mulvihill et al. 2009 (SIR 2009-5144): bankfull width (ft) = a *
-# drainage_area(mi^2)^b, fit per hydrologic region from real cross-section
-# surveys (verified by extracting the actual published table, not
-# transcribed from a secondary source). Keyed by the region polygon's own
-# ``Name`` field so the join needs no separate lookup table.
+# Table 3 of Mulvihill et al. 2009: bankfull width (ft) = a * drainage_area(mi^2)^b, fitted for each hydrologic
+# region from cross-section surveys. The values were taken from the published table itself. They are keyed by
+# the region polygon's Name field, so the join needs no other lookup.
 _BANKFULL_WIDTH_EQUATIONS = {
     "Bankfull_Regions_1_and_2_SIR2009_5144": (21.5, 0.362),
     "Bankfull_Region_3_SIR2009_5144": (24.0, 0.292),
@@ -1430,9 +1190,8 @@ def fetch_bankfull_width_bulk(df: pd.DataFrame) -> pd.Series:
     fallback_a, fallback_b = _BANKFULL_WIDTH_STATEWIDE
     a = a.fillna(fallback_a)
     b = b.fillna(fallback_b)
-    # drainage area of 0/negative isn't physical (would make DA^b undefined
-    # for fractional b); clip to a tiny positive floor rather than drop the
-    # row - matches how log_drainage_area already floors near-zero values.
+    # A drainage area of 0 or less is not physical and DA^b would be undefined for fractional b, so it is
+    # clipped to a tiny positive value and the row is kept, as log_drainage_area does.
     width_ft = a * da_mi2.clip(lower=0.01) ** b
     return (width_ft * 0.3048).rename("bankfull_width_m")
 
@@ -1460,22 +1219,14 @@ def compute_constriction_ratio(df: pd.DataFrame) -> pd.Series:
     return (span_m / bankfull.where(bankfull > 0)).rename("constriction_ratio")
 
 
-# ---------------------------------------------------------------------------
-# 12. Precipitation intensity ("flashiness") - StreamCat's sc_precip_mm is
-#     mean annual precipitation; this is short-duration storm intensity, a
-#     different quantity that determines whether a fixed-size structure
-#     gets overwhelmed (perching, scour, blowout) regardless of the yearly
-#     average. Source: NOAA Atlas 14 Volume 10 Precipitation Frequency Data
-#     Server (hdsc.nws.noaa.gov/pub/hdsc/data/ne/, gridded ASCII, ESRI
-#     format, NAD83, ~1km cells, values in 1000ths of an inch). Sanity
-#     checked against NOAA's own published point estimates for Albany
-#     (3.799in) and NYC (5.516in) before use.
+# Short-duration precipitation intensity. StreamCat's sc_precip_mm is mean annual precipitation. This is storm
+# intensity, which decides whether a fixed-size structure is overwhelmed whatever the yearly average is.
 #
-#     ``precip_24h_10yr_in`` (24hr/10yr storm depth) and
-#     ``precip_60m_10yr_in`` (1hr/10yr) plus their ratio
-#     ``precip_flashiness_ratio``. Only the 24h depth is actually used by
-#     the model - see models.py.
-# ---------------------------------------------------------------------------
+# The source is NOAA Atlas 14 Volume 10, Precipitation Frequency Data Server
+# (hdsc.nws.noaa.gov/pub/hdsc/data/ne/, gridded ASCII in ESRI format, NAD83, about 1 km cells, values in
+# thousandths of an inch). We checked it against NOAA's published point estimates for Albany (3.799 in) and New
+# York City (5.516 in). The columns are precip_24h_10yr_in (24 hour, 10 year storm depth), precip_60m_10yr_in (1
+# hour, 10 year) and their ratio precip_flashiness_ratio. The model uses only the 24 hour depth (see models.py).
 
 _PRECIP_GRIDS = {
     # (zip URL, inner .asc filename, output column, 1000ths-inch -> inches)
@@ -1547,9 +1298,7 @@ def fetch_precip_intensity_bulk(df: pd.DataFrame) -> pd.DataFrame:
     return out
 
 
-# ---------------------------------------------------------------------------
-# Driver
-# ---------------------------------------------------------------------------
+# Building the predictor table
 
 
 def build_predictor_table(df: pd.DataFrame, *, do_drainage=True, do_elev=True,
@@ -1567,8 +1316,8 @@ def build_predictor_table(df: pd.DataFrame, *, do_drainage=True, do_elev=True,
     limit once the one-time ~500MB extract is local. See module docstring."""
     df = attach_county_census(df).copy()
     if "Road_Type" in df.columns:
-        # Kept for audit/comparison only - NOT a model feature. A real
-        # deployment target (an unassessed crossing) will not have this.
+        # Kept for comparison only and not a model feature, because a crossing that has not been surveyed does
+        # not have it.
         df["road_class_surveyed"] = df["Road_Type"].astype("string").str.strip().str.lower()
 
     per_point_road = do_road_class and road_class_mode == "per_point"
@@ -1576,9 +1325,8 @@ def build_predictor_table(df: pd.DataFrame, *, do_drainage=True, do_elev=True,
     da, span, comid, elev, road = [], [], [], [], []
     for i, (_, row) in enumerate(df.iterrows()):
         cid = str(row["crossing_id"])
-        # Only the per-point OSM/Overpass fetch is rate-limited; skip the
-        # sleep when its result is already cached, so a resumed/rebuilt run
-        # doesn't pay the full per-row delay for rows needing no network call.
+        # Only the per-point OpenStreetMap (Overpass) fetch is rate limited, so skip the sleep when its result
+        # is already cached. A resumed run then avoids the delay for rows that need no network call.
         road_was_cached = (CACHE / "osm_road" / f"{cid}.json").exists()
         if do_drainage:
             d = fetch_drainage_area(row["lon"], row["lat"], cid)
@@ -1612,10 +1360,9 @@ def build_predictor_table(df: pd.DataFrame, *, do_drainage=True, do_elev=True,
             raise ValueError("do_streamcat requires do_drainage=True (needs COMID)")
         sc = fetch_streamcat_batch(df["comid"].tolist())
         df = df.merge(sc, left_on="comid", right_index=True, how="left", suffixes=("", "_sc"))
-        # StreamCat's independent watershed-area estimate backfills rows where
-        # the primary NLDI basin-polygon fetch failed (bad snap, timeout, etc)
-        # - a different data source for the same physical quantity, used only
-        # to fill gaps, never to override a value NLDI did produce.
+        # StreamCat's own watershed-area estimate fills rows where the NLDI basin polygon failed (a bad snap, a
+        # timeout). It is a different source for the same quantity, and it only fills gaps and never replaces a
+        # value that NLDI produced.
         da_col = pd.to_numeric(df["drainage_area_km2"], errors="coerce")
         sc_area = pd.to_numeric(df["sc_watershed_area_km2"], errors="coerce")
         backfilled = da_col.isna() & sc_area.notna()

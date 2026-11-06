@@ -1,7 +1,10 @@
-"""Do StreamCat / NHDPlus attributes help once the COMID link is verified against d8accum?
-NY dev crossings present in the old pipeline. 'Verified link' = old NLDI area within a factor 2 of the d8accum area
-(30 m cells assumed; the verification only needs rough agreement). T3 features +/- old-pipeline extras (sc_*,
-stream_slope, stream_order). HUC8 CV, 3 random splits, LightGBM default. Locked set untouched."""
+"""Do StreamCat and NHDPlus attributes help once the stream link has been checked against d8accum?
+
+It uses the New York development crossings that are in the old pipeline. A link counts as checked when the old NLDI area is within
+a factor of 2 of the d8accum area (30 m cells assumed, and the check only needs rough agreement). It compares T3 features with and
+without the old pipeline's extras (sc_*, stream_slope and stream_order), using HUC8 CV, 3 random splits and LightGBM default
+settings. The test basins are not used.
+"""
 import numpy as np, pandas as pd, lightgbm as lgb
 from src import plunkett_cv as cv, plunkett_features as pf
 d = pd.read_parquet("data/processed/plunkett_features_osm.parquet"); lock = cv.locked_test_mask(d)

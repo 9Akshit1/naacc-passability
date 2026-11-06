@@ -1,6 +1,8 @@
-"""ORACLE analysis (an upper bound, NOT a deployable model): how much R2 would a perfectly known field property add to the
-T3 GIS model?  NY development crossings with survey fields. Tells us which properties are worth estimating remotely.
-HUC8 CV, 3 random splits, LightGBM. Field values are used only as an analysis device; locked set untouched."""
+"""How much R2 would a perfectly known field property add to the T3 model? This is an upper bound and not a model that could be used.
+
+It uses the New York development crossings that have survey fields, HUC8 CV with 3 random splits and LightGBM. The field values
+are used only to see which properties would be worth estimating from a distance. The test basins are not used.
+"""
 import numpy as np, pandas as pd, lightgbm as lgb
 from src import plunkett_cv as cv, plunkett_features as pf
 d = pd.read_parquet("data/processed/plunkett_features_osm.parquet"); lock = cv.locked_test_mask(d)

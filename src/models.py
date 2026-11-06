@@ -1,11 +1,6 @@
-"""The model ladder.
-
-Tabular environmental data - no neural nets. Progression from a mean predictor
-(the honest floor) through linear models to tree ensembles and gradient
-boosting, per the plan.
-
-Every model is a scikit-learn Pipeline that handles imputation + (for linear
-models) scaling + one-hot encoding of the categorical ``road_class``.
+"""The models compared for the New York version, from a mean-only baseline through linear models to tree ensembles and
+gradient boosting. Every model is a scikit-learn Pipeline that fills in missing values, scales the inputs for the linear models
+and one-hot encodes road_class.
 """
 
 from __future__ import annotations
@@ -50,48 +45,42 @@ NUMERIC_FEATURES_DEFAULT = [
     "sc_road_stream_crossing_density", "sc_dam_density", "sc_pop_density",
     "sc_bedrock_depth_cm", "sc_soil_perm", "sc_wetness_index",
     "sc_pct_impervious", "sc_pct_forest", "sc_pct_wetland", "sc_pct_agriculture",
-    # (local-catchment-scale StreamCat metrics, sc_*_local, are fetched and
-    # cached but deliberately excluded here - they correlate 0.82-0.91 with
-    # the watershed-scale versions above and diluted permutation importance
-    # across the board without moving R2. See METHODOLOGY.md.)
+    # The local-catchment StreamCat measures (sc_*_local) are fetched and cached but left out here. They correlate 0.82 to
+    # 0.91 with the watershed-scale versions above and spread the permutation importance across features without
+    # changing R2.
     "stream_slope", "stream_order",
     "aadt", "log_aadt",
     "terrain_slope_100m", "terrain_rough_100m",
     "terrain_slope_500m", "terrain_rough_500m",
-    # NYSDOT structure inventory (fetch_structure_inventory_bulk): bridge/
-    # large-culvert age, condition, length - matched within 100m for ~21% of
-    # crossings. The most mechanistically direct predictor category here,
-    # since NAACC's own scoring runs on structure properties, not landscape.
+    # New York DOT structure inventory (fetch_structure_inventory_bulk): age, condition and length of bridges and large
+    # culverts, matched within 100 m for about 21% of crossings. NAACC's own score is built from structure properties and
+    # not from the landscape.
     "structure_age_yr", "structure_condition", "structure_length_m",
     "structure_superstructure_condition",
     "structure_opening_width_m", "structure_num_spans", "structure_culvert_skew_deg",
     "precip_24h_10yr_in",
-    # Tried and left out (flat or negative, see METHODOLOGY.md / EXPERIMENT_LOG.md):
-    # constriction_ratio, structure_yrs_since_inspection, precip_60m_10yr_in,
-    # precip_flashiness_ratio.
+    # Tried and left out because they were flat or negative: constriction_ratio, structure_yrs_since_inspection,
+    # precip_60m_10yr_in and precip_flashiness_ratio.
 ]
 CATEGORICAL_FEATURES_DEFAULT = [
     "road_class",
-    # EPA Level III ecoregion - regional-heterogeneity control, not a DSL
-    # predictor; see gis_predictors.py::fetch_ecoregion_bulk.
+    # EPA Level III ecoregion, which lets the model account for regional differences (not a DSL predictor); see
+    # gis_predictors.py::fetch_ecoregion_bulk.
     "ecoregion",
-    # NYSDOT structure inventory categoricals - "none" where unmatched.
+    # New York DOT structure categories, "none" where unmatched.
     "structure_material", "structure_is_bridge",
     "structure_fhwa_status",
     "structure_streambed_material",
-    # Tried and left out (flat, within noise - see METHODOLOGY.md): structure_type.
+    # Tried and left out (flat, within noise): structure_type.
 ]
 
 
 def _preprocessor(numeric, categorical, scale: bool):
-    # add_indicator=True (2026-09-27 addition): appends one binary "was this
-    # observed" column per numeric feature that has any missingness, on top
-    # of the median-imputed value itself. Tested via repeated spatial CV
-    # (N=5): flat alone, but combined with the voting ensemble it
-    # contributes to a real, tighter-variance gain - see make_models'
-    # docstring. Most missingness here (structure fields, ~79% unmatched)
-    # is already flagged by structure_is_bridge=="none", but AADT (58%
-    # coverage) and terrain (98%) had no equivalent flag before this.
+    # add_indicator=True adds one 0/1 column per numeric feature that has missing values, saying whether the value was
+    # observed, next to the median-imputed value. On its own this made no difference in repeated spatial CV (N=5), but with
+    # the voting ensemble it gave a small gain with less variation between splits (see make_models). Most missing structure
+    # fields (about 79% unmatched) are already flagged by structure_is_bridge == "none", but AADT (58% coverage) and
+    # terrain (98%) had no such flag.
     num_steps = [("impute", SimpleImputer(strategy="median", add_indicator=True))]
     if scale:
         num_steps.append(("scale", StandardScaler()))
@@ -113,8 +102,8 @@ def make_models(numeric=None, categorical=None, seed: int = 0,
     ``voting_ensemble``: a plain equal-weight average
     (``sklearn.ensemble.VotingRegressor``) of the four tuned tree/boosting
     models, built from the same pipeline objects after ``tuned_params`` is
-    applied. See ``reports/METHODOLOGY.md`` for the ensemble-vs-single-model
-    comparison."""
+    applied. The ensemble-vs-single-model comparison is in the E0 results of
+    model_experiments.py."""
     numeric = numeric or NUMERIC_FEATURES_DEFAULT
     categorical = categorical or CATEGORICAL_FEATURES_DEFAULT
     tuned_params = tuned_params or {}
@@ -158,15 +147,10 @@ def catchment_only_model(seed: int = 0) -> Pipeline:
     ])
 
 
-# ---------------------------------------------------------------------------
-# Hyperparameter tuning: one RandomizedSearchCV per tunable model, scored
-# under a HUC8-group CV (never random CV, so tuning can't reward memorizing
-# watershed identity). This is one search pass over the whole dataset, not
-# nested inside every fold of the later repeated spatial-CV evaluation
-# (that would multiply cost by repeats x folds - infeasible at this scale).
-# The tuning split's seed is independent of the reporting splits', so the
-# reported score is still on genuinely unseen watershed combinations.
-# ---------------------------------------------------------------------------
+# Hyperparameter tuning: one RandomizedSearchCV per tunable model, scored with HUC8 group CV (never random CV, so tuning
+# cannot reward memorising watershed identity). It is one search over the whole dataset and is not nested inside every
+# fold of the repeated spatial-CV evaluation, which would multiply the cost by repeats times folds. The tuning seed is
+# separate from the reporting seeds, so the reported score is still on combinations of watersheds that tuning did not see.
 
 TUNABLE_PARAM_DISTS = {
     "random_forest": {

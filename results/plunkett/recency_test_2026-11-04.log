@@ -1,0 +1,15 @@
+survey year coverage: 1.0 {'min': 2003.0, '50%': 2018.0, 'max': 2026.0}
+{2003: 9, 2004: 226, 2005: 426, 2006: 737, 2007: 78, 2008: 377, 2009: 82, 2010: 284, 2011: 281, 2012: 706, 2013: 609, 2014: 1392, 2015: 3525, 2016: 6520, 2017: 4997, 2018: 4139, 2019: 3405, 2020: 2588, 2021: 3135, 2022: 2878, 2023: 2670, 2024: 2806, 2025: 2551, 2026: 3109}
+seed 0: A reference=0.3273  B + year input=0.3300  C recency weights=0.3255  D train 2015+ only (all held-out)=0.3267  D train 2015+ only (held-out 2015+)=0.3284  A reference (held-out 2015+)=0.3285
+seed 1: A reference=0.3222  B + year input=0.3261  C recency weights=0.3216  D train 2015+ only (all held-out)=0.3215  D train 2015+ only (held-out 2015+)=0.3226  A reference (held-out 2015+)=0.3229
+seed 2: A reference=0.3261  B + year input=0.3298  C recency weights=0.3251  D train 2015+ only (all held-out)=0.3261  D train 2015+ only (held-out 2015+)=0.3280  A reference (held-out 2015+)=0.3277
+
+A reference                              R2 = 0.3252  seeds [0.3273, 0.3222, 0.3261]
+B + year input                           R2 = 0.3286  seeds [0.33, 0.3261, 0.3298]
+C recency weights                        R2 = 0.3241  seeds [0.3255, 0.3216, 0.3251]
+D train 2015+ only (all held-out)        R2 = 0.3248  seeds [0.3267, 0.3215, 0.3261]
+D train 2015+ only (held-out 2015+)      R2 = 0.3263  seeds [0.3284, 0.3226, 0.328]
+A reference (held-out 2015+)             R2 = 0.3264  seeds [0.3285, 0.3229, 0.3277]
+
+reference model R2 by survey period (held-out rows): {'<2010': 0.17, '2010-14': 0.372, '2015-19': 0.341, '2020+': 0.31} {'<2010': 1935, '2010-14': 3272, '2015-19': 22586, '2020+': 19737}
+done

@@ -1,6 +1,8 @@
-"""Quick-check tier (NOT a GIS-only model): GIS features + a few coarse volunteer-observable answers.
-NY development crossings with survey fields; HUC8 grouped CV, 3 splits. Locked set untouched here.
-Coarse inputs are derived from the surveyed values by binning, i.e. what a volunteer could report in seconds."""
+"""The one-question check: map features plus a few coarse answers that a volunteer could give. This is not a map-only model.
+
+It uses New York development crossings with survey fields, HUC8 group CV and 3 splits, without the test basins. The coarse inputs
+are made by binning the surveyed values, which is what a volunteer could report in a few seconds.
+"""
 import numpy as np, pandas as pd, lightgbm as lgb
 from src import plunkett_cv as cv, plunkett_features as pf
 d = pd.read_parquet("data/processed/plunkett_features_osm.parquet"); lock = cv.locked_test_mask(d)

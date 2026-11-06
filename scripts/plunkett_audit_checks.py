@@ -1,4 +1,6 @@
-"""Independent audit checks (no model fitting). Each prints PASS/FLAG context; results -> results/plunkett/audit_checks.json"""
+"""Checks that do not fit any model. Each prints PASS or FLAG with some context, and the results are saved to
+results/plunkett/audit_checks.json.
+"""
 import json, re
 import numpy as np, pandas as pd, geopandas as gpd
 from scipy.stats import spearmanr

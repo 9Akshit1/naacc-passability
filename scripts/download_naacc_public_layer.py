@@ -4,8 +4,8 @@ data/raw/naacc_public_layer.parquet.
 
 The layer was first used to compare Plunkett's scores with NAACC's published scores and to see what his filtering removed. It
 is also used by scripts/build_outlet_drop_join.py to look up outlet drop (see reports/OUTLET_DROP.md). The layer has no licence
-or terms text, and the downloaded file is not committed to this repository. NAACC and Ethan Plunkett should be asked before
-results built on it are used outside this project.
+or terms text. Ethan Plunkett wrote on 2026-11-09 that NAACC data can be used for anything, with no restrictions. The downloaded
+file is not committed to this repository.
 """
 import time
 from pathlib import Path

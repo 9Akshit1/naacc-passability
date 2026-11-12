@@ -12,6 +12,7 @@ data/interim/*.jsonl
 data/interim/sarp_new_features.parquet
 data/interim/links.csv
 data/raw/naacc_public_layer.parquet
+data/raw/naacc_detailed_export_*.csv
 data/processed/fine_dem_pilot*
 
 # Feature tables and other files built by the scripts

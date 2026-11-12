@@ -9,12 +9,16 @@ Pass 1 tries rows with the same survey id, because ids repeat across state datab
 Pass 2 matches the remaining crossings to the nearest unused layer point. Pass 3 fills crossings that are still empty from the
 older New York export, which has the same outlet drop field.
 
-The layer has one row for each measured pipe, so a crossing with several pipes can have different drops. A crossing whose
-accepted rows differ by more than AMBIG_FT gets no value. A crossing with no accepted row is left empty and is never filled in
-by a model.
+The layer has one row for each measured pipe, so a crossing with several pipes can have different drops. Ethan Plunkett
+(email, 2026-11-09) scores a multi-part crossing on each structure and keeps the maximum passability, which means the score
+follows the most passable structure. A single outlet drop for such a crossing is therefore the lowest drop among its pipes
+(he suggested the mean or the minimum), and that is what this script uses. Before 2026-11-09 these crossings were left empty
+(see data/processed/plunkett_outlet_drop_before_min_rule.parquet). A crossing with no accepted row is left empty and is never
+filled in by a model.
 
 Output: data/processed/plunkett_outlet_drop.parquet with crossing_code, drop_ws (drop to the water surface), drop_sb (drop to
-the stream bottom), match_pass, match_m, score_diff and ambiguous. Nothing existing is changed.
+the stream bottom), match_pass, match_m, score_diff and ambiguous (True when the pipes differ by more than AMBIG_FT, so the
+lowest was taken from several different values). Nothing existing is changed.
 """
 import numpy as np
 import pandas as pd
@@ -53,13 +57,14 @@ if __name__ == "__main__":
     m1["score_diff"] = (m1.aquatic_score - m1.score).abs()
     cand1 = m1[(m1.match_m <= MAX_M) & (m1.score_diff < SCORE_TOL)]
     # The layer holds one row per measured pipe, so the same survey (same point, same crossing-level score) can appear two
-    # or more times with different outlet drops. It is not defined which pipe a single yes/no should describe, so a crossing
-    # whose accepted rows disagree by more than AMBIG_FT gets no outlet-drop value (1,076 crossings, 431 of them with a
-    # different perched yes/no).
+    # or more times with different outlet drops. The NAACC score follows the most passable structure, so the crossing gets the
+    # lowest drop among its accepted rows. Rows where the drop was not measured (NaN) are skipped by min.
     sp1 = cand1.groupby("di").drop_ws.agg(lambda s: s.max() - s.min() if s.notna().any() else 0.0)
     ambiguous = set(sp1[sp1 > AMBIG_FT].index)
+    low1 = cand1.groupby("di")[["drop_ws", "drop_sb"]].min()
     ok = cand1.sort_values(["di", "match_m"]).drop_duplicates("di")
     ok = ok.assign(match_pass=1)
+    ok[["drop_ws", "drop_sb"]] = low1.loc[ok.di].values
     print(f"pass 1 (id + location + score): {len(ok)} accepted of {len(m1)} id matches", flush=True)
 
     # pass 2: location + score among the layer rows not yet used
@@ -67,7 +72,7 @@ if __name__ == "__main__":
     left_n = n[~n.lid.isin(ok.lid)].reset_index(drop=True)
     tree = cKDTree(xy(left_n.lat, left_n.lon))
     cand = tree.query_ball_point(xy(left_d.lat_nad83, left_d.lon_nad83), r=MAX_M * 1.2)
-    rows = []
+    rows, low2 = [], {}
     for di, c in zip(left_d.index, cand):
         if not c:
             continue
@@ -81,17 +86,19 @@ if __name__ == "__main__":
             v = r.drop_ws.values[good]
             if np.isfinite(v).any() and np.nanmax(v) - np.nanmin(v) > AMBIG_FT:
                 ambiguous.add(di)
+            low2[di] = (np.nanmin(v) if np.isfinite(v).any() else np.nan,
+                        np.nanmin(r.drop_sb.values[good]) if np.isfinite(r.drop_sb.values[good]).any() else np.nan)
     p2 = pd.DataFrame(rows, columns=["di", "lid", "match_m", "score_diff"])
     p2 = p2.sort_values("match_m").drop_duplicates("lid")                      # one layer row serves one crossing
     p2 = p2.merge(n[["lid", "drop_ws", "drop_sb"]], on="lid").assign(match_pass=2)
+    p2[["drop_ws", "drop_sb"]] = [low2[i] for i in p2.di]
     print(f"pass 2 (location + score): {len(p2)} accepted", flush=True)
 
     out = pd.concat([ok[["di", "lid", "drop_ws", "drop_sb", "match_pass", "match_m", "score_diff"]], p2], ignore_index=True)
     out = out.sort_values("match_m").drop_duplicates("lid").drop_duplicates("di")
     res = d[["crossing_code", "state"]].join(out.set_index("di")[["drop_ws", "drop_sb", "match_pass", "match_m", "score_diff"]])
     res["ambiguous"] = res.index.isin(ambiguous)
-    res.loc[res.ambiguous, ["drop_ws", "drop_sb"]] = np.nan
-    print(f"ambiguous (accepted rows disagree by > {AMBIG_FT} ft): {int(res.ambiguous.sum())} crossings set to no value", flush=True)
+    print(f"pipes disagree by > {AMBIG_FT} ft: {int(res.ambiguous.sum())} crossings (given the lowest drop)", flush=True)
     # pass 3: crossings still blank get the value from the older NY survey export (same crossing code); where both sources hold a value
     # they are compared and the agreement is printed, the public-layer value wins.
     old = pd.read_parquet("data/processed/subset_predictors.parquet")
@@ -100,7 +107,7 @@ if __name__ == "__main__":
     res = res.merge(o, on="crossing_code", how="left")
     both = res.drop_ws.notna() & res.o_ws.notna()
     print(f"NY export vs public layer where both hold a value: {both.sum()} crossings, equal {np.isclose(res.drop_ws[both], res.o_ws[both]).mean():.3f}")
-    fill = res.drop_ws.isna() & res.o_ws.notna() & ~res.ambiguous           # the older export keeps one pipe: never used for ambiguous ones
+    fill = res.drop_ws.isna() & res.o_ws.notna()                            # the older export keeps one pipe; used only where the layer has none
     res.loc[fill, "drop_ws"] = res.loc[fill, "o_ws"]; res.loc[fill, "match_pass"] = 3
     print(f"pass 3 (older NY export): {fill.sum()} crossings filled")
     res = res.drop(columns="o_ws")

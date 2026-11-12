@@ -1,6 +1,6 @@
 """One model for every region, a model for each region, or an average of both? It uses development rows only and never reads the test basins.
 
-    python -m scripts.plunkett_regions_eval {A|B|C}
+    python -m scripts.plunkett_regions_eval {A|B|C} [public|export]
 
 A  map only, leaving out one state at a time. The held-out state stands in for a place with no local training data.
 B  the same, on the crossings with a surveyed outlet drop, with and without the yes/no answer to "is the outlet perched?"
@@ -16,6 +16,10 @@ For a held-out state s, with no rows of s used in training, the variants are:
   simweight  pooled, with each training row weighted by how much it looks like s on the map inputs (a domain classifier trained on
              the inputs only, so no labels of s are used)
 It uses the fixed LightGBM model (scripts.plunkett_streamcat_eval.reg) and seed 0.
+
+The outlet drop comes from the public NAACC layer by default (data/processed/plunkett_outlet_drop.parquet). With the argument
+"export" it comes from NAACC's detailed export (plunkett_outlet_drop_export.parquet, see scripts/build_outlet_drop_from_export.py),
+and a crossing the export does not cover keeps its public-layer value.
 """
 import sys
 import time
@@ -38,7 +42,17 @@ def r2(y, p):
     return 1 - ((y - p) ** 2).sum() / ((y - y.mean()) ** 2).sum()
 
 
-def load(full=False):
+def outlet_drop(source="public"):
+    pub = pd.read_parquet("data/processed/plunkett_outlet_drop.parquet")[["crossing_code", "drop_ws"]]
+    if source == "public":
+        return pub
+    exp = pd.read_parquet("data/processed/plunkett_outlet_drop_export.parquet")[["crossing_code", "drop_ws"]]
+    both = exp.merge(pub, on="crossing_code", how="outer", suffixes=("", "_pub"))
+    both["drop_ws"] = both.drop_ws.fillna(both.drop_ws_pub)
+    return both[["crossing_code", "drop_ws"]]
+
+
+def load(full=False, drop_source="public"):
     d = pd.read_parquet("data/processed/plunkett_features_osm.parquet")
     d, _ = pf.add_derived(d)
     g = pf.feature_groups(d)
@@ -48,8 +62,7 @@ def load(full=False):
     d = pd.concat([d, sf.build(d).drop(columns="comid")], axis=1)
     pub = [c for c in d.columns if c.startswith(("sc_", "vaa_"))] + ["snap_m", "snap2_m", "order_line", "ftype_line"]
     nodsl = [c for c in g["PLUNKETT"] if c not in raster] + g["NBI"] + g["OSM"] + pub
-    o = pd.read_parquet("data/processed/plunkett_outlet_drop.parquet")[["crossing_code", "drop_ws"]]
-    d = d.merge(o, on="crossing_code", how="left")
+    d = d.merge(outlet_drop(drop_source), on="crossing_code", how="left")
     d["q_perched"] = np.where(d.drop_ws.isna(), np.nan, (d.drop_ws > 0.25).astype(float))
     if full:
         return d, t3, nodsl
@@ -167,7 +180,9 @@ def part_C(dev, t3, nodsl):
 
 
 if __name__ == "__main__":
-    dev, t3, nodsl = load()
+    source = sys.argv[2] if len(sys.argv) > 2 else "public"
+    dev, t3, nodsl = load(drop_source=source)
+    print(f"outlet drop from the {source} source")
     print(f"dev rows {len(dev)}, inputs: t3 {len(t3)}, no-DSL {len(nodsl)}", flush=True)
     {"A": part_A, "B": part_B, "C": part_C}[sys.argv[1]](dev, t3, nodsl)
     print("done", flush=True)

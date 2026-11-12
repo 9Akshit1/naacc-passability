@@ -1,0 +1,71 @@
+dev rows 47530, inputs: t3 71, no-DSL 175
+PART B: crossings with a recorded outlet drop 26885 (perched share 0.278); states: {'NY': 16474, 'PA': 3055, 'ME': 2435, 'CT': 1845, 'MA': 1129, 'MD': 657, 'NJ': 529, 'VA': 366, 'WV': 327, 'VT': 28, 'RI': 20, 'NH': 20}
+
+map only (no DSL rasters)
+  [map only (no] CT n= 1845 (regional from ['MA', 'RI', 'NJ', 'NY'])  pooled 0.190  regional 0.193  ensemble 0.193  simweight 0.173  [36s]
+  [map only (no] MA n= 1129 (regional from ['CT', 'RI', 'NY', 'NJ'])  pooled 0.248  regional 0.244  ensemble 0.247  simweight 0.228  [31s]
+  [map only (no] MD n=  657 (regional from ['WV', 'PA', 'VA', 'NJ'])  pooled 0.052  regional 0.042  ensemble 0.058  simweight 0.050  [24s]
+  [map only (no] ME n= 2435 (regional from ['NH', 'VT', 'MA', 'RI'])  pooled 0.087  regional 0.082  ensemble 0.097  simweight 0.086  [22s]
+  [map only (no] NH n=   20 (regional from ['VT', 'ME', 'MA', 'RI'])  pooled -0.005  regional 0.051  ensemble 0.035  simweight 0.016  [21s]
+  [map only (no] NJ n=  529 (regional from ['CT', 'NY', 'MA', 'PA'])  pooled -0.068  regional -0.041  ensemble -0.053  simweight -0.074  [24s]
+  [map only (no] NY n=16474 (regional from ['CT', 'MA', 'NJ', 'PA'])  pooled 0.219  regional 0.212  ensemble 0.219  simweight 0.203  [25s]
+  [map only (no] PA n= 3055 (regional from ['MD', 'NJ', 'NY', 'WV'])  pooled 0.216  regional 0.215  ensemble 0.217  simweight 0.209  [23s]
+  [map only (no] RI n=   20 (regional from ['MA', 'CT', 'NJ', 'NY'])  pooled 0.154  regional 0.134  ensemble 0.144  simweight 0.145  [21s]
+  [map only (no] VA n=  366 (regional from ['WV', 'MD', 'PA', 'NJ'])  pooled 0.139  regional 0.113  ensemble 0.131  simweight 0.169  [18s]
+  [map only (no] VT n=   28 (regional from ['NH', 'ME', 'MA', 'NY'])  pooled 0.413  regional 0.426  ensemble 0.420  simweight 0.429  [20s]
+  [map only (no] WV n=  327 (regional from ['VA', 'MD', 'PA', 'NJ'])  pooled 0.293  regional 0.247  ensemble 0.275  simweight 0.297  [21s]
+  [map only (no] ALL held-out rows pooled together: pooled 0.2132  regional 0.2074  ensemble 0.2144  simweight 0.2006
+  [map only (no] mean over states with n>=300 (9 states): pooled 0.1529  regional 0.1453  ensemble 0.1537  simweight 0.1489
+  [map only (no] state wins vs pooled (n>=300): regional 2/9  ensemble 6/9  simweight 2/9
+
+map + perched yes/no (no DSL rasters)
+  [map + perche] CT n= 1845 (regional from ['MA', 'RI', 'NJ', 'NY'])  pooled 0.688  regional 0.685  ensemble 0.687  simweight 0.677  [21s]
+  [map + perche] MA n= 1129 (regional from ['CT', 'RI', 'NY', 'NJ'])  pooled 0.704  regional 0.704  ensemble 0.704  simweight 0.688  [25s]
+  [map + perche] MD n=  657 (regional from ['WV', 'PA', 'VA', 'NJ'])  pooled 0.634  regional 0.642  ensemble 0.643  simweight 0.640  [20s]
+  [map + perche] ME n= 2435 (regional from ['NH', 'VT', 'MA', 'RI'])  pooled 0.648  regional 0.638  ensemble 0.648  simweight 0.637  [17s]
+  [map + perche] NH n=   20 (regional from ['VT', 'ME', 'MA', 'RI'])  pooled 0.122  regional 0.025  ensemble 0.079  simweight 0.142  [22s]
+  [map + perche] NJ n=  529 (regional from ['CT', 'NY', 'MA', 'PA'])  pooled 0.418  regional 0.416  ensemble 0.418  simweight 0.380  [31s]
+  [map + perche] NY n=16474 (regional from ['CT', 'MA', 'NJ', 'PA'])  pooled 0.689  regional 0.686  ensemble 0.689  simweight 0.677  [30s]
+  [map + perche] PA n= 3055 (regional from ['MD', 'NJ', 'NY', 'WV'])  pooled 0.688  regional 0.688  ensemble 0.689  simweight 0.684  [39s]
+  [map + perche] RI n=   20 (regional from ['MA', 'CT', 'NJ', 'NY'])  pooled 0.687  regional 0.695  ensemble 0.691  simweight 0.686  [42s]
+  [map + perche] VA n=  366 (regional from ['WV', 'MD', 'PA', 'NJ'])  pooled 0.714  regional 0.707  ensemble 0.713  simweight 0.708  [32s]
+  [map + perche] VT n=   28 (regional from ['NH', 'ME', 'MA', 'NY'])  pooled 0.800  regional 0.797  ensemble 0.799  simweight 0.799  [42s]
+  [map + perche] WV n=  327 (regional from ['VA', 'MD', 'PA', 'NJ'])  pooled 0.799  regional 0.784  ensemble 0.793  simweight 0.796  [34s]
+  [map + perche] ALL held-out rows pooled together: pooled 0.6891  regional 0.6862  ensemble 0.6893  simweight 0.6784
+  [map + perche] mean over states with n>=300 (9 states): pooled 0.6646  regional 0.6612  ensemble 0.6649  simweight 0.6540
+  [map + perche] state wins vs pooled (n>=300): regional 3/9  ensemble 5/9  simweight 1/9
+
+map only (with DSL rasters)
+  [map only (wi] CT n= 1845 (regional from ['MA', 'RI', 'NJ', 'NY'])  pooled 0.266  regional 0.253  ensemble 0.261  simweight 0.261  [22s]
+  [map only (wi] MA n= 1129 (regional from ['CT', 'RI', 'NY', 'NJ'])  pooled 0.328  regional 0.326  ensemble 0.328  simweight 0.335  [25s]
+  [map only (wi] MD n=  657 (regional from ['WV', 'PA', 'VA', 'NJ'])  pooled 0.108  regional 0.033  ensemble 0.100  simweight 0.107  [28s]
+  [map only (wi] ME n= 2435 (regional from ['NH', 'VT', 'MA', 'RI'])  pooled 0.156  regional 0.168  ensemble 0.170  simweight 0.157  [9s]
+  [map only (wi] NH n=   20 (regional from ['VT', 'ME', 'MA', 'RI'])  pooled 0.289  regional 0.367  ensemble 0.333  simweight 0.274  [13s]
+  [map only (wi] NJ n=  529 (regional from ['CT', 'NY', 'MA', 'PA'])  pooled -0.115  regional -0.107  ensemble -0.110  simweight -0.228  [12s]
+  [map only (wi] NY n=16474 (regional from ['CT', 'MA', 'NJ', 'PA'])  pooled 0.290  regional 0.271  ensemble 0.288  simweight 0.273  [10s]
+  [map only (wi] PA n= 3055 (regional from ['MD', 'NJ', 'NY', 'WV'])  pooled 0.247  regional 0.229  ensemble 0.240  simweight 0.227  [12s]
+  [map only (wi] RI n=   20 (regional from ['MA', 'CT', 'NJ', 'NY'])  pooled 0.100  regional 0.055  ensemble 0.078  simweight 0.113  [14s]
+  [map only (wi] VA n=  366 (regional from ['WV', 'MD', 'PA', 'NJ'])  pooled 0.058  regional 0.059  ensemble 0.064  simweight 0.007  [10s]
+  [map only (wi] VT n=   28 (regional from ['NH', 'ME', 'MA', 'NY'])  pooled 0.472  regional 0.503  ensemble 0.489  simweight 0.457  [11s]
+  [map only (wi] WV n=  327 (regional from ['VA', 'MD', 'PA', 'NJ'])  pooled 0.333  regional 0.326  ensemble 0.334  simweight 0.315  [9s]
+  [map only (wi] ALL held-out rows pooled together: pooled 0.2753  regional 0.2601  ensemble 0.2741  simweight 0.2609
+  [map only (wi] mean over states with n>=300 (9 states): pooled 0.1856  regional 0.1732  ensemble 0.1861  simweight 0.1618
+  [map only (wi] state wins vs pooled (n>=300): regional 3/9  ensemble 5/9  simweight 2/9
+
+map + perched yes/no (with DSL rasters)
+  [map + perche] CT n= 1845 (regional from ['MA', 'RI', 'NJ', 'NY'])  pooled 0.701  regional 0.700  ensemble 0.701  simweight 0.703  [11s]
+  [map + perche] MA n= 1129 (regional from ['CT', 'RI', 'NY', 'NJ'])  pooled 0.716  regional 0.715  ensemble 0.716  simweight 0.711  [13s]
+  [map + perche] MD n=  657 (regional from ['WV', 'PA', 'VA', 'NJ'])  pooled 0.653  regional 0.624  ensemble 0.647  simweight 0.652  [17s]
+  [map + perche] ME n= 2435 (regional from ['NH', 'VT', 'MA', 'RI'])  pooled 0.654  regional 0.653  ensemble 0.658  simweight 0.651  [9s]
+  [map + perche] NH n=   20 (regional from ['VT', 'ME', 'MA', 'RI'])  pooled 0.103  regional 0.143  ensemble 0.127  simweight 0.130  [10s]
+  [map + perche] NJ n=  529 (regional from ['CT', 'NY', 'MA', 'PA'])  pooled 0.413  regional 0.415  ensemble 0.414  simweight 0.351  [12s]
+  [map + perche] NY n=16474 (regional from ['CT', 'MA', 'NJ', 'PA'])  pooled 0.701  regional 0.696  ensemble 0.701  simweight 0.692  [8s]
+  [map + perche] PA n= 3055 (regional from ['MD', 'NJ', 'NY', 'WV'])  pooled 0.697  regional 0.695  ensemble 0.697  simweight 0.695  [11s]
+  [map + perche] RI n=   20 (regional from ['MA', 'CT', 'NJ', 'NY'])  pooled 0.597  regional 0.608  ensemble 0.603  simweight 0.594  [11s]
+  [map + perche] VA n=  366 (regional from ['WV', 'MD', 'PA', 'NJ'])  pooled 0.703  regional 0.698  ensemble 0.702  simweight 0.699  [9s]
+  [map + perche] VT n=   28 (regional from ['NH', 'ME', 'MA', 'NY'])  pooled 0.834  regional 0.832  ensemble 0.833  simweight 0.843  [11s]
+  [map + perche] WV n=  327 (regional from ['VA', 'MD', 'PA', 'NJ'])  pooled 0.806  regional 0.806  ensemble 0.808  simweight 0.806  [9s]
+  [map + perche] ALL held-out rows pooled together: pooled 0.6996  regional 0.6958  ensemble 0.7003  simweight 0.6926
+  [map + perche] mean over states with n>=300 (9 states): pooled 0.6715  regional 0.6671  ensemble 0.6717  simweight 0.6620
+  [map + perche] state wins vs pooled (n>=300): regional 2/9  ensemble 5/9  simweight 2/9
+done

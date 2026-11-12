@@ -22,6 +22,8 @@ The last model is 0.034 better than the random forest (95% interval 0.026 to 0.0
 
 The full results are in [reports/RESULTS.md](reports/RESULTS.md), the way the tests were set up is in [reports/METHODS.md](reports/METHODS.md), and the mistakes found and fixed along the way are in [reports/CHECKS.md](reports/CHECKS.md).
 
+The file `results/plunkett/predictions_surveyed_crossings.csv` lists all 56,525 surveyed crossings with the NAACC score, the prediction of the boosted ensemble above and the prediction of the random forest, each made without using that crossing's watershed for training. [docs/SCORING_NEW_CROSSINGS.md](docs/SCORING_NEW_CROSSINGS.md) explains how to read it and how to score a list of crossings with `scripts/score_crossings.py`.
+
 If you only want one piece of this work, the National Bridge Inventory join is the easiest to reuse. [docs/NBI_JOIN.md](docs/NBI_JOIN.md) explains it, and `python -m src.nbi` downloads the federal files and joins them to any list of crossings.
 
 ## Setup

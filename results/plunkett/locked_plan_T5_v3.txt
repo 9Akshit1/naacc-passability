@@ -1,0 +1,19 @@
+Plan for the third scoring of the outlet-drop test on the set-aside basins, written before the script was run.
+
+What changes: the outlet drop. It now comes from NAACC's detailed export, matched to Plunkett's crossings by survey id (46,522 of
+56,525 crossings), with the public-layer value used for the 27 crossings that only it covers. When a crossing has several
+structures, the lowest drop is used. Before this, 32,223 crossings had a drop.
+
+What does not change: the two models (map inputs only, and map inputs plus the yes/no answer), the list of map inputs (no DSL
+raster inputs), the model (src/plunkett_final.FinalEnsemble), the 0.25 ft cut-off that makes the yes/no, the training rows (all
+development crossings with a recorded drop), the test rows (set-aside crossings with a recorded drop), and the way R-squared
+and its interval are found (resampling HUC8 watersheds, 2000 draws).
+
+What is reported: R-squared for both models, the difference with its interval, R-squared by state where the set-aside basins have at
+least 100 crossings with a drop, and the result when 10%, 20% and 30% of the yes/no answers are wrong.
+
+How the result is read: whatever the numbers are, they are reported as they come out. The cut-off, the inputs and the model are not
+adjusted afterwards. The earlier results (0.205 map only and 0.698 with the yes/no on 5,102 crossings) stay in the record next to
+the new ones, because they were measured on a different set of rows.
+
+The set-aside basins have been used for this test twice already, so this is a third use, and it is reported as such.

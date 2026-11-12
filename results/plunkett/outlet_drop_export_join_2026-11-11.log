@@ -1,0 +1,21 @@
+export: 101300 rows, 90061 survey ids
+Plunkett crossings 56525; with an id in the export 51121; rows accepted after the location/score checks 59335
+crossings with an outlet drop: 46522 of 56525 (0.823)
+        size    sum   mean
+state                     
+CT      4174   3219  0.771
+DE        40     39  0.975
+MA      7774   4456  0.573
+MD      2312   1727  0.747
+ME      2678   2435  0.909
+NH       549     29  0.053
+NJ      2092   1856  0.887
+NY     23685  21824  0.921
+PA      9361   7893  0.843
+RI       423    169  0.400
+VA      1857   1746  0.940
+VT       202     34  0.168
+WV      1378   1095  0.795
+crossings with several rows: 6503; pipes differ by more than 0.05 ft: 1822
+agreement with the public-layer join where both have a value: 32196 crossings, equal 0.993
+saved data/processed/plunkett_outlet_drop_export.parquet

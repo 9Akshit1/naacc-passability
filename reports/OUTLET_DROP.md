@@ -10,9 +10,9 @@ Plunkett's file does not contain the outlet drop. The first version of this test
 
 In the shapefile version of the layer, `Outlet_D_1` is the drop to the water surface and `Outlet_Dro` is the drop to the stream bottom. These were checked against the older New York export, and they agree on 97% of the non-zero rows. A value of -1 means "not measured" and is treated as missing.
 
-The layer has one row for each measured pipe, so a crossing with two pipes appears twice with the same score and sometimes two different drops. For 1,076 crossings the drops differed by more than 0.05 ft, and for 431 of them the yes/no answer itself differed. Which pipe a single answer should describe is not defined, so these crossings are given no outlet drop value. After that change, the join agrees with the older New York export on 99.4% of crossings that appear in both.
+The layer has one row for each measured pipe, so a crossing with two pipes appears twice with the same score and sometimes two different drops. For about 1,080 crossings the drops differ by more than 0.05 ft, and for 431 of them the yes/no answer itself differs. Until 2026-11-09 these crossings were given no outlet drop value. Plunkett then explained that NAACC scores each structure of a multi-part crossing and keeps the maximum passability, so the score follows the most passable structure. These crossings now get the lowest drop among their pipes. The join agrees with the older New York export, which keeps one pipe, on 97.5% of the 8,163 crossings that appear in both (99.4% when the multi-pipe crossings were left out).
 
-The result is an outlet drop for 31,140 of the 56,525 crossings (55%). The other crossings were left empty. We did not fill them in from the map, because predicting the outlet drop from the map is exactly the part that does not work well.
+The result is an outlet drop for 32,223 of the 56,525 crossings (57%). The other crossings were left empty. We did not fill them in from the map, because predicting the outlet drop from the map is exactly the part that does not work well.
 
 ## Why 45% of the crossings have no value
 
@@ -50,6 +50,35 @@ The same final model (`src/plunkett_final.py`) was trained on the development cr
 
 By state, the map-only score and the score with the yes/no are 0.19 and 0.69 in New York, 0.14 and 0.69 in Pennsylvania, 0.28 and 0.72 in Virginia, and 0.03 and 0.60 in Maryland.
 
+### The lowest-drop rule, and why the table above was not redone
+
+The table above was scored before the multi-pipe rule changed (see "Where the outlet drop values came from"), so its 5,102 set-aside crossings exclude the ones whose pipes disagree. We did not score the set-aside basins a third time, because that would use up the held-out test again for a small change. We measured the change on the development crossings only, with the same checks as in "One model or several" (logs `results/plunkett/regions_B_min_rule_2026-11-09.log` and `regions_C_min_rule_2026-11-09.log`). The number of development crossings with a recorded drop rose from 26,038 to 26,885.
+
+| Development crossings, leave one state out, all held-out rows together | Before | With the lowest drop |
+|---|---|---|
+| Map only, no raster inputs, same crossings as the next row | 0.2195 | 0.2132 |
+| Map plus yes/no, no raster inputs | 0.6922 | 0.6891 |
+| Map plus yes/no, with raster inputs | 0.7030 | 0.6996 |
+| Cross-validation inside states, map plus yes/no, one pooled model | 0.6979 | 0.6952 |
+
+The yes/no still adds about 0.48 on these crossings, and one pooled model is still the best or tied in every row, so the decision does not change. The scores are about 0.003 lower because the added crossings have several pipes and are harder to predict. The set-aside figures of 0.205 and 0.698 were measured on the earlier row set. The next section repeats the set-aside test with the detailed NAACC export.
+
+### Third scoring, with the detailed export
+
+After the detailed export was joined (see "What would fix the gaps"), the development checks were repeated first (logs `results/plunkett/regions_B_export_2026-11-11.log` and `regions_C_export_2026-11-11.log`). The development crossings with a recorded drop rose to 38,782. Leaving one state out, one pooled model was still the best or tied, and the yes/no still added about 0.47 (map only 0.211, map plus yes/no 0.684, no raster inputs).
+
+The set-aside basins were then scored a third time with a plan written beforehand (`results/plunkett/locked_plan_T5_v3.txt`). Only the outlet drop changed. The models, the inputs, the 0.25 ft cut-off and the way the interval is found stayed the same, and nothing was adjusted after the result was seen. The script is `scripts/plunkett_locked_quickcheck_v3.py`. The model was trained on the 38,782 development crossings with a drop and scored on 7,767 set-aside crossings that have one (5,102 before).
+
+| | R² | 95% interval | MAE |
+|---|---|---|---|
+| Map only, same crossings | 0.207 | 0.181 to 0.227 | 0.216 |
+| Map plus yes/no | 0.693 | 0.667 to 0.711 | 0.134 |
+| Difference | +0.486 | 0.465 to 0.512 | |
+
+By state, the map-only score and the score with the yes/no are 0.19 and 0.70 in New York, 0.20 and 0.69 in Pennsylvania, 0.24 and 0.70 in Virginia, and 0.03 and 0.58 in Maryland. The result is close to the second scoring (0.205 and 0.698), with about 50% more test crossings and a narrower interval. These basins have now been used three times for this test, so the three results are not independent of each other. The data changed between the scorings and the model did not.
+
+With the same fitted model, flipping the yes/no at random in the test crossings gave R² of 0.41 when 10% of the answers were wrong, 0.13 when 20% were wrong and -0.16 when 30% were wrong. This is the same collapse as in "If volunteers make mistakes", and it applies to a model trained on surveyor answers only.
+
 ## What the 0.70 means
 
 On the development crossings, the yes/no answer by itself explains an RÂ² of 0.618, the exact outlet drop by itself explains 0.750, the map by itself explains 0.229, the map with the yes/no explains 0.683, and the map with the exact drop explains 0.806. So almost all of the 0.70 comes from the yes/no, and the map adds about 0.065 on top. Because the score is partly computed from the outlet drop, this is mostly arithmetic and it is not evidence of a clever model. The map-only score of 0.320 on the set-aside basins is unchanged by any of this.
@@ -81,10 +110,23 @@ Among the crossings where the pipes disagree, the NAACC score follows the lowest
 
 It does not show that volunteers can answer the question accurately, or how the model performs outside the 13 NAACC states. Only New York, Pennsylvania, Virginia and Maryland (plus a few crossings in Delaware and West Virginia) are in the set-aside test, and the other states are tested only by leaving each state out in development. It also says nothing about crossings with no recorded outlet drop, which are 45% of the file and may differ from the rest.
 
-## Permission to use the public layer
+## Permission to use NAACC data
 
-The public layer is an open service hosted by NAACC and The Nature Conservancy. It needs no login, and its metadata contains no licence or terms of use. Plunkett's data was compiled from NAACC database exports, so the layer is the same underlying source and not an independent one. The download script (`scripts/download_naacc_public_layer.py`) was first written to compare scores and was then also used for this join. The layer files themselves are not committed to this repository. This is not a legal clearance, and NAACC and Plunkett should be asked before results built on the layer are used outside this project.
+The public layer is an open service hosted by NAACC and The Nature Conservancy, and its metadata has no licence text. Ethan Plunkett, who works with NAACC's data, replied by email on 2026-11-09 that it is fine to use NAACC data for whatever we want, with no restrictions. The layer files themselves are still not committed to this repository, and the download script (`scripts/download_naacc_public_layer.py`) is included so the data can be fetched again.
 
 ## What would fix the gaps
 
-The most direct fix is for Plunkett or NAACC to provide the survey fields for his crossings from the April 2021 export: outlet drop to the water surface, outlet grade, and the number of structures at each crossing, keyed by `crossing_survey_id`. That would cover all 56,525 crossings with authorised data and would settle the question of which pipe a single answer describes. We could not find another organisation that holds these values. The Connecticut and Vermont culvert inventories and the New York Department of Transportation inventory were tested and do not include the outlet drop.
+The gaps are the crossings the public layer does not cover. Plunkett pointed out that NAACC's Data Center (naacc.org, "Search Crossings") can export a detailed Excel or CSV file of the surveys taken after 6/1/2015, which should have the outlet drop to the water surface, the outlet grade and the number of structures, one row for each structure. He described how to collapse it. A crossing with more than one survey has rows for each survey id, so we use the survey id Plunkett's file already names. A crossing with more than one structure has several rows with the same survey id. His own score is the maximum passability over the structures, so the single drop used here is the lowest one (he also named the mean).
+
+The detailed export was downloaded from the Data Center on 2026-11-11 (the "NAACC (after 6/1/2015)" dataset, no filters: 101,300 rows, 90,061 survey ids, all 13 states). `scripts/build_outlet_drop_from_export.py` joins it to Plunkett's crossings by `crossing_survey_id`, accepts a row only when its location is within 30 m of Plunkett's point and its aquatic score differs by less than 0.02, and takes the lowest drop when a crossing has several structures. The log is `results/plunkett/outlet_drop_export_join_2026-11-11.log` and the result is `data/processed/plunkett_outlet_drop_export.parquet`.
+
+| | Public layer join | Detailed export join |
+|---|---|---|
+| Crossings with an outlet drop | 32,223 of 56,525 (57%) | 46,522 of 56,525 (82%) |
+| Crossings with several structures | | 6,503 (1,822 differ by more than 0.05 ft) |
+
+Where both have a value (32,196 crossings), they are equal on 99.3%. The 14,326 crossings that only the export covers are mostly the surveys added after November 2020. The share with a value is now 92% in New York, 94% in Virginia, 89% in New Jersey, 84% in Pennsylvania, 80% in West Virginia, 77% in Connecticut and 57% in Massachusetts, but still only 5% in New Hampshire, 17% in Vermont and 40% in Rhode Island, which were mostly surveyed under the older UMass project.
+
+The Data Center also has a detailed export of that older UMass dataset (13,206 rows, downloaded the same day). It matches 4,820 of Plunkett's 5,403 older crossings by survey id, location and score. Its outlet drop is stored differently, as text: `0`, whole numbers up to 48 and ranges (`1-6`, `6-12`, `12-24`, `>24`), with a column saying whether it was measured or estimated. The values look like inches, but no document says so, and `1-6` straddles the 3 inch (0.25 ft) cut-off, so it is not used yet. The units are an open question for NAACC.
+
+The sections "One model or several" and "If volunteers make mistakes" and the first two set-aside tables are from the public-layer join. The third set-aside scoring above and the development checks it followed use the export join.

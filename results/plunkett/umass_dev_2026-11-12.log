@@ -1,0 +1,49 @@
+development rows 47530; older UMass crossings 5156; with a usable UMass drop 3257 (ranges 378, of which hold the 3 inch cut-off 144)
+current-survey rows with an outlet drop 38776
+
+PART 1  map-only model, all development rows
+  without flag, all rows                                     R2 0.2768  (n=47530)
+  with flag,    all rows                                     R2 0.2781  (n=47530)   vs reference +0.0013 (-0.0008 .. +0.0037)
+  without flag, current-survey rows                          R2 0.2805  (n=42374)
+  with flag,    current-survey rows                          R2 0.2812  (n=42374)   vs reference +0.0007 (-0.0005 .. +0.0024)
+  without flag, older UMass rows                             R2 0.2377  (n=5156)
+  with flag,    older UMass rows                             R2 0.2441  (n=5156)   vs reference +0.0063 (-0.0119 .. +0.0289)
+
+PART 2  outlet-drop yes/no with UMass drops (drop_ws = current surveys, um_drop = UMass midpoint)
+
+[1-6 range handled as: mid]  UMass rows with the yes/no 3257, perched share 0.328
+  c  map only (trained on both),            older UMass rows R2 0.2554  (n=3257)
+  a  +yes/no, trained on current only,      older UMass rows R2 0.6683  (n=3257)   vs reference +0.4130 (+0.3644 .. +0.4586)
+  b  +yes/no, trained on both with flag,    older UMass rows R2 0.6683  (n=3257)   vs reference +0.4129 (+0.3741 .. +0.4599)
+  c  map only (trained on both),            current-survey rows R2 0.2263  (n=38776)
+  a  +yes/no, trained on current only,      current-survey rows R2 0.6896  (n=38776)   vs reference +0.4633 (+0.4468 .. +0.4765)
+  b  +yes/no, trained on both with flag,    current-survey rows R2 0.6895  (n=38776)   vs reference +0.4633 (+0.4467 .. +0.4763)
+  older UMass rows by state, map only -> with yes/no (b): CT n=599 0.18->0.66; MA n=2265 0.28->0.68; NY n=271 0.24->0.58; RI n=122 0.13->0.60
+
+[1-6 range handled as: no]  UMass rows with the yes/no 3257, perched share 0.284
+  c  map only (trained on both),            older UMass rows R2 0.2554  (n=3257)
+  a  +yes/no, trained on current only,      older UMass rows R2 0.7420  (n=3257)   vs reference +0.4866 (+0.4349 .. +0.5788)
+  b  +yes/no, trained on both with flag,    older UMass rows R2 0.7444  (n=3257)   vs reference +0.4890 (+0.4363 .. +0.5835)
+  c  map only (trained on both),            current-survey rows R2 0.2263  (n=38776)
+  a  +yes/no, trained on current only,      current-survey rows R2 0.6896  (n=38776)   vs reference +0.4633 (+0.4468 .. +0.4765)
+  b  +yes/no, trained on both with flag,    current-survey rows R2 0.6898  (n=38776)   vs reference +0.4635 (+0.4470 .. +0.4766)
+  older UMass rows by state, map only -> with yes/no (b): CT n=599 0.18->0.78; MA n=2265 0.28->0.75; NY n=271 0.24->0.58; RI n=122 0.13->0.79
+
+[1-6 range handled as: yes]  UMass rows with the yes/no 3257, perched share 0.328
+  c  map only (trained on both),            older UMass rows R2 0.2554  (n=3257)
+  a  +yes/no, trained on current only,      older UMass rows R2 0.6683  (n=3257)   vs reference +0.4130 (+0.3644 .. +0.4586)
+  b  +yes/no, trained on both with flag,    older UMass rows R2 0.6683  (n=3257)   vs reference +0.4129 (+0.3741 .. +0.4599)
+  c  map only (trained on both),            current-survey rows R2 0.2263  (n=38776)
+  a  +yes/no, trained on current only,      current-survey rows R2 0.6896  (n=38776)   vs reference +0.4633 (+0.4468 .. +0.4765)
+  b  +yes/no, trained on both with flag,    current-survey rows R2 0.6895  (n=38776)   vs reference +0.4633 (+0.4467 .. +0.4763)
+  older UMass rows by state, map only -> with yes/no (b): CT n=599 0.18->0.66; MA n=2265 0.28->0.68; NY n=271 0.24->0.58; RI n=122 0.13->0.60
+
+[1-6 range handled as: left_out]  UMass rows with the yes/no 3113, perched share 0.297
+  c  map only (trained on both),            older UMass rows R2 0.2585  (n=3113)
+  a  +yes/no, trained on current only,      older UMass rows R2 0.7472  (n=3113)   vs reference +0.4887 (+0.4447 .. +0.5711)
+  b  +yes/no, trained on both with flag,    older UMass rows R2 0.7501  (n=3113)   vs reference +0.4916 (+0.4464 .. +0.5743)
+  c  map only (trained on both),            current-survey rows R2 0.2260  (n=38776)
+  a  +yes/no, trained on current only,      current-survey rows R2 0.6896  (n=38776)   vs reference +0.4636 (+0.4468 .. +0.4768)
+  b  +yes/no, trained on both with flag,    current-survey rows R2 0.6898  (n=38776)   vs reference +0.4638 (+0.4469 .. +0.4767)
+  older UMass rows by state, map only -> with yes/no (b): CT n=567 0.20->0.78; MA n=2164 0.28->0.76; NY n=271 0.25->0.59; RI n=111 0.14->0.79
+done

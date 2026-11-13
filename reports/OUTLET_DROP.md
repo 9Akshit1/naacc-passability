@@ -69,7 +69,7 @@ After the detailed export was joined (see "What would fix the gaps"), the develo
 
 The set-aside basins were then scored a third time with a plan written beforehand (`results/plunkett/locked_plan_T5_v3.txt`). Only the outlet drop changed. The models, the inputs, the 0.25 ft cut-off and the way the interval is found stayed the same, and nothing was adjusted after the result was seen. The script is `scripts/plunkett_locked_quickcheck_v3.py`. The model was trained on the 38,782 development crossings with a drop and scored on 7,767 set-aside crossings that have one (5,102 before).
 
-| | R² | 95% interval | MAE |
+| | RÂ² | 95% interval | MAE |
 |---|---|---|---|
 | Map only, same crossings | 0.207 | 0.181 to 0.227 | 0.216 |
 | Map plus yes/no | 0.693 | 0.667 to 0.711 | 0.134 |
@@ -77,7 +77,7 @@ The set-aside basins were then scored a third time with a plan written beforehan
 
 By state, the map-only score and the score with the yes/no are 0.19 and 0.70 in New York, 0.20 and 0.69 in Pennsylvania, 0.24 and 0.70 in Virginia, and 0.03 and 0.58 in Maryland. The result is close to the second scoring (0.205 and 0.698), with about 50% more test crossings and a narrower interval. These basins have now been used three times for this test, so the three results are not independent of each other. The data changed between the scorings and the model did not.
 
-With the same fitted model, flipping the yes/no at random in the test crossings gave R² of 0.41 when 10% of the answers were wrong, 0.13 when 20% were wrong and -0.16 when 30% were wrong. This is the same collapse as in "If volunteers make mistakes", and it applies to a model trained on surveyor answers only.
+With the same fitted model, flipping the yes/no at random in the test crossings gave RÂ² of 0.41 when 10% of the answers were wrong, 0.13 when 20% were wrong and -0.16 when 30% were wrong. This is the same collapse as in "If volunteers make mistakes", and it applies to a model trained on surveyor answers only.
 
 ## What the 0.70 means
 
@@ -127,6 +127,26 @@ The detailed export was downloaded from the Data Center on 2026-11-11 (the "NAAC
 
 Where both have a value (32,196 crossings), they are equal on 99.3%. The 14,326 crossings that only the export covers are mostly the surveys added after November 2020. The share with a value is now 92% in New York, 94% in Virginia, 89% in New Jersey, 84% in Pennsylvania, 80% in West Virginia, 77% in Connecticut and 57% in Massachusetts, but still only 5% in New Hampshire, 17% in Vermont and 40% in Rhode Island, which were mostly surveyed under the older UMass project.
 
-The Data Center also has a detailed export of that older UMass dataset (13,206 rows, downloaded the same day). It matches 4,820 of Plunkett's 5,403 older crossings by survey id, location and score. Its outlet drop is stored differently, as text: `0`, whole numbers up to 48 and ranges (`1-6`, `6-12`, `12-24`, `>24`), with a column saying whether it was measured or estimated. The values look like inches, but no document says so, and `1-6` straddles the 3 inch (0.25 ft) cut-off, so it is not used yet. The units are an open question for NAACC.
+The Data Center also has a detailed export of that older UMass dataset, and it is used in the next section.
+
+### The older UMass crossings
+
+The 5,403 older crossings are marked `database = umass` in Plunkett's file. All 5,403 are in the UMass export (13,206 rows, downloaded 2026-11-11) when it is matched on `Crossing_Record_ID` = `crossing_survey_id`. The export's column `AquaticScore_NAACC` equals Plunkett's `aquatic_score` on every row (largest difference 0.002), so his score for these crossings is the one stored in the NAACC database. Matching on `Survey_ID` instead, as for the current surveys, finds only 4,820 of them, which is why an earlier version of this page gave that number. Plunkett wrote on 2026-11-12 that these scores are taken from the database and are not worked out from the outlet drop, because the older scoring used its own table.
+
+The export stores Outlet_Drop as text: whole numbers up to 99, and four ranges (`1-6`, `6-12`, `12-24`, `>24`). Nothing in the export says what the unit is. We treat them as inches because the score of single-structure crossings falls steadily with the number (0.79 at 0, 0.58 at 1, 0.18 at 12, 0.03 at 24) and the four ranges score where their midpoints would put them (0.65, 0.28, 0.07, 0.03). Plunkett suggested using the midpoint of a range, so `1-6` is 3.5 inches, `6-12` is 9 and `12-24` is 18, and `>24` is taken as 24, its lower end. Crossings with several structures get the lowest drop, as for the current surveys. `scripts/build_outlet_drop_umass.py` does this and stops if the score in the export differs from Plunkett's.
+
+Three states are left out. New Jersey's values are not whole numbers (0.0833, 1.0833, and so on) and the score does not move with them, so the unit is not inches. In New Hampshire and Vermont a drop is recorded only for outlets that have one: none of the recorded values is 0, against 52 to 88 percent in the other states, so a missing value there is more likely "no drop" than "not measured". The rule in the code is that a state is used when at least 10% of its recorded values are 0 and all are whole numbers or ranges. That leaves 3,410 older crossings with a drop (Massachusetts 2,265, Connecticut 599, New York 352, Rhode Island 122, Pennsylvania 72) and brings the total with a drop to 49,932 of 56,525 (88%). New Hampshire and Vermont stay mostly uncovered.
+
+We then repeated the yes/no test on these crossings using development rows only (3,257 older crossings with a drop; the set-aside basins were not read). A model with map inputs only scores R-squared 0.255 on them. Adding the yes/no answer to "is the outlet drop more than 0.25 ft?" raises it as follows, depending on how the `1-6` range is handled:
+
+| `1-6` range treated as | Older crossings with the yes/no | R-squared with yes/no | Gain (95% interval) |
+|---|---|---|---|
+| perched (its midpoint, 3.5 inches, is above 3) | 3,257 | 0.668 | +0.413 (+0.364 to +0.459) |
+| not perched | 3,257 | 0.742 | +0.487 (+0.435 to +0.579) |
+| left out | 3,113 | 0.747 | +0.489 (+0.446 to +0.571) |
+
+Of the 3,257 crossings, 144 have a `1-6` range. The gain is the same for a model trained only on current-survey crossings as for one trained on both (0.668 in each case), so the older crossings add nothing as training data. By state, with the midpoint, R-squared goes from 0.18 to 0.66 in Connecticut, 0.28 to 0.68 in Massachusetts, 0.24 to 0.58 in New York and 0.13 to 0.60 in Rhode Island. The older crossings were scored by a different method, so this shows that the outlet drop predicts the score there too, which fits the idea that perched outlets are what the map inputs miss. A recorded drop is a surveyor's number and not a volunteer's yes/no answer, so the earlier warning about volunteer errors applies here as well.
+
+Two smaller checks. A flag for "older UMass crossing" added to the map-only model changes the R-squared of the current surveys by +0.0007 (interval -0.0005 to +0.0024), so it is not used. And the prediction table gives the boosted ensemble an R-squared of 0.283 on the older crossings against 0.235 for the random forest (0.330 against 0.285 on the current surveys), so the gain over the random forest is about the same on both kinds. The log is `results/plunkett/umass_dev_2026-11-12.log` and the script is `scripts/plunkett_umass_eval.py`.
 
 The sections "One model or several" and "If volunteers make mistakes" and the first two set-aside tables are from the public-layer join. The third set-aside scoring above and the development checks it followed use the export join.
